@@ -1,0 +1,84 @@
+{
+  "contexto_original": "https://apps.abacus.ai/chatllm/share/conversation/2101c3f2f:14b2096444",
+  "data_geracao": "2026-05-12",
+  "projeto": "3S Química - Distribuição de Hipoclorito de Sódio 12%",
+  "perfil_usuario": {
+    "empresa": "3S Química",
+    "responsavel": "Eduardo Sousa",
+    "localizacao": "Rio de Janeiro (Acari/Ilha/JPA)",
+    "veiculo": "HR 2015",
+    "fornecedor": "Katrium (Cota Direta)"
+  },
+  "historico_conversa": [
+    {
+      "id": 1,
+      "role": "user",
+      "text": "Usuário iniciou consulta sobre logística do Mercado Livre em 2026 e códigos universais (EAN/GTIN/SKU) para hipoclorito."
+    },
+    {
+      "id": 2,
+      "role": "assistant",
+      "text": "Explicação sobre ecossistema Mercado Envios (Full, Coleta, Flex) e definição técnica de SKU vs EAN para gestão de estoque profissional."
+    },
+    {
+      "id": 3,
+      "role": "user",
+      "text": "Dúvida sobre custos de lucro: Compra por 2,50/L, galão 5L, rótulo 2,00. Como ter lucro?"
+    },
+    {
+      "id": 4,
+      "role": "assistant",
+      "text": "Análise financeira mostrando que a venda unitária de 5L a preços baixos gera prejuízo. Recomendação de Kits para diluir frete e aumentar ticket médio."
+    },
+    {
+      "id": 5,
+      "role": "user",
+      "text": "Abaixo da concentração para 10% com hidróxido de sódio adiantaria para estabilizar o inchaço?"
+    },
+    {
+      "id": 6,
+      "role": "assistant",
+      "text": "Orientação técnica: Diluição com água para 10% e estabilização de pH (11.5-12.5) com NaOH para evitar decomposição e inchaço dos galões."
+    },
+    {
+      "id": 7,
+      "role": "user",
+      "text": "Vi um anúncio a 78,90 frete grátis nacional. Dá pra se basear?"
+    },
+    {
+      "id": 8,
+      "role": "assistant",
+      "text": "Alerta sobre a 'armadilha do frete': A R$ 78,90 o frete consome a margem. Demonstração de que o lucro real está no Kit 2x5L (R$ 139) ou 4x5L (R$ 249)."
+    },
+    {
+      "id": 9,
+      "role": "user",
+      "text": "Custo unitário galão pronto: R$ 14,00. Anúncio Premium, Caixa R$ 3,00. Quanto sobra de lucro real?"
+    },
+    {
+      "id": 10,
+      "role": "assistant",
+      "text": "Simulação final: Sobra bruta de R$ 43,12 por Kit 2x5L. Com Ads (CPA R$ 15), lucro líquido de R$ 28,12. Estratégia de recorrência em condomínios pode gerar ~R$ 4.800/mês."
+    },
+    {
+      "id": 11,
+      "role": "user",
+      "text": "E se eu fizer tráfego direto para WhatsApp na Ilha do Governador entregando eu mesmo?"
+    },
+    {
+      "id": 12,
+      "role": "assistant",
+      "text": "Estratégia Híbrida: Lucro na Ilha sobe para ~R$ 64,00/kit (sem taxas de ML e frete caro). Ilha financia o crescimento nacional no Mercado Livre."
+    },
+    {
+      "id": 13,
+      "role": "system_note",
+      "text": "Identificados riscos críticos: Vazamento no transporte, Instabilidade química e Custo de Aquisição (CAC) acima da margem unitária."
+    }
+  ],
+  "metas_operacionais_proximos_passos": {
+    "imediato": "Criar anúncio de Kit 2x5L no Mercado Livre e campanha local no Meta Ads.",
+    "tecnico": "Garantir pH estabilizado e embalagem dupla (saco + caixa reforçada).",
+    "comercial": "Focar em síndicos de Jacarepaguá e Ilha com entrega 'Last Mile' direta."
+  }
+}
