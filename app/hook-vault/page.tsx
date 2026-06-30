@@ -1,8 +1,7 @@
-export default function Page() {
-  return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>Hook Vault</h1>
-      <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>Em construção · dados mockados em breve</p>
-    </div>
-  );
+import { HookVaultClient } from "@/components/hook-vault/hook-vault-client";
+
+export const metadata = { title: "Hook Vault · Content Dashboard" };
+
+export default function HookVaultPage() {
+  return <HookVaultClient />;
 }
