@@ -10,18 +10,21 @@ Para editar, basta abrir o arquivo em um editor de texto e salvar.
 
 ## ⚠️ Antes de publicar
 
-Abra o arquivo **`js/config.js`** e preencha estes três itens. Enquanto o
-primeiro não for preenchido, aparece uma tarja amarela no topo do site
-avisando que a configuração está pendente.
+O WhatsApp comercial já está configurado: **(21) 98449-2698**.
+Faltam dois itens em **`js/config.js`**:
 
 | O que | Onde no arquivo | Observação |
 |---|---|---|
-| Número de WhatsApp | `whatsapp:` | Só números: 55 + DDD + número. Ex.: `'5521987654321'` |
-| E-mail comercial | `email:` | Use um e-mail do domínio publicado |
+| E-mail comercial | `email:` | Está como `comercial@3squimica.com.br`. Confirme se esse endereço existe |
 | Endereço público | `endereco:` | Decida com o contador: sede operacional ou endereço fiscal do rótulo |
 
-O número que vem no arquivo (`5521000000000`) é inválido de propósito, para
-não cair no WhatsApp de um terceiro por engano.
+Nenhum dos dois impede a publicação. Sem o endereço, o Schema.org declara
+apenas "Rio de Janeiro — RJ", que é verdadeiro e não cria divergência com
+o rótulo.
+
+Se um dia o número mudar, troque só a linha `whatsapp:` — ela alimenta as
+seis páginas, o botão flutuante e o Schema.org de uma vez. Se você apagar o
+número, o site volta a exibir uma tarja de aviso no topo.
 
 ---
 
@@ -67,10 +70,12 @@ números. Não apague vírgulas, chaves `{ }` nem colchetes `[ ]`.
 ### Trocar o número de WhatsApp
 
 ```js
-whatsapp: '5521987654321',
+whatsapp: '5521984492698',
 ```
 
-Muda em todas as páginas de uma vez, inclusive no botão flutuante.
+Formato: 55 (Brasil) + DDD + número, só dígitos, sem espaço, parêntese ou
+traço. Muda em todas as páginas de uma vez, inclusive no botão flutuante
+e no Schema.org.
 
 ### Mudar preços
 

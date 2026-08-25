@@ -15,11 +15,9 @@ const CONFIG = {
      1. CANAIS DE ATENDIMENTO
      --------------------------------------------------------------------- */
 
-  // PREENCHER: número de WhatsApp comercial em formato internacional,
-  // só números: 55 + DDD + número. Ex.: "5521987654321"
-  // O valor abaixo é INVÁLIDO de propósito, para não cair em número de
-  // terceiros por engano. O site avisa no rodapé enquanto não for trocado.
-  whatsapp: '5521000000000',
+  // Número de WhatsApp comercial em formato internacional, só números:
+  // 55 (Brasil) + 21 (DDD) + 984492698.
+  whatsapp: '5521984492698',
 
   // PREENCHER se houver outro: e-mail comercial do domínio publicado.
   email: 'comercial@3squimica.com.br',
