@@ -715,7 +715,12 @@ table, .num, input[type="number"], .calc-valor, .preco {
 
 /* --- 6.6 Rodapé ------------------------------------------------------- */
 
-.rodape { background: var(--grafite); color: rgba(255, 255, 255, 0.75); padding-block: var(--e-8) var(--e-5); }
+/* O respiro extra embaixo impede que o botão flutuante de WhatsApp, que é
+   fixo no canto, cubra o link da política de privacidade. */
+.rodape {
+  background: var(--grafite); color: rgba(255, 255, 255, 0.75);
+  padding-block: var(--e-8) calc(var(--e-5) + 4.5rem);
+}
 .rodape a { color: rgba(255, 255, 255, 0.75); text-decoration: none; }
 .rodape a:hover { color: var(--branco); text-decoration: underline; }
 .rodape h4 { color: var(--branco); font-size: var(--t-sm); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: var(--e-4); }
@@ -724,6 +729,16 @@ table, .num, input[type="number"], .calc-valor, .preco {
 .rodape__texto { font-size: var(--t-sm); margin-top: var(--e-4); max-width: 30ch; }
 .rodape ul { list-style: none; margin: 0; padding: 0; }
 .rodape li { margin-bottom: var(--e-3); font-size: var(--t-sm); }
+
+/* O endereço abre a rota no mapa. O rótulo diz o que acontece ao clicar,
+   em vez de deixar o visitante descobrir. Só aparece quando o endereço
+   virou link de fato — sem logradouro no config, o href é removido. */
+.rodape a[data-mapa][href]::after {
+  content: ' · ver rota';
+  color: var(--amarelo-3s);
+  font-size: var(--t-xs);
+  white-space: nowrap;
+}
 
 /* SAC em texto simples, não clicável, separado do canal comercial. */
 .rodape__sac {

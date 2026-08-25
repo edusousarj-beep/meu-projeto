@@ -22,10 +22,16 @@ const CONFIG = {
   // PREENCHER se houver outro: e-mail comercial do domínio publicado.
   email: 'comercial@3squimica.com.br',
 
-  // PREENCHER: endereço público que vai no Schema.org e no rodapé.
-  // Decida com o contador se entra a sede operacional ou o endereço fiscal
-  // do rótulo. Enquanto não decidir, fica só a cidade/estado — que é
-  // verdadeiro e não cria divergência com o rótulo.
+  // Endereço público, usado no rodapé e no Schema.org.
+  //
+  // Está de propósito só com cidade e estado: é o que se pode afirmar sem
+  // risco. Assim o site declara apenas "Rio de Janeiro — RJ", que é
+  // verdadeiro e não diverge do endereço do rótulo.
+  //
+  // Quando o endereço for definido (decida com o contador entre a sede
+  // operacional e o endereço fiscal do rótulo), preencha os campos abaixo.
+  // O rodapé passa a exibir o endereço completo, clicável, abrindo a rota
+  // no Google Maps — não é preciso mexer em mais nada.
   endereco: {
     logradouro: '',              // ex.: 'Rua Exemplo, 100 — Galpão 2'
     bairro: '',                  // ex.: 'Bonsucesso'
@@ -244,3 +250,12 @@ CONFIG.enderecoLinha = (function () {
   const partes = [e.logradouro, e.bairro, `${e.cidade} — ${e.uf}`, e.cep];
   return partes.filter(Boolean).join(', ');
 })();
+
+// Link de rota no Google Maps, montado com o mesmo endereço acima.
+// Só existe quando há logradouro: mandar o comprador para uma rota que
+// termina no meio da cidade é pior do que não oferecer rota nenhuma.
+CONFIG.enderecoMapa = CONFIG.endereco.logradouro
+  ? 'https://www.google.com/maps/dir/?api=1&destination=' +
+    // Travessão vira hífen: alguns apps de mapa engasgam com "—".
+    encodeURIComponent(CONFIG.enderecoLinha.replace(/\s—\s/g, ' - '))
+  : '';

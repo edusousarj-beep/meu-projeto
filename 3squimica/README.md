@@ -16,11 +16,22 @@ Faltam dois itens em **`js/config.js`**:
 | O que | Onde no arquivo | Observação |
 |---|---|---|
 | E-mail comercial | `email:` | Está como `comercial@3squimica.com.br`. Confirme se esse endereço existe |
-| Endereço público | `endereco:` | Decida com o contador: sede operacional ou endereço fiscal do rótulo |
+| Endereço público | `endereco:` | Opcional. Ver abaixo |
 
-Nenhum dos dois impede a publicação. Sem o endereço, o Schema.org declara
-apenas "Rio de Janeiro — RJ", que é verdadeiro e não cria divergência com
-o rótulo.
+### Sobre o endereço
+
+O campo está com **apenas cidade e estado**, de propósito. O site declara
+"Rio de Janeiro — RJ", que é verdadeiro e não diverge do endereço do
+rótulo. **Dá para publicar assim.**
+
+Quando o endereço for definido — sede operacional ou endereço fiscal do
+rótulo, decida com o contador — preencha `logradouro`, `bairro` e `cep`.
+O rodapé passa a mostrar o endereço completo e clicável, abrindo a rota no
+Google Maps, sem precisar mexer em mais nada.
+
+Só não publique com endereço inventado: o campo alimenta o Schema.org, que
+o Google indexa como endereço da empresa, e corrigir depois leva semanas de
+reindexação.
 
 Se um dia o número mudar, troque só a linha `whatsapp:` — ela alimenta as
 seis páginas, o botão flutuante e o Schema.org de uma vez. Se você apagar o
@@ -122,6 +133,26 @@ Para remover, apague a linha inteira, com a vírgula do final.
 O verificador ignora acento e maiúscula: quem digitar "sao goncalo" acha
 "São Gonçalo".
 
+### Mudar o endereço
+
+```js
+endereco: {
+  logradouro: 'Rua Exemplo, 100 — Galpão 2',
+  bairro: 'Bonsucesso',
+  cidade: 'Rio de Janeiro',
+  uf: 'RJ',
+  cep: '21040-000',
+},
+```
+
+O endereço aparece no rodapé das seis páginas, **clicável**: abre a rota
+no Google Maps em nova aba. O link é montado sozinho a partir dos campos
+acima — você não precisa colar URL de mapa em lugar nenhum.
+
+Se `logradouro` estiver vazio, o endereço continua visível mas deixa de
+ser clicável. É proposital: mandar o comprador para uma rota que termina
+no meio da cidade é pior do que não oferecer rota.
+
 ### Mudar pedido mínimo, frete ou horário
 
 ```js
@@ -185,6 +216,7 @@ Eventos já registrados:
 | `clique_whatsapp` | Qualquer botão de WhatsApp, com a origem junto |
 | `consulta_cobertura` | Verificação de bairro, com o resultado |
 | `envio_formulario` | Envio do formulário de orçamento |
+| `clique_mapa` | Clique no endereço do rodapé |
 
 ---
 

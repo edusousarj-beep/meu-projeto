@@ -236,6 +236,24 @@
       el.textContent = CONFIG.email;
     });
 
+    /* Endereço clicável: abre a rota no Google Maps, em nova aba.
+       Se não houver logradouro no config, o link vira texto simples —
+       o endereço continua visível, só não leva a lugar nenhum. */
+    var mapas = document.querySelectorAll('[data-mapa]');
+    Array.prototype.forEach.call(mapas, function (el) {
+      if (CONFIG.enderecoMapa) {
+        el.setAttribute('href', CONFIG.enderecoMapa);
+        el.setAttribute('target', '_blank');
+        el.setAttribute('rel', 'noopener');
+        el.setAttribute('title', 'Ver rota no Google Maps');
+        el.addEventListener('click', function () {
+          rastrear('clique_mapa', { origem: 'rodape' });
+        });
+      } else {
+        el.removeAttribute('href');
+      }
+    });
+
     // SAC dos rótulos: texto simples, NUNCA link. Some se não houver valor.
     var sacs = document.querySelectorAll('[data-sac]');
     Array.prototype.forEach.call(sacs, function (el) {
