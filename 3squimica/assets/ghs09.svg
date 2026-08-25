@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="GHS09 — perigoso ao meio ambiente">
+  <title>GHS09 — perigoso ao meio ambiente</title>
+  <!-- Losango de sinalização: fundo branco, borda vermelha, símbolo preto -->
+  <polygon points="50,3 97,50 50,97 3,50" fill="#FFFFFF" stroke="#D0021B" stroke-width="7" stroke-linejoin="round"/>
+
+  <g fill="#000000">
+    <!-- Linha d'água -->
+    <rect x="20" y="60" width="60" height="3.2" rx="1.6"/>
+
+    <!-- Árvore morta, à esquerda: tronco inclinado e galhos secos -->
+    <path d="M30 60 L32.5 34 L35.5 34 L34 60 Z"/>
+    <path d="M33 44 L24 36 L26 34 L33.6 40 Z"/>
+    <path d="M33.2 39 L40 30 L42 32 L34 41 Z"/>
+    <path d="M32.6 50 L26 45 L27.5 43 L33 47.5 Z"/>
+
+    <!-- Peixe morto, à direita: corpo, cauda e o olho em X -->
+    <path d="M48 76
+             q9 -10 20 -10
+             q10 0 15 7
+             q-5 7 -15 7
+             q-11 0 -20 -4 Z"/>
+    <polygon points="46,68 46,84 55,76"/>
+    <!-- Olho marcado com X, sobre o corpo -->
+    <g stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round">
+      <line x1="63" y1="70" x2="68" y2="75"/>
+      <line x1="68" y1="70" x2="63" y2="75"/>
+    </g>
+  </g>
+</svg>

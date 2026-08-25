@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Área de entrega no Rio de Janeiro — 3S Química</title>
+<meta name="description" content="Bairros e municípios atendidos pela 3S Química na região metropolitana do Rio de Janeiro, com prazo típico, pedido mínimo e política de frete para hipoclorito de sódio.">
+<link rel="canonical" href="https://3squimica.com.br/cobertura.html">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="3S Química">
+<meta property="og:title" content="Área de entrega no Rio de Janeiro — 3S Química">
+<meta property="og:description" content="Bairros e municípios atendidos, prazo típico, pedido mínimo e frete.">
+<meta property="og:url" content="https://3squimica.com.br/cobertura.html">
+
+<meta name="theme-color" content="#004AAD">
+<link rel="icon" href="assets/logo-azul.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="pular-para-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="navbar">
+  <div class="container navbar__interno">
+    <a class="marca" href="index.html" aria-label="3S Química — início">
+      <img class="marca__simbolo" src="assets/logo-azul.svg" alt="" width="34" height="34">
+      <span class="marca__nome">3S <span>Química</span></span>
+    </a>
+    <nav class="menu" id="menu-principal" data-aberto="false" aria-label="Principal">
+      <ul class="menu__lista">
+        <li><a class="menu__link" href="index.html">Início</a></li>
+        <li><a class="menu__link" href="produtos.html">Produtos</a></li>
+        <li><a class="menu__link" href="cobertura.html" aria-current="page">Cobertura</a></li>
+        <li><a class="menu__link" href="empresa.html">Empresa</a></li>
+        <li><a class="menu__link" href="orcamento.html">Orçamento</a></li>
+        <li class="menu__cta">
+          <a class="btn btn--primario btn--largo" data-zap="cobertura">Consultar no WhatsApp</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="navbar__acoes">
+      <a class="btn btn--primario btn--pequeno" data-zap="cobertura">Pedir orçamento</a>
+      <button class="menu-toggle" type="button" aria-expanded="false"
+              aria-controls="menu-principal" aria-label="Abrir menu">
+        <span class="menu-toggle__barra"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="conteudo">
+
+  <div class="pagina-cabecalho">
+    <div class="container">
+      <nav class="trilha" aria-label="Trilha de navegação">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li aria-current="page">Cobertura</li>
+        </ol>
+      </nav>
+      <h1>Onde entregamos e em quanto tempo.</h1>
+      <p>
+        Rota própria na região metropolitana do Rio. Sem transportadora no meio,
+        a data combinada é a data que vale.
+      </p>
+    </div>
+  </div>
+
+
+  <!-- ===================================================================
+       VERIFICADOR
+       =================================================================== -->
+  <section class="secao">
+    <div class="container">
+
+      <div class="secao-cabecalho revelar">
+        <span class="secao-rotulo">Verificar</span>
+        <h2>Digite seu bairro.</h2>
+      </div>
+
+      <div class="cobertura-busca revelar">
+        <form id="form-cobertura" novalidate>
+          <div class="cobertura-busca__linha">
+            <div class="campo">
+              <label class="campo__rotulo apenas-leitor" for="cobertura-local">
+                Bairro ou município de entrega
+              </label>
+              <input type="text" id="cobertura-local" name="local"
+                     placeholder="Ex.: Bonsucesso, Niterói…"
+                     autocomplete="address-level3"
+                     role="combobox" aria-expanded="false"
+                     aria-controls="cobertura-sugestoes"
+                     aria-describedby="cobertura-resposta">
+            </div>
+            <button class="btn btn--primario" type="submit">Verificar</button>
+          </div>
+          <ul class="cobertura-sugestoes" id="cobertura-sugestoes" role="listbox"
+              aria-label="Sugestões de bairro ou município"></ul>
+        </form>
+
+        <div class="cobertura-resposta" id="cobertura-resposta" role="status" aria-live="polite"></div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ===================================================================
+       CONDIÇÕES
+       =================================================================== -->
+  <section class="secao secao--cinza">
+    <div class="container">
+
+      <div class="secao-cabecalho revelar">
+        <span class="secao-rotulo">Condições</span>
+        <h2>Pedido mínimo, frete e janela de entrega.</h2>
+      </div>
+
+      <div class="grid grid--3 revelar">
+
+        <div class="card">
+          <h3 class="card__titulo">Pedido mínimo</h3>
+          <p class="secao-apoio" style="font-size:var(--t-sm)" data-config="entrega.pedidoMinimo"></p>
+        </div>
+
+        <div class="card">
+          <h3 class="card__titulo">Frete</h3>
+          <p class="secao-apoio" style="font-size:var(--t-sm)" data-config="entrega.frete"></p>
+        </div>
+
+        <div class="card">
+          <h3 class="card__titulo">Janela de entrega</h3>
+          <p class="secao-apoio" style="font-size:var(--t-sm)" data-config="entrega.janela"></p>
+        </div>
+
+      </div>
+
+      <p class="nota" style="margin-top:var(--e-6)">
+        Contrato mensal reserva a entrega na sua data e dispensa a negociação
+        de frete a cada pedido.
+      </p>
+
+    </div>
+  </section>
+
+
+  <!-- ===================================================================
+       LISTA COMPLETA — preenchida por js/cobertura.js
+       =================================================================== -->
+  <section class="secao">
+    <div class="container">
+
+      <div class="secao-cabecalho revelar">
+        <span class="secao-rotulo">Rotas fixas</span>
+        <h2>Bairros e municípios atendidos.</h2>
+        <p class="secao-apoio">
+          Endereço fora desta lista não é recusa: avaliamos rota nova conforme
+          volume e frequência.
+        </p>
+      </div>
+
+      <div class="revelar" id="lista-cobertura"></div>
+
+      <div style="margin-top:var(--e-7)">
+        <a class="btn btn--primario" data-zap="cobertura">Consultar meu endereço no WhatsApp</a>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="rodape">
+  <div class="container">
+    <div class="rodape__grid">
+      <div class="rodape__marca">
+        <span class="marca">
+          <img class="marca__simbolo" src="assets/logo-branco.svg" alt="" width="34" height="34">
+          <span class="marca__nome">3S <span>Química</span></span>
+        </span>
+        <p class="rodape__texto">
+          Distribuidora de hipoclorito de sódio para operação profissional
+          na região metropolitana do Rio de Janeiro.
+        </p>
+      </div>
+      <div>
+        <h4>Site</h4>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="cobertura.html">Cobertura</a></li>
+          <li><a href="empresa.html">Empresa</a></li>
+          <li><a href="orcamento.html">Orçamento</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Atendimento</h4>
+        <ul>
+          <li><a data-zap="flutuante">WhatsApp comercial</a></li>
+          <li><a data-email href="#">e-mail</a></li>
+        </ul>
+        <p class="rodape__texto" style="font-size:var(--t-xs)">
+          O atendimento comercial é feito por WhatsApp, em texto.
+          Não recebemos ligações.
+        </p>
+        <p class="rodape__sac" data-sac></p>
+      </div>
+      <div>
+        <h4>Empresa</h4>
+        <ul>
+          <li data-config-linha><span data-config="empresa.razaoSocial"></span></li>
+          <li data-config-linha>CNPJ <span data-config="empresa.cnpj"></span></li>
+          <li data-config-linha><span data-config="enderecoLinha"></span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="rodape__legal">
+      <span>© <span data-ano></span> 3S Química. Todos os direitos reservados.</span>
+      <a href="politica-privacidade.html">Política de privacidade</a>
+    </div>
+  </div>
+</footer>
+
+<a class="zap-flutuante" data-zap="flutuante" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.98-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.39.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.14-1.18-.06-.11-.22-.17-.47-.29z"/>
+  </svg>
+  <span>WhatsApp</span>
+</a>
+
+<aside class="cookies" id="banner-cookies" hidden aria-label="Aviso de cookies">
+  <p>
+    Usamos cookies de medição para entender quais páginas trazem pedido.
+    Nada é usado para publicidade fora deste site sem o seu aceite.
+    <a href="politica-privacidade.html">Ler a política</a>.
+  </p>
+  <div class="cookies__acoes">
+    <button class="btn btn--primario btn--pequeno" type="button" data-cookies="aceitar">Aceitar</button>
+    <button class="btn btn--secundario btn--pequeno" type="button" data-cookies="recusar">Recusar</button>
+  </div>
+</aside>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+<script src="js/cobertura.js"></script>
+</body>
+</html>
