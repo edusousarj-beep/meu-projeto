@@ -252,9 +252,14 @@ table, .num, input[type="number"], .calc-valor, .preco {
   font-family: var(--fonte-marca);
   font-weight: 800; font-size: 1.15rem;
   letter-spacing: -0.01em; line-height: 1; white-space: nowrap;
+  /* Lockup: símbolo amarelo + texto azul. O texto não usa grafite em
+     lugar nenhum — as duas palavras são azuis. */
+  color: var(--azul-3s);
 }
 .marca__nome span { color: var(--azul-3s); }
-.navbar--escura .marca__nome span { color: var(--amarelo-3s); }
+/* Sobre fundo azul o lockup inverte: símbolo e texto em branco. */
+.navbar--escura .marca__nome,
+.navbar--escura .marca__nome span { color: var(--branco); }
 
 
 /* --- 5.2 Botões ------------------------------------------------------- */
@@ -628,6 +633,28 @@ table, .num, input[type="number"], .calc-valor, .preco {
   margin: var(--e-4) 0 0; line-height: 1.5;
 }
 
+/* Lista de ganhos: é o que transforma o resultado em argumento de compra. */
+.calc__ganhos { list-style: none; margin: var(--e-5) 0 var(--e-5); padding: 0; }
+.calc__ganho {
+  position: relative; padding-left: var(--e-6); margin-bottom: var(--e-3);
+  font-size: var(--t-sm); color: rgba(255, 255, 255, 0.88); line-height: 1.45;
+}
+.calc__ganho:last-child { margin-bottom: 0; }
+.calc__ganho strong { color: var(--branco); }
+.calc__ganho::before {
+  content: ''; position: absolute; left: 0; top: 0.5em;
+  width: 11px; height: 12px; background: var(--amarelo-3s);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Pedido avulso: existe, mas não disputa atenção com o fornecimento mensal. */
+.calc__secundario {
+  display: block; text-align: center; margin-top: var(--e-4);
+  font-size: var(--t-sm); color: rgba(255, 255, 255, 0.75);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.calc__secundario:hover { color: var(--branco); }
+
 /* Animação do número ao recalcular: um pulso curto, nada mais. */
 .calc__numero[data-atualizado="true"] { animation: pulso 420ms ease-out; }
 @keyframes pulso {
@@ -748,7 +775,6 @@ table, .num, input[type="number"], .calc-valor, .preco {
   text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: var(--e-4);
 }
 .rodape__grid { display: grid; gap: var(--e-7); grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
-.rodape__marca .marca__nome { color: var(--grafite); }
 .rodape__texto { font-size: var(--t-sm); margin-top: var(--e-4); max-width: 30ch; }
 .rodape ul { list-style: none; margin: 0; padding: 0; }
 .rodape li { margin-bottom: var(--e-3); font-size: var(--t-sm); }

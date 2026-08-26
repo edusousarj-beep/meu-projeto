@@ -33,7 +33,7 @@
   <div class="container navbar__interno">
 
     <a class="marca" href="index.html" aria-label="3S Química — início">
-      <img class="marca__simbolo" src="assets/logo-azul.svg" alt="" width="34" height="34">
+      <img class="marca__simbolo" src="assets/logo-amarelo.svg" alt="" width="34" height="34">
       <span class="marca__nome">3S <span>Química</span></span>
     </a>
 
@@ -93,7 +93,8 @@
 
   <!-- ===================================================================
        2. CALCULADORA DE CONSUMO
-       A tela mostra só o número de embalagens. O fator de diluição fica
+       Recomenda a embalagem certa para o volume informado e oferece o
+       fornecimento mensal como caminho principal. O fator de diluição fica
        no código (js/config.js), não aparece para o visitante.
        =================================================================== -->
   <section class="secao secao--cinza" id="calculadora-secao">
@@ -101,10 +102,10 @@
 
       <div class="secao-cabecalho revelar">
         <span class="secao-rotulo">Calculadora</span>
-        <h2>Quantas embalagens você usa por mês.</h2>
+        <h2>Descubra o abastecimento certo para o seu consumo.</h2>
         <p class="secao-apoio">
-          Dois campos. O número vai junto na mensagem do WhatsApp, então você
-          já começa a conversa com o volume definido.
+          Informe quanto sua equipe usa por mês. Devolvemos a embalagem
+          indicada, a quantidade e a mensagem pronta para fechar no WhatsApp.
         </p>
       </div>
 
@@ -112,16 +113,6 @@
 
         <!-- Entrada -->
         <form class="calc__form" id="calculadora" novalidate>
-
-          <div class="campo">
-            <label class="campo__rotulo" for="calc-embalagem">Embalagem</label>
-            <select id="calc-embalagem" name="embalagem">
-              <option value="5l">Bombona 5L</option>
-              <option value="20l">Bombona 20L</option>
-              <option value="50l" selected>Bombona 50L</option>
-              <option value="ibc">IBC 1.000L</option>
-            </select>
-          </div>
 
           <div class="campo">
             <label class="campo__rotulo" for="calc-consumo">
@@ -133,6 +124,21 @@
             <p class="campo__dica" id="calc-consumo-dica">
               Em litros, já diluído. Se não souber, some os baldes que a equipe
               usa por dia e multiplique por 22 dias.
+            </p>
+          </div>
+
+          <div class="campo">
+            <label class="campo__rotulo" for="calc-embalagem">Embalagem</label>
+            <select id="calc-embalagem" name="embalagem">
+              <option value="auto" selected>Recomendar para o meu volume</option>
+              <option value="5l">Bombona 5L</option>
+              <option value="20l">Bombona 20L</option>
+              <option value="50l">Bombona 50L</option>
+              <option value="ibc">IBC 1.000L</option>
+            </select>
+            <p class="campo__dica">
+              Deixe em "recomendar" e o site escolhe o formato com menos peças
+              para receber e movimentar.
             </p>
           </div>
 
@@ -381,7 +387,7 @@
 
       <div class="rodape__marca">
         <span class="marca">
-          <img class="marca__simbolo" src="assets/logo-azul.svg" alt="" width="34" height="34">
+          <img class="marca__simbolo" src="assets/logo-amarelo.svg" alt="" width="34" height="34">
           <span class="marca__nome">3S <span>Química</span></span>
         </span>
         <p class="rodape__texto">
