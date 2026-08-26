@@ -43,10 +43,10 @@ número, o site volta a exibir uma tarja de aviso no topo.
 
 ```
 index.html                  Home (hero, calculadora, embalagens, cobertura,
-                            confiabilidade, segurança, CTA final)
-produtos.html               Catálogo com ficha de cada embalagem e preços
+                            confiabilidade, CTA final)
+produtos.html               Ficha de cada embalagem + bloco de segurança
 cobertura.html              Área de entrega, prazos, frete e pedido mínimo
-empresa.html                Quem somos, história e responsabilidade técnica
+empresa.html                Quem somos, em quatro parágrafos
 orcamento.html              Formulário de proposta (6 campos)
 politica-privacidade.html   Política de privacidade (LGPD)
 
@@ -56,9 +56,8 @@ css/style.css               Folha única, em camadas:
 
 js/config.js                ⭐ ÚNICO arquivo que você precisa editar
 js/main.js                  Menu, WhatsApp, rodapé, cookies, analytics
-js/calculadora.js           Calculadora de diluição e economia
-js/cobertura.js             Verificador de bairro e lista de rotas
-js/produtos.js              Tabela de preços
+js/calculadora.js           Calculadora de consumo (nº de embalagens)
+js/cobertura.js             Verificador de bairro e lista de localidades
 js/orcamento.js             Validação e envio do formulário
 
 assets/logo-azul.svg        Logo azul, para fundo claro
@@ -88,33 +87,26 @@ Formato: 55 (Brasil) + DDD + número, só dígitos, sem espaço, parêntese ou
 traço. Muda em todas as páginas de uma vez, inclusive no botão flutuante
 e no Schema.org.
 
-### Mudar preços
+### Preço
 
-Procure o bloco `produtos:` e altere o valor depois de `preco:`.
-Use ponto como separador decimal (`179.00`, não `179,00`).
+O site **não exibe preço em nenhum lugar**, por decisão comercial. Valor é
+passado por WhatsApp, conforme o volume. Não há campo de preço no config.
+
+### Mudar o texto de uma embalagem
+
+No bloco `produtos:`:
 
 ```js
 {
   id: '50l',
-  volume: 50,
+  volume: 50,                    // usado no cálculo, não aparece na tela
   nome: 'Bombona 50L',
-  preco: 179.00,        // ← só este número
-  ...
+  aplicacao: 'Abastecimento mensal de operação contínua.',
+  publico: 'Empresas de limpeza, condomínios grandes, conservação',
+  embalagem: 'Venda em regime de troca — a bombona vazia é devolvida...',
+  trocaVasilhame: true,          // true mostra o aviso de vasilhame
 }
 ```
-
-Para deixar uma embalagem como "sob consulta", escreva `preco: null`.
-
-### Esconder todos os preços
-
-```js
-mostrarPrecos: 'nao',
-```
-
-A tabela some e no lugar aparece "preço por faixa de volume, consulte pelo
-WhatsApp". A calculadora deixa de mostrar custo e economia.
-
-Para mostrar de novo, volte para `'sim'`.
 
 ### Adicionar ou remover um bairro
 
@@ -157,11 +149,14 @@ no meio da cidade é pior do que não oferecer rota.
 
 ```js
 entrega: {
-  pedidoMinimo: 'R$ 250,00 em produto, ou 1 bombona de 50L',
+  pedidoMinimo: 'A partir de 1 bombona de 50L, ou volume equivalente...',
   frete: '...',
   janela: '...',
 },
 ```
+
+O texto de `janela` aparece igual na home e na página Cobertura. Não escreva
+valor em R$ em nenhum desses campos: o site não exibe preço.
 
 ### Mudar as mensagens que abrem no WhatsApp
 
@@ -217,6 +212,8 @@ Eventos já registrados:
 | `consulta_cobertura` | Verificação de bairro, com o resultado |
 | `envio_formulario` | Envio do formulário de orçamento |
 | `clique_mapa` | Clique no endereço do rodapé |
+
+O evento `consulta_preco` não existe: o site não tem página de preço.
 
 ---
 
@@ -276,8 +273,28 @@ Depois abra `http://localhost:8000` no navegador.
 Estas escolhas têm motivo comercial ou regulatório. Mudar sem saber o porquê
 quebra alguma coisa.
 
+**O site não exibe preço nem rendimento.** Preço é passado por WhatsApp,
+conforme o volume. Rendimento em litros foi removido de todas as páginas.
+
+**A calculadora mostra um número só: quantas embalagens por mês.** O fator
+de diluição existe no código e não aparece na tela.
+
+**A empresa não é descrita como fundada em 1967.** O sujeito da frase é
+sempre a *cadeia familiar de fornecimento*, nunca a razão social nem a
+marca. O CNPJ no rodapé é muito posterior a 1967, e quem cruzar as duas
+informações precisa achar coerência. A menção aparece em exatamente dois
+lugares: o selo do topo da home e um parágrafo da página Empresa.
+
+**Não existe menção a responsável técnico nem a CRQ.**
+
+**Não se escreve "entrega própria", "rota própria" nem "rota fixa".**
+
 **Não existe link de telefone em lugar nenhum.** O atendimento é por
 WhatsApp, em texto. Um botão "ligue agora" gera ligação que ninguém atende.
+
+**O bloco de segurança fica só na página Produtos.** Foi removido da home.
+Pictogramas GHS, aviso de não misturar com ácidos e amoniacais e referência
+à FISPQ continuam lá.
 
 **Vermelho aparece só no bloco de segurança química.** No setor químico,
 vermelho é sinalização de risco. Usar vermelho em promoção ou botão anula a
@@ -312,18 +329,27 @@ produto de amônio quaternário. Só entram depois da AFE emitida.
 
 ## Observações técnicas
 
-**Base de cálculo da calculadora.** Uma bombona de 50L rende 600L de solução
-a 1% — ou seja, 12L de solução pronta por litro de produto. As outras
-concentrações são proporcionais (0,5% rende o dobro; 2%, a metade). Para
-mudar a base, altere `rendimentoPorLitroA1Pct` em `js/config.js`.
+**Base de cálculo da calculadora.** O produto vendido tem **12% de cloro
+ativo**. Diluído a 1% de uso final, 1L de produto rende 12L de solução
+pronta. Daí sai o número de embalagens.
 
-**Comparação com o varejo.** Usa água sanitária de varejo a 2,5% de cloro
-ativo, a R$ 2,50/L, na mesma concentração de uso. Essa premissa aparece
-escrita na tela, embaixo do resultado — número de economia sem premissa à
-vista não convence comprador técnico. Ajuste em `calculo.varejo`.
+Esse cálculo **não aparece na tela**: a calculadora mostra só quantas
+embalagens por mês. Rendimento, preço e economia foram removidos do site.
+
+Se o teor do produto mudar, altere `teorAtivoProduto` em `js/config.js` —
+o fator é recalculado sozinho.
 
 **Pictogramas GHS.** Os SVGs em `assets/` são versões desenhadas para uso na
 tela. Para rótulo impresso, use a arte oficial do GHS, não estes arquivos.
+
+**Verde do WhatsApp.** Os CTAs usam `#25D366` (hover `#1DA851`) com texto em
+grafite `#1A1D22`, não em branco. Branco sobre `#25D366` dá 1,98:1 e reprova
+em AA; grafite dá 8,52:1. Para inverter, troque `color` em `.btn--zap` no
+CSS — mas aí o site deixa de passar AA nos botões principais.
+
+**Logo do rodapé.** Como o rodapé passou a ser branco, o rodapé usa
+`logo-azul.svg` (Opção 1 do documento de correções). O `logo-branco.svg`
+segue no projeto para uso sobre fundo azul.
 
 **Fontes.** Archivo e Montserrat estão em `assets/fonts`, auto-hospedadas,
 com `font-display: swap`. Nenhuma requisição sai para o Google.

@@ -56,54 +56,45 @@ const CONFIG = {
   },
 
   /* -----------------------------------------------------------------------
-     3. PREÇOS
+     3. EMBALAGENS
      --------------------------------------------------------------------- */
+     // O site não exibe preço. Valor é passado por WhatsApp, conforme volume.
 
-  // 'sim'  → mostra a tabela de preços na página /produtos e na calculadora
-  // 'nao'  → troca por "preço por faixa de volume — consulte pelo WhatsApp"
-  mostrarPrecos: 'sim',
-
-  // Preço por embalagem, em reais. Use null para "sob consulta".
-  // Para editar: troque só o número depois de "preco:".
   produtos: [
     {
       id: '5l',
       volume: 5,
       nome: 'Bombona 5L',
-      preco: 22.90,
-      aplicacao: 'Uso pontual e reposição de ponto de limpeza',
-      publico: 'Condomínios pequenos, clínicas, salões, escritórios',
-      embalagem: 'Bombona de polietileno com tampa lacrada. Sem devolução de vasilhame.',
+      aplicacao: 'Reposição de ponto de limpeza.',
+      publico: 'Condomínios pequenos, clínicas, escritórios',
+      embalagem: 'Bombona de PEAD com tampa lacrada. Sem devolução de vasilhame.',
       trocaVasilhame: false,
     },
     {
       id: '20l',
       volume: 20,
       nome: 'Bombona 20L',
-      preco: 84.90,
-      aplicacao: 'Consumo semanal de equipe de limpeza',
-      publico: 'Terceirizadas de porte médio, hotelaria, cozinhas industriais',
-      embalagem: 'Bombona de polietileno com tampa lacrada. Sem devolução de vasilhame.',
+      aplicacao: 'Consumo semanal de equipe em campo.',
+      publico: 'Empresas de limpeza, hotelaria, cozinhas industriais',
+      embalagem: 'Bombona de PEAD com tampa lacrada. Sem devolução de vasilhame.',
       trocaVasilhame: false,
     },
     {
       id: '50l',
       volume: 50,
       nome: 'Bombona 50L',
-      preco: 179.00,
-      aplicacao: 'Abastecimento mensal de operação contínua',
-      publico: 'Facilities, condomínios grandes, empresas de conservação',
-      embalagem: 'Venda em regime de troca de vasilhame: a bombona vazia é devolvida na entrega seguinte.',
+      aplicacao: 'Abastecimento mensal de operação contínua.',
+      publico: 'Empresas de limpeza, condomínios grandes, conservação',
+      embalagem: 'Venda em regime de troca — a bombona vazia é devolvida na entrega seguinte.',
       trocaVasilhame: true,
     },
     {
       id: 'ibc',
       volume: 1000,
       nome: 'IBC 1.000L',
-      preco: null,                 // null = sob consulta
-      aplicacao: 'Abastecimento industrial e reenvase por distribuidor',
+      aplicacao: 'Abastecimento industrial e reenvase.',
       publico: 'Distribuidores, indústria, grandes contratos',
-      embalagem: 'Contêiner IBC com gaiola metálica, em regime de comodato. Retorna na troca.',
+      embalagem: 'Contêiner em comodato, retorna na troca.',
       trocaVasilhame: true,
     },
   ],
@@ -111,25 +102,19 @@ const CONFIG = {
   /* -----------------------------------------------------------------------
      4. BASE DE CÁLCULO DA CALCULADORA
      --------------------------------------------------------------------- */
+     // O produto vendido tem 12% de cloro ativo. Diluído para 1% de uso
+     // final, 1L de produto rende 12L de solução pronta — é daí que sai o
+     // fator abaixo, e não de um número arbitrário.
+     //
+     // Se o teor do produto mudar, troque só teorAtivoProduto: o fator é
+     // recalculado sozinho.
+     //
+     // O site NÃO exibe rendimento nem economia. Este cálculo serve só para
+     // converter o consumo informado em número de embalagens.
 
   calculo: {
-    // Referência validada do briefing: uma bombona de 50L rende 600L de
-    // solução a 1%. Isso equivale a 12L de solução pronta para cada 1L de
-    // produto concentrado, na concentração de 1%.
-    rendimentoPorLitroA1Pct: 12,
-
-    // Concentrações de uso final oferecidas no seletor, em %.
-    concentracoes: [0.5, 1, 2],
-    concentracaoPadrao: 1,
-
-    // Referência de comparação com varejo. Ajuste se o preço de mercado
-    // mudar. O site sempre mostra essa premissa na tela — não é número
-    // escondido.
-    varejo: {
-      precoPorLitro: 2.50,       // R$ por litro de água sanitária de varejo
-      teorAtivo: 2.5,            // % de cloro ativo típico do produto de varejo
-      descricao: 'água sanitária de varejo (2,5% de cloro ativo, R$ 2,50/L)',
-    },
+    teorAtivoProduto: 12,        // % de cloro ativo do produto vendido
+    concentracaoUso: 1,          // % de uso final assumido na conta
   },
 
   /* -----------------------------------------------------------------------
@@ -190,9 +175,9 @@ const CONFIG = {
 
   // Condições de entrega exibidas na página /cobertura.
   entrega: {
-    pedidoMinimo: 'R$ 250,00 em produto, ou 1 bombona de 50L',
-    frete: 'Frete incluso para pedido acima do mínimo dentro da área listada. Abaixo do mínimo, retirada no local ou frete a combinar.',
-    janela: 'Entregas de segunda a sexta, em horário comercial. Janela combinada por WhatsApp no fechamento do pedido.',
+    pedidoMinimo: 'A partir de 1 bombona de 50L, ou volume equivalente nas demais embalagens.',
+    frete: 'Frete incluso para pedido acima do mínimo dentro da área atendida. Abaixo do mínimo, retirada no local ou frete a combinar.',
+    janela: 'Entregas de segunda a sábado, em horário comercial, na região metropolitana do Rio de Janeiro. A janela de entrega é combinada por WhatsApp no fechamento do pedido.',
   },
 
   /* -----------------------------------------------------------------------
@@ -250,6 +235,11 @@ CONFIG.enderecoLinha = (function () {
   const partes = [e.logradouro, e.bairro, `${e.cidade} — ${e.uf}`, e.cep];
   return partes.filter(Boolean).join(', ');
 })();
+
+// Litros de solução pronta por litro de produto concentrado.
+// 12% de cloro ativo diluído a 1% de uso = 12L por litro.
+CONFIG.calculo.litrosPorLitroDeProduto =
+  CONFIG.calculo.teorAtivoProduto / CONFIG.calculo.concentracaoUso;
 
 // Link de rota no Google Maps, montado com o mesmo endereço acima.
 // Só existe quando há logradouro: mandar o comprador para uma rota que

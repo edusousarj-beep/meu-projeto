@@ -22,6 +22,8 @@
   --azul-claro:   #E8F0FB;   /* blocos de destaque */
   --amarelo-3s:   #F2C80F;   /* acento — convertido do CMYK C3 M20 Y94 K2 */
   --vermelho-3s:  #D0021B;   /* EXCLUSIVO para segurança química */
+  --verde-zap:       #25D366; /* EXCLUSIVO para CTA de WhatsApp */
+  --verde-zap-hover: #1DA851;
   --grafite:      #1A1D22;   /* texto principal */
   --cinza-medio:  #5A6270;   /* texto secundário */
   --cinza-linha:  #DDE2E8;   /* divisórias */
@@ -171,7 +173,7 @@ table, .num, input[type="number"], .calc-valor, .preco {
   border-radius: var(--raio-sm);
 }
 /* Fundo azul precisa de anel claro para o foco continuar visível. */
-.bloco-azul :focus-visible, .rodape :focus-visible {
+.bloco-azul :focus-visible {
   outline-color: var(--amarelo-3s);
 }
 
@@ -252,7 +254,7 @@ table, .num, input[type="number"], .calc-valor, .preco {
   letter-spacing: -0.01em; line-height: 1; white-space: nowrap;
 }
 .marca__nome span { color: var(--azul-3s); }
-.rodape .marca__nome span, .navbar--escura .marca__nome span { color: var(--amarelo-3s); }
+.navbar--escura .marca__nome span { color: var(--amarelo-3s); }
 
 
 /* --- 5.2 Botões ------------------------------------------------------- */
@@ -278,6 +280,15 @@ table, .num, input[type="number"], .calc-valor, .preco {
 /* Secundário — contorno azul. */
 .btn--secundario { background: transparent; color: var(--azul-3s); border-color: var(--azul-3s); }
 .btn--secundario:hover { background: var(--azul-claro); color: var(--azul-escuro); }
+
+/* WhatsApp — verde da marca do app, para o comprador reconhecer o canal
+   antes de ler o rótulo. Texto em grafite, não em branco: branco sobre
+   #25D366 dá 1,98:1 e reprova em AA. Grafite dá 8,52:1. */
+.btn--zap { background: var(--verde-zap); color: var(--grafite); }
+.btn--zap:hover {
+  background: var(--verde-zap-hover); color: var(--grafite);
+  box-shadow: 0 12px 32px rgba(37, 211, 102, 0.28);
+}
 
 /* Sobre fundo azul, o botão inverte para branco e continua sendo o primário. */
 .btn--claro { background: var(--branco); color: var(--azul-3s); }
@@ -591,27 +602,34 @@ table, .num, input[type="number"], .calc-valor, .preco {
 }
 .calc__resultado h3 { color: var(--branco); font-size: var(--t-md); margin-bottom: var(--e-4); }
 
-.calc__linhas { list-style: none; margin: 0 0 var(--e-5); padding: 0; }
-.calc__linha {
-  display: flex; align-items: baseline; justify-content: space-between;
-  gap: var(--e-4); padding: var(--e-3) 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+/* A saída é um número só. Nada de tabela de rendimento ou economia. */
+.calc__rotulo {
+  font-size: var(--t-sm); color: rgba(255, 255, 255, 0.8);
+  margin-bottom: var(--e-2);
 }
-.calc__rotulo { font-size: var(--t-sm); color: rgba(255, 255, 255, 0.8); }
-.calc__valor { font-size: var(--t-lg); font-weight: 900; white-space: nowrap; }
-
-/* Destaque da economia — amarelo como acento de número, não como fundo. */
-.calc__linha--destaque { border-bottom: none; padding-top: var(--e-4); }
-.calc__linha--destaque .calc__valor { color: var(--amarelo-3s); font-size: var(--t-xl); }
-
-.calc__premissa {
+.calc__numero {
+  font-family: var(--fonte-display); font-weight: 900;
+  font-size: clamp(3.5rem, 2rem + 8vw, 5.5rem);
+  line-height: 1; letter-spacing: -0.03em;
+  color: var(--amarelo-3s);
+  margin: 0 0 var(--e-2);
+  font-variant-numeric: tabular-nums;
+}
+.calc__unidade {
+  font-size: var(--t-md); font-weight: 700; color: var(--branco);
+  margin-bottom: 0;
+}
+.calc__vazio {
+  font-size: var(--t-sm); color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 0;
+}
+.calc__nota {
   font-size: var(--t-xs); color: rgba(255, 255, 255, 0.7);
   margin: var(--e-4) 0 0; line-height: 1.5;
 }
-.calc__premissa a { color: var(--amarelo-3s); }
 
 /* Animação do número ao recalcular: um pulso curto, nada mais. */
-.calc__valor[data-atualizado="true"] { animation: pulso 420ms ease-out; }
+.calc__numero[data-atualizado="true"] { animation: pulso 420ms ease-out; }
 @keyframes pulso {
   0%   { opacity: 0.35; transform: translateY(-4px); }
   100% { opacity: 1;    transform: translateY(0); }
@@ -699,12 +717,12 @@ table, .num, input[type="number"], .calc-valor, .preco {
   position: fixed; right: var(--e-4); bottom: var(--e-4); z-index: 90;
   display: inline-flex; align-items: center; gap: var(--e-2);
   padding: var(--e-3) var(--e-5); min-height: 52px;
-  background: var(--azul-3s); color: var(--branco);
-  border-radius: 100px; box-shadow: var(--sombra-3);
+  background: var(--verde-zap); color: var(--grafite);
+  border-radius: 100px; box-shadow: 0 12px 32px rgba(37, 211, 102, 0.32);
   font-weight: 700; font-size: var(--t-sm); text-decoration: none;
   transition: background var(--transicao), transform var(--transicao);
 }
-.zap-flutuante:hover { background: var(--azul-escuro); color: var(--branco); transform: translateY(-2px); }
+.zap-flutuante:hover { background: var(--verde-zap-hover); color: var(--grafite); transform: translateY(-2px); }
 .zap-flutuante svg { width: 22px; height: 22px; fill: currentColor; flex-shrink: 0; }
 /* No celular vira botão redondo, para não cobrir o conteúdo. */
 @media (max-width: 480px) {
@@ -714,18 +732,23 @@ table, .num, input[type="number"], .calc-valor, .preco {
 
 
 /* --- 6.6 Rodapé ------------------------------------------------------- */
-
-/* O respiro extra embaixo impede que o botão flutuante de WhatsApp, que é
+/* Fundo branco. A linha superior é obrigatória: sem ela o rodapé cola no
+   conteúdo e o leitor não percebe onde a página termina.
+   O respiro extra embaixo impede que o botão flutuante de WhatsApp, que é
    fixo no canto, cubra o link da política de privacidade. */
 .rodape {
-  background: var(--grafite); color: rgba(255, 255, 255, 0.75);
+  background: var(--branco); color: var(--cinza-medio);
+  border-top: 1px solid var(--cinza-linha);
   padding-block: var(--e-8) calc(var(--e-5) + 4.5rem);
 }
-.rodape a { color: rgba(255, 255, 255, 0.75); text-decoration: none; }
-.rodape a:hover { color: var(--branco); text-decoration: underline; }
-.rodape h4 { color: var(--branco); font-size: var(--t-sm); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: var(--e-4); }
+.rodape a { color: var(--azul-3s); text-decoration: none; }
+.rodape a:hover { color: var(--azul-escuro); text-decoration: underline; }
+.rodape h4 {
+  color: var(--grafite); font-size: var(--t-sm);
+  text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: var(--e-4);
+}
 .rodape__grid { display: grid; gap: var(--e-7); grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
-.rodape__marca .marca__nome { color: var(--branco); }
+.rodape__marca .marca__nome { color: var(--grafite); }
 .rodape__texto { font-size: var(--t-sm); margin-top: var(--e-4); max-width: 30ch; }
 .rodape ul { list-style: none; margin: 0; padding: 0; }
 .rodape li { margin-bottom: var(--e-3); font-size: var(--t-sm); }
@@ -734,22 +757,27 @@ table, .num, input[type="number"], .calc-valor, .preco {
    em vez de deixar o visitante descobrir. Só aparece quando o endereço
    virou link de fato — sem logradouro no config, o href é removido. */
 .rodape a[data-mapa][href]::after {
-  content: ' · ver rota';
-  color: var(--amarelo-3s);
+  content: ' \00b7 ver rota';
+  color: var(--cinza-medio);
   font-size: var(--t-xs);
   white-space: nowrap;
 }
 
+/* Endereço sem logradouro no config não vira link — então também não pode
+   ter cor de link, senão o visitante clica e nada acontece. */
+.rodape a[data-mapa]:not([href]) { color: var(--cinza-medio); cursor: default; }
+.rodape a[data-mapa]:not([href]):hover { text-decoration: none; }
+
 /* SAC em texto simples, não clicável, separado do canal comercial. */
 .rodape__sac {
   margin-top: var(--e-4); padding-top: var(--e-4);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  font-size: var(--t-xs); color: rgba(255, 255, 255, 0.6);
+  border-top: 1px solid var(--cinza-linha);
+  font-size: var(--t-xs); color: var(--cinza-medio);
 }
 .rodape__legal {
   margin-top: var(--e-7); padding-top: var(--e-5);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  font-size: var(--t-xs); color: rgba(255, 255, 255, 0.55);
+  border-top: 1px solid var(--cinza-linha);
+  font-size: var(--t-xs); color: var(--cinza-medio);
   display: flex; flex-wrap: wrap; gap: var(--e-2) var(--e-5); justify-content: space-between;
 }
 

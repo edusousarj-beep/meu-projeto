@@ -147,7 +147,7 @@
       '</p>' +
       '<p>Para adiantar, mande a mesma mensagem no WhatsApp — é por lá que ' +
       'fechamos pedido e combinamos a entrega.</p>' +
-      '<a class="btn btn--primario" id="orcamento-cta">Continuar no WhatsApp</a>';
+      '<a class="btn btn--zap" id="orcamento-cta">Continuar no WhatsApp</a>';
 
     confirmacao.hidden = false;
 

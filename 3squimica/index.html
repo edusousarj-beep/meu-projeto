@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>3S Química — hipoclorito de sódio para empresas no Rio de Janeiro</title>
-<meta name="description" content="Distribuidora de hipoclorito de sódio no Rio de Janeiro. Bombonas de 5L, 20L, 50L e IBC de 1.000L, com entrega própria e fornecimento recorrente para empresas de limpeza, condomínios e facilities.">
+<title>Abastecimento de hipoclorito de sódio para empresas no Rio — 3S Química</title>
+<meta name="description" content="Fornecimento de hipoclorito de sódio para empresas no Rio de Janeiro. Bombonas de 5L, 20L e 50L e IBC de 1.000L, com entrega na região metropolitana.">
 <link rel="canonical" href="https://3squimica.com.br/">
 
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:site_name" content="3S Química">
-<meta property="og:title" content="3S Química — hipoclorito de sódio para empresas no Rio de Janeiro">
-<meta property="og:description" content="Fornecimento recorrente de hipoclorito de sódio, com entrega própria na região metropolitana do Rio.">
+<meta property="og:title" content="Abastecimento de hipoclorito de sódio para empresas no Rio — 3S Química">
+<meta property="og:description" content="Fornecimento recorrente de hipoclorito de sódio, com entrega na região metropolitana do Rio.">
 <meta property="og:url" content="https://3squimica.com.br/">
 
 <meta name="theme-color" content="#004AAD">
@@ -45,13 +45,13 @@
         <li><a class="menu__link" href="empresa.html">Empresa</a></li>
         <li><a class="menu__link" href="orcamento.html">Orçamento</a></li>
         <li class="menu__cta">
-          <a class="btn btn--primario btn--largo" data-zap="hero">Pedir orçamento no WhatsApp</a>
+          <a class="btn btn--zap btn--largo" data-zap="hero">Pedir orçamento no WhatsApp</a>
         </li>
       </ul>
     </nav>
 
     <div class="navbar__acoes">
-      <a class="btn btn--primario btn--pequeno" data-zap="hero">Pedir orçamento</a>
+      <a class="btn btn--zap btn--pequeno" data-zap="hero">Pedir orçamento</a>
       <button class="menu-toggle" type="button" aria-expanded="false"
               aria-controls="menu-principal" aria-label="Abrir menu">
         <span class="menu-toggle__barra"></span>
@@ -69,22 +69,22 @@
   <section class="hero">
     <div class="container">
 
-      <h1>Hipoclorito de sódio para quem não pode ficar sem.</h1>
+      <h1>Hipoclorito de sódio no volume que sua operação consome.</h1>
 
       <p class="hero__apoio">
-        Fornecimento mensal para empresas de limpeza, condomínios e facilities no Rio.
-        Bombonas de 5L a IBC de 1.000L, com entrega própria e responsável técnico químico.
+        Fornecimento recorrente para empresas de limpeza, condomínios, hotelaria
+        e cozinhas industriais. Entrega na região metropolitana do Rio de Janeiro.
       </p>
 
       <div class="hero__acoes">
-        <a class="btn btn--claro" data-zap="hero">Pedir orçamento no WhatsApp</a>
+        <a class="btn btn--zap" data-zap="hero">Pedir orçamento no WhatsApp</a>
         <a class="btn btn--contorno-claro" href="#calculadora-secao">Calcular meu consumo</a>
       </div>
 
       <ul class="hero__provas">
-        <li><strong>65 anos de cadeia</strong>Fornecimento familiar no setor químico desde a década de 1960</li>
-        <li><strong>Responsável técnico</strong>Químico com CRQ ativo</li>
-        <li><strong>Entrega própria</strong>Região metropolitana do Rio de Janeiro</li>
+        <li><strong>Cadeia familiar</strong>A 3S Química é o braço atual de uma cadeia familiar que fornece produtos químicos desde 1967</li>
+        <li><strong>Quatro embalagens</strong>De 5 litros ao IBC de 1.000L</li>
+        <li><strong>Entrega</strong>Segunda a sábado, na região metropolitana do Rio</li>
       </ul>
 
     </div>
@@ -92,17 +92,19 @@
 
 
   <!-- ===================================================================
-       2. CALCULADORA DE DILUIÇÃO E ECONOMIA
+       2. CALCULADORA DE CONSUMO
+       A tela mostra só o número de embalagens. O fator de diluição fica
+       no código (js/config.js), não aparece para o visitante.
        =================================================================== -->
   <section class="secao secao--cinza" id="calculadora-secao">
     <div class="container">
 
       <div class="secao-cabecalho revelar">
         <span class="secao-rotulo">Calculadora</span>
-        <h2>Quanto rende, quantas bombonas por mês, quanto você economiza.</h2>
+        <h2>Quantas embalagens você usa por mês.</h2>
         <p class="secao-apoio">
-          Três campos. O resultado vai junto na mensagem do WhatsApp, então
-          você já começa a conversa com o volume definido.
+          Dois campos. O número vai junto na mensagem do WhatsApp, então você
+          já começa a conversa com o volume definido.
         </p>
       </div>
 
@@ -120,27 +122,6 @@
               <option value="ibc">IBC 1.000L</option>
             </select>
           </div>
-
-          <fieldset class="campo" style="border:0;padding:0;margin-inline:0">
-            <legend class="campo__rotulo" style="padding:0">Concentração de uso final</legend>
-            <div class="opcoes">
-              <label class="opcoes__item">
-                <input type="radio" name="concentracao" value="0.5">
-                <span>0,5%</span>
-              </label>
-              <label class="opcoes__item">
-                <input type="radio" name="concentracao" value="1" checked>
-                <span>1%</span>
-              </label>
-              <label class="opcoes__item">
-                <input type="radio" name="concentracao" value="2">
-                <span>2%</span>
-              </label>
-            </div>
-            <p class="campo__dica">
-              1% cobre a maior parte da limpeza e desodorização de piso e superfície.
-            </p>
-          </fieldset>
 
           <div class="campo">
             <label class="campo__rotulo" for="calc-consumo">
@@ -174,7 +155,7 @@
 
       <div class="secao-cabecalho revelar">
         <span class="secao-rotulo">Embalagens</span>
-        <h2>Quatro formatos, do ponto de limpeza ao contrato industrial.</h2>
+        <h2>Quatro embalagens. O mesmo hipoclorito.</h2>
       </div>
 
       <div class="grid grid--4 revelar">
@@ -184,14 +165,13 @@
             <h3 class="card__titulo">Bombona 5L</h3>
           </div>
           <div class="card__corpo">
-            <p class="secao-apoio" style="font-size:var(--t-sm)">Uso pontual e reposição de ponto de limpeza.</p>
+            <p class="secao-apoio" style="font-size:var(--t-sm)">Reposição de ponto de limpeza.</p>
             <dl>
-              <dt>Rende</dt><dd>60L de solução a 1%</dd>
               <dt>Indicado para</dt><dd>Condomínios pequenos, clínicas, escritórios</dd>
             </dl>
           </div>
           <div class="card__rodape">
-            <a class="btn btn--secundario btn--largo btn--pequeno" data-zap="produto"
+            <a class="btn btn--zap btn--largo btn--pequeno" data-zap="produto"
                data-zap-extra="Quero orçamento de bombona de 5L.">Pedir 5L no WhatsApp</a>
           </div>
         </article>
@@ -201,14 +181,13 @@
             <h3 class="card__titulo">Bombona 20L</h3>
           </div>
           <div class="card__corpo">
-            <p class="secao-apoio" style="font-size:var(--t-sm)">Consumo semanal de equipe de limpeza.</p>
+            <p class="secao-apoio" style="font-size:var(--t-sm)">Consumo semanal de equipe em campo.</p>
             <dl>
-              <dt>Rende</dt><dd>240L de solução a 1%</dd>
-              <dt>Indicado para</dt><dd>Terceirizadas, hotelaria, cozinhas industriais</dd>
+              <dt>Indicado para</dt><dd>Empresas de limpeza, hotelaria, cozinhas industriais</dd>
             </dl>
           </div>
           <div class="card__rodape">
-            <a class="btn btn--secundario btn--largo btn--pequeno" data-zap="produto"
+            <a class="btn btn--zap btn--largo btn--pequeno" data-zap="produto"
                data-zap-extra="Quero orçamento de bombona de 20L.">Pedir 20L no WhatsApp</a>
           </div>
         </article>
@@ -221,17 +200,13 @@
           <div class="card__corpo">
             <p class="secao-apoio" style="font-size:var(--t-sm)">Abastecimento mensal de operação contínua.</p>
             <dl>
-              <dt>Rende</dt><dd>600L de solução a 1%</dd>
-              <dt>Indicado para</dt><dd>Facilities, condomínios grandes, conservação</dd>
-              <!-- O regime de vasilhame aparece ANTES do CTA, de propósito:
-                   evita atrito e devolução no primeiro pedido. -->
+              <dt>Indicado para</dt><dd>Empresas de limpeza, condomínios grandes, conservação</dd>
               <dt>Vasilhame</dt>
-              <dd><strong>Venda em regime de troca: a bombona vazia é devolvida
-                  na entrega seguinte.</strong></dd>
+              <dd><strong>Venda em regime de troca — a bombona vazia é devolvida na entrega seguinte.</strong></dd>
             </dl>
           </div>
           <div class="card__rodape">
-            <a class="btn btn--primario btn--largo btn--pequeno" data-zap="produto"
+            <a class="btn btn--zap btn--largo btn--pequeno" data-zap="produto"
                data-zap-extra="Quero orçamento de bombona de 50L, em regime de troca de vasilhame.">Pedir 50L no WhatsApp</a>
           </div>
         </article>
@@ -243,14 +218,13 @@
           <div class="card__corpo">
             <p class="secao-apoio" style="font-size:var(--t-sm)">Abastecimento industrial e reenvase.</p>
             <dl>
-              <dt>Rende</dt><dd>12.000L de solução a 1%</dd>
               <dt>Indicado para</dt><dd>Distribuidores, indústria, grandes contratos</dd>
               <dt>Vasilhame</dt>
               <dd><strong>Contêiner em comodato, retorna na troca.</strong></dd>
             </dl>
           </div>
           <div class="card__rodape">
-            <a class="btn btn--secundario btn--largo btn--pequeno" data-zap="produto"
+            <a class="btn btn--zap btn--largo btn--pequeno" data-zap="produto"
                data-zap-extra="Quero condições para IBC de 1.000L.">Consultar IBC</a>
           </div>
         </article>
@@ -300,9 +274,12 @@
 
         <div class="cobertura-resposta" id="cobertura-resposta" role="status" aria-live="polite"></div>
 
+        <!-- Texto de entrega — idêntico ao da página Cobertura. -->
         <p class="nota" style="margin-top:var(--e-5)">
-          Rota fixa na região metropolitana. Endereço fora da lista é avaliado
-          conforme volume. <a href="cobertura.html">Ver todos os bairros e condições</a>.
+          Entregas de segunda a sábado, em horário comercial, na região
+          metropolitana do Rio de Janeiro. A janela de entrega é combinada por
+          WhatsApp no fechamento do pedido.
+          <a href="cobertura.html">Ver todos os bairros e condições</a>.
         </p>
       </div>
 
@@ -321,7 +298,7 @@
         <h2>O que sustenta o fornecimento.</h2>
       </div>
 
-      <div class="grid grid--4 revelar">
+      <div class="grid grid--3 revelar">
 
         <div class="card">
           <svg class="card__hex" viewBox="0 0 100 100" aria-hidden="true">
@@ -330,24 +307,10 @@
             </g>
             <polygon points="50,30 71,42 71,66 50,78 29,66 29,42" fill="currentColor" opacity="0.15"/>
           </svg>
-          <h3 class="card__titulo">Cadeia familiar desde os anos 1960</h3>
+          <h3 class="card__titulo">Um produto, quatro embalagens</h3>
           <p class="secao-apoio" style="font-size:var(--t-sm)">
-            A 3S Química é o braço atual de uma cadeia de fornecimento familiar
-            com 65 anos no setor químico.
-          </p>
-        </div>
-
-        <div class="card">
-          <svg class="card__hex" viewBox="0 0 100 100" aria-hidden="true">
-            <g fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round">
-              <polygon points="50,3 90.7,26.5 90.7,73.5 50,97 9.3,73.5 9.3,26.5"/>
-            </g>
-            <polygon points="50,30 71,42 71,66 50,78 29,66 29,42" fill="currentColor" opacity="0.15"/>
-          </svg>
-          <h3 class="card__titulo">Responsável técnico químico</h3>
-          <p class="secao-apoio" style="font-size:var(--t-sm)">
-            Profissional com CRQ ativo responde tecnicamente pelo produto
-            e pela documentação.
+            Foco em hipoclorito de sódio, do ponto de limpeza ao abastecimento
+            industrial. Muda o formato, não o produto.
           </p>
         </div>
 
@@ -360,8 +323,8 @@
           </svg>
           <h3 class="card__titulo">Matéria-prima de fabricante nacional</h3>
           <p class="secao-apoio" style="font-size:var(--t-sm)">
-            Origem rastreável, sem intermediação de terceiros na compra
-            do concentrado.
+            Origem rastreável, sem intermediação de terceiros na compra do
+            concentrado.
           </p>
         </div>
 
@@ -372,10 +335,10 @@
             </g>
             <polygon points="50,30 71,42 71,66 50,78 29,66 29,42" fill="currentColor" opacity="0.15"/>
           </svg>
-          <h3 class="card__titulo">Entrega própria no Rio</h3>
+          <h3 class="card__titulo">Entrega na região metropolitana</h3>
           <p class="secao-apoio" style="font-size:var(--t-sm)">
-            Frota própria na região metropolitana. A data combinada não depende
-            de transportadora.
+            Segunda a sábado, em horário comercial, com a janela combinada por
+            WhatsApp no fechamento do pedido.
           </p>
         </div>
 
@@ -386,66 +349,7 @@
 
 
   <!-- ===================================================================
-       6. SEGURANÇA E MANUSEIO
-       Único bloco do site onde o vermelho aparece.
-       =================================================================== -->
-  <section class="secao secao--cinza" id="seguranca">
-    <div class="container">
-
-      <div class="secao-cabecalho revelar">
-        <span class="secao-rotulo">Segurança</span>
-        <h2>Manuseio e armazenagem.</h2>
-        <p class="secao-apoio">
-          Hipoclorito de sódio é produto químico. Quem compra em volume precisa
-          orientar a equipe.
-        </p>
-      </div>
-
-      <div class="seguranca revelar">
-
-        <div class="seguranca__cabecalho">
-          <h3 class="seguranca__titulo">Classificação de perigo</h3>
-        </div>
-
-        <div class="ghs">
-          <div class="ghs__item">
-            <img class="ghs__figura" src="assets/ghs05.svg" width="66" height="66"
-                 alt="Pictograma GHS05: corrosão">
-            <span class="ghs__legenda">GHS05<br>Corrosão</span>
-          </div>
-          <div class="ghs__item">
-            <img class="ghs__figura" src="assets/ghs09.svg" width="66" height="66"
-                 alt="Pictograma GHS09: perigoso ao meio ambiente">
-            <span class="ghs__legenda">GHS09<br>Perigoso ao meio ambiente</span>
-          </div>
-        </div>
-
-        <div class="aviso-critico">
-          <p>
-            <strong>Não misture com ácidos nem com produtos amoniacais.</strong>
-            A mistura libera gás tóxico. Isso vale para ácido muriático,
-            desincrustante de vaso sanitário, limpa-pedra e limpadores com amônia.
-            Cada produto vai em um balde, sempre.
-          </p>
-        </div>
-
-        <ul class="lista-hex">
-          <li>Guarde em local ventilado, ao abrigo da luz e longe de fonte de calor.</li>
-          <li>Mantenha a embalagem original fechada e rotulada. Não reenvase em garrafa de bebida.</li>
-          <li>Use luva e óculos de proteção ao diluir. Adicione o produto na água, nunca o contrário.</li>
-          <li>Em caso de contato, lave com água corrente em abundância e procure orientação médica.</li>
-          <li>A ficha de informações de segurança (FISPQ) acompanha o pedido e fica disponível na
-              <a href="produtos.html">página de produtos</a>.</li>
-        </ul>
-
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- ===================================================================
-       7. CTA FINAL
+       6. CTA FINAL
        =================================================================== -->
   <section class="secao secao--azul">
     <div class="container">
@@ -453,12 +357,12 @@
         <span class="secao-rotulo">Fornecimento recorrente</span>
         <h2>Combine o volume do mês e pare de pensar nisso.</h2>
         <p class="secao-apoio">
-          Contrato mensal fixa preço e reserva a entrega na sua data.
-          Mande o volume que você usa e devolvemos a proposta.
+          Com o volume combinado, a entrega já entra agendada e você não
+          renegocia a cada pedido. Mande quanto usa por mês.
         </p>
       </div>
       <div class="hero__acoes revelar">
-        <a class="btn btn--claro" data-zap="recorrente">Falar sobre contrato mensal</a>
+        <a class="btn btn--zap" data-zap="recorrente">Falar sobre contrato mensal</a>
         <a class="btn btn--contorno-claro" href="orcamento.html">Preencher formulário</a>
       </div>
     </div>
@@ -477,12 +381,12 @@
 
       <div class="rodape__marca">
         <span class="marca">
-          <img class="marca__simbolo" src="assets/logo-branco.svg" alt="" width="34" height="34">
+          <img class="marca__simbolo" src="assets/logo-azul.svg" alt="" width="34" height="34">
           <span class="marca__nome">3S <span>Química</span></span>
         </span>
         <p class="rodape__texto">
-          Distribuidora de hipoclorito de sódio para operação profissional
-          na região metropolitana do Rio de Janeiro.
+          Hipoclorito de sódio para empresas na região metropolitana
+          do Rio de Janeiro.
         </p>
       </div>
 
@@ -503,10 +407,6 @@
           <li><a data-zap="flutuante">WhatsApp comercial</a></li>
           <li><a data-email href="#">e-mail</a></li>
         </ul>
-        <p class="rodape__texto" style="font-size:var(--t-xs)">
-          O atendimento comercial é feito por WhatsApp, em texto.
-          Não recebemos ligações.
-        </p>
         <p class="rodape__sac" data-sac></p>
       </div>
 

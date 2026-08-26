@@ -3,8 +3,8 @@
    =========================================================================
    O comprador digita o bairro ou município e recebe uma resposta direta.
    Regra de conversão: se o local NÃO está na lista, o site nunca responde
-   "não atendemos". Responde "vamos verificar a rota" e abre o WhatsApp.
-   Rota nova se combina; lead perdido não volta.
+   "não atendemos". Responde "vamos verificar" e abre o WhatsApp.
+   Endereço novo se combina; lead perdido não volta.
    ========================================================================= */
 
 (function () {
@@ -112,7 +112,7 @@
           '<p class="resposta__titulo">Sim, entregamos em ' + local.nome + '.</p>' +
           '<p>Prazo típico: <strong>' + local.prazo + '</strong> após a confirmação do pedido. ' +
             'Pedido mínimo: ' + CONFIG.entrega.pedidoMinimo + '.</p>' +
-          '<a class="btn btn--primario" id="cobertura-cta">Fechar pedido no WhatsApp</a>' +
+          '<a class="btn btn--zap" id="cobertura-cta">Fechar pedido no WhatsApp</a>' +
         '</div>';
 
       ligarCta('cobertura-cta',
@@ -125,11 +125,12 @@
       // Fora da lista: nunca dizer "não atendemos".
       resposta.innerHTML =
         '<div class="resposta resposta--consultar">' +
-          '<p class="resposta__titulo">' + escapar(texto) + ' não está na nossa lista de rotas fixas.</p>' +
-          '<p>Isso não quer dizer que não entregamos. Rodamos rota própria na região ' +
-            'metropolitana e avaliamos endereço novo conforme volume e frequência. ' +
-            'Mande o endereço no WhatsApp que respondemos com prazo e frete.</p>' +
-          '<a class="btn btn--primario" id="cobertura-cta">Consultar rota no WhatsApp</a>' +
+          '<p class="resposta__titulo">' + escapar(texto) + ' não está na nossa lista de endereços atendidos.</p>' +
+          '<p>Isso não quer dizer que não entregamos. Entregamos na região ' +
+            'metropolitana do Rio de Janeiro e avaliamos endereço novo conforme ' +
+            'volume e frequência. Mande o endereço no WhatsApp que respondemos ' +
+            'com prazo e frete.</p>' +
+          '<a class="btn btn--zap" id="cobertura-cta">Consultar endereço no WhatsApp</a>' +
         '</div>';
 
       ligarCta('cobertura-cta',
