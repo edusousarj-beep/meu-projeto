@@ -75,7 +75,7 @@ const CONFIG = {
       volume: 20,
       nome: 'Bombona 20L',
       aplicacao: 'Consumo semanal de equipe em campo.',
-      publico: 'Empresas de limpeza, hotelaria, cozinhas industriais',
+      publico: 'Empresas de limpeza, hotelaria, cozinhas industriais, veterinárias e canis',
       embalagem: 'Bombona de PEAD com tampa lacrada. Sem devolução de vasilhame.',
       trocaVasilhame: false,
     },
@@ -84,7 +84,7 @@ const CONFIG = {
       volume: 50,
       nome: 'Bombona 50L',
       aplicacao: 'Abastecimento mensal de operação contínua.',
-      publico: 'Empresas de limpeza, condomínios grandes, conservação',
+      publico: 'Empresas de limpeza, condomínios grandes, conservação, piscinas e clubes',
       embalagem: 'Venda em regime de troca — a bombona vazia é devolvida na entrega seguinte.',
       trocaVasilhame: true,
     },
@@ -94,90 +94,43 @@ const CONFIG = {
       nome: 'IBC 1.000L',
       aplicacao: 'Abastecimento industrial e reenvase.',
       publico: 'Distribuidores, indústria, grandes contratos',
-      embalagem: 'Contêiner em comodato, retorna na troca.',
-      trocaVasilhame: true,
+      embalagem: '',
+      trocaVasilhame: false,
     },
   ],
 
   /* -----------------------------------------------------------------------
      4. BASE DE CÁLCULO DA CALCULADORA
      --------------------------------------------------------------------- */
-     // O produto vendido tem 12% de cloro ativo. Diluído para 1% de uso
-     // final, 1L de produto rende 12L de solução pronta — é daí que sai o
-     // fator abaixo, e não de um número arbitrário.
+     // O visitante informa o consumo de hipoclorito puro, em litros. Não há
+     // conta de diluição na tela nem no código: o número que entra é o
+     // volume de produto que ele compra.
      //
-     // Se o teor do produto mudar, troque só teorAtivoProduto: o fator é
-     // recalculado sozinho.
-     //
-     // O site NÃO exibe rendimento nem economia. Este cálculo serve só para
-     // converter o consumo informado em número de embalagens.
+     // Sobre esse volume aplicamos uma margem de segurança, para o
+     // abastecimento não terminar exatamente no fim do mês. Trocar 0.20 por
+     // 0.15 reduz a margem para 15%.
 
   calculo: {
-    teorAtivoProduto: 12,        // % de cloro ativo do produto vendido
-    concentracaoUso: 1,          // % de uso final assumido na conta
+    margemSeguranca: 0.20,       // 20% acima do consumo informado
+    teorAtivoProduto: 12,        // % de cloro ativo, para referência técnica
   },
 
   /* -----------------------------------------------------------------------
      5. ÁREA DE ENTREGA
      --------------------------------------------------------------------- */
-     // Para adicionar um bairro, copie uma linha inteira e troque o nome.
-     // prazo: texto livre que aparece para o usuário.
+     // Duas regiões, sem detalhar bairro e sem prazo. Também alimenta o
+     // areaServed do Schema.org.
 
   cobertura: [
-    // --- Município do Rio de Janeiro ---
-    { nome: 'Centro',              tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Bonsucesso',          tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Ramos',               tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Penha',               tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Olaria',              tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Méier',               tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Tijuca',              tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Vila Isabel',         tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Maracanã',            tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'São Cristóvão',       tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Madureira',           tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Cascadura',           tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Irajá',               tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Pavuna',              tipo: 'bairro',    prazo: 'até 72h' },
-    { nome: 'Copacabana',          tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Ipanema',             tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Leblon',              tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Botafogo',            tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Flamengo',            tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Laranjeiras',         tipo: 'bairro',    prazo: 'até 48h' },
-    { nome: 'Barra da Tijuca',     tipo: 'bairro',    prazo: 'até 72h' },
-    { nome: 'Recreio dos Bandeirantes', tipo: 'bairro', prazo: 'até 72h' },
-    { nome: 'Jacarepaguá',         tipo: 'bairro',    prazo: 'até 72h' },
-    { nome: 'Taquara',             tipo: 'bairro',    prazo: 'até 72h' },
-    { nome: 'Campo Grande',        tipo: 'bairro',    prazo: 'até 72h' },
-    { nome: 'Bangu',               tipo: 'bairro',    prazo: 'até 72h' },
-    { nome: 'Realengo',            tipo: 'bairro',    prazo: 'até 72h' },
-    { nome: 'Santa Cruz',          tipo: 'bairro',    prazo: 'até 72h' },
-    { nome: 'Ilha do Governador',  tipo: 'bairro',    prazo: 'até 72h' },
-
-    // --- Demais municípios da região metropolitana ---
-    { nome: 'Niterói',             tipo: 'município', prazo: 'até 72h' },
-    { nome: 'São Gonçalo',         tipo: 'município', prazo: 'até 72h' },
-    { nome: 'Duque de Caxias',     tipo: 'município', prazo: 'até 48h' },
-    { nome: 'São João de Meriti',  tipo: 'município', prazo: 'até 48h' },
-    { nome: 'Nilópolis',           tipo: 'município', prazo: 'até 72h' },
-    { nome: 'Mesquita',            tipo: 'município', prazo: 'até 72h' },
-    { nome: 'Nova Iguaçu',         tipo: 'município', prazo: 'até 72h' },
-    { nome: 'Belford Roxo',        tipo: 'município', prazo: 'até 72h' },
-    { nome: 'Queimados',           tipo: 'município', prazo: 'a combinar' },
-    { nome: 'Japeri',              tipo: 'município', prazo: 'a combinar' },
-    { nome: 'Magé',                tipo: 'município', prazo: 'a combinar' },
-    { nome: 'Itaboraí',            tipo: 'município', prazo: 'a combinar' },
-    { nome: 'Maricá',              tipo: 'município', prazo: 'a combinar' },
-    { nome: 'Itaguaí',             tipo: 'município', prazo: 'a combinar' },
-    { nome: 'Seropédica',          tipo: 'município', prazo: 'a combinar' },
+    { nome: 'Rio',        tipo: 'região' },
+    { nome: 'Grande Rio', tipo: 'região' },
   ],
 
   // Condições de entrega exibidas na página /cobertura.
   entrega: {
     pedidoMinimo: 'A partir de 1 bombona de 50L, ou volume equivalente nas demais embalagens.',
     frete: 'Frete incluso para pedido acima do mínimo dentro da área atendida. Abaixo do mínimo, retirada no local ou frete a combinar.',
-    janela: 'Entregas de segunda a sábado, em horário comercial, na região metropolitana do Rio de Janeiro. A janela de entrega é combinada por WhatsApp no fechamento do pedido.',
+    janela: 'Entregas de segunda a sábado, em horário comercial. O dia da sua região é combinado por WhatsApp no fechamento do pedido.',
   },
 
   /* -----------------------------------------------------------------------
@@ -235,11 +188,6 @@ CONFIG.enderecoLinha = (function () {
   const partes = [e.logradouro, e.bairro, `${e.cidade} — ${e.uf}`, e.cep];
   return partes.filter(Boolean).join(', ');
 })();
-
-// Litros de solução pronta por litro de produto concentrado.
-// 12% de cloro ativo diluído a 1% de uso = 12L por litro.
-CONFIG.calculo.litrosPorLitroDeProduto =
-  CONFIG.calculo.teorAtivoProduto / CONFIG.calculo.concentracaoUso;
 
 // Link de rota no Google Maps, montado com o mesmo endereço acima.
 // Só existe quando há logradouro: mandar o comprador para uma rota que

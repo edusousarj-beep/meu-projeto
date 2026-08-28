@@ -17,13 +17,13 @@
 
 :root {
   /* --- Cor ------------------------------------------------------------ */
-  --azul-3s:      #004AAD;   /* primária — CMYK C97 M76 Y0 K0 */
-  --azul-escuro:  #00306F;   /* fundos escuros e hover */
-  --azul-claro:   #E8F0FB;   /* blocos de destaque */
+  --azul-3s:      #1268E0;   /* primária, tom claro — 5,14:1 com branco */
+  --azul-escuro:  #0D4FA3;   /* fundos e hover — 7,88:1 com branco */
+  --azul-claro:   #EAF2FE;   /* blocos de destaque */
   --amarelo-3s:   #F2C80F;   /* acento — convertido do CMYK C3 M20 Y94 K2 */
   --vermelho-3s:  #D0021B;   /* EXCLUSIVO para segurança química */
-  --verde-zap:       #25D366; /* EXCLUSIVO para CTA de WhatsApp */
-  --verde-zap-hover: #1DA851;
+  --verde-zap:       #3DDC7F; /* EXCLUSIVO para CTA de WhatsApp — 9,45:1 com grafite */
+  --verde-zap-hover: #2BC96C;
   --grafite:      #1A1D22;   /* texto principal */
   --cinza-medio:  #5A6270;   /* texto secundário */
   --cinza-linha:  #DDE2E8;   /* divisórias */
@@ -65,7 +65,7 @@
   /* Sombras discretas. Site técnico não usa sombra dramática. */
   --sombra-1: 0 1px 2px rgba(26, 29, 34, 0.06);
   --sombra-2: 0 4px 16px rgba(26, 29, 34, 0.08);
-  --sombra-3: 0 12px 32px rgba(0, 74, 173, 0.12);
+  --sombra-3: 0 12px 32px rgba(18, 104, 224, 0.14);
 
   /* --- Movimento ------------------------------------------------------ */
   --transicao: 180ms cubic-bezier(0.2, 0, 0.2, 1);
@@ -286,13 +286,13 @@ table, .num, input[type="number"], .calc-valor, .preco {
 .btn--secundario { background: transparent; color: var(--azul-3s); border-color: var(--azul-3s); }
 .btn--secundario:hover { background: var(--azul-claro); color: var(--azul-escuro); }
 
-/* WhatsApp — verde da marca do app, para o comprador reconhecer o canal
-   antes de ler o rótulo. Texto em grafite, não em branco: branco sobre
-   #25D366 dá 1,98:1 e reprova em AA. Grafite dá 8,52:1. */
+/* WhatsApp — verde claro, para o comprador reconhecer o canal antes de ler
+   o rótulo. Texto em grafite, não em branco: branco sobre esse verde fica
+   abaixo de 2:1 e reprova em AA. Grafite dá 9,45:1. */
 .btn--zap { background: var(--verde-zap); color: var(--grafite); }
 .btn--zap:hover {
   background: var(--verde-zap-hover); color: var(--grafite);
-  box-shadow: 0 12px 32px rgba(37, 211, 102, 0.28);
+  box-shadow: 0 12px 32px rgba(61, 220, 127, 0.30);
 }
 
 /* Sobre fundo azul, o botão inverte para branco e continua sendo o primário. */
@@ -460,7 +460,7 @@ table, .num, input[type="number"], .calc-valor, .preco {
 .campo input:hover, .campo select:hover, .campo textarea:hover { border-color: var(--cinza-medio); }
 .campo input:focus, .campo select:focus, .campo textarea:focus {
   border-color: var(--azul-3s);
-  box-shadow: 0 0 0 3px rgba(0, 74, 173, 0.15);
+  box-shadow: 0 0 0 3px rgba(18, 104, 224, 0.18);
   outline: none;
 }
 
@@ -571,6 +571,16 @@ table, .num, input[type="number"], .calc-valor, .preco {
   font-size: var(--t-md); color: rgba(255, 255, 255, 0.88);
   max-width: 46ch; margin-bottom: var(--e-6);
 }
+/* Imagem horizontal do hero. O arquivo é placeholder: o cliente substitui
+   assets/img/hero-banner.jpg mantendo proporção wide (16:5 ou parecida). */
+.hero__imagem {
+  width: 100%;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  object-fit: cover;
+  max-height: 340px;
+}
+
 .hero__acoes { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-bottom: var(--e-7); }
 .hero__acoes .btn { flex: 1 1 auto; }
 
@@ -631,6 +641,13 @@ table, .num, input[type="number"], .calc-valor, .preco {
 .calc__nota {
   font-size: var(--t-xs); color: rgba(255, 255, 255, 0.7);
   margin: var(--e-4) 0 0; line-height: 1.5;
+}
+
+/* Linha que explica a margem. Fica logo abaixo do número, para o comprador
+   não descobrir a diferença só no pedido. */
+.calc__margem {
+  font-size: var(--t-sm); color: rgba(255, 255, 255, 0.78);
+  margin: var(--e-3) 0 0; line-height: 1.5;
 }
 
 /* Lista de ganhos: é o que transforma o resultado em argumento de compra. */
@@ -745,7 +762,7 @@ table, .num, input[type="number"], .calc-valor, .preco {
   display: inline-flex; align-items: center; gap: var(--e-2);
   padding: var(--e-3) var(--e-5); min-height: 52px;
   background: var(--verde-zap); color: var(--grafite);
-  border-radius: 100px; box-shadow: 0 12px 32px rgba(37, 211, 102, 0.32);
+  border-radius: 100px; box-shadow: 0 12px 32px rgba(61, 220, 127, 0.34);
   font-weight: 700; font-size: var(--t-sm); text-decoration: none;
   transition: background var(--transicao), transform var(--transicao);
 }

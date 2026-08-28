@@ -15,7 +15,7 @@
 <meta property="og:description" content="Bairros e municípios atendidos, prazo típico, pedido mínimo e frete.">
 <meta property="og:url" content="https://3squimica.com.br/cobertura.html">
 
-<meta name="theme-color" content="#004AAD">
+<meta name="theme-color" content="#1268E0">
 <link rel="icon" href="assets/logo-azul.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/style.css">
@@ -62,48 +62,37 @@
           <li aria-current="page">Cobertura</li>
         </ol>
       </nav>
-      <h1>Onde entregamos e em quanto tempo.</h1>
+      <h1>Onde entregamos.</h1>
       <p>
-        Entregas de segunda a sábado, em horário comercial, na região
-        metropolitana do Rio de Janeiro. A janela de entrega é combinada por
-        WhatsApp no fechamento do pedido.
+        Dias fixos na semana dependendo da região. O dia da sua região é
+        combinado por WhatsApp no fechamento do pedido.
       </p>
     </div>
   </div>
 
 
   <!-- ===================================================================
-       VERIFICADOR
+       REGIÕES ATENDIDAS
        =================================================================== -->
   <section class="secao">
     <div class="container">
 
       <div class="secao-cabecalho revelar">
-        <span class="secao-rotulo">Verificar</span>
-        <h2>Digite seu bairro.</h2>
+        <span class="secao-rotulo">Regiões</span>
+        <h2>Rio e Grande Rio.</h2>
+        <p class="secao-apoio">
+          Endereço fora dessas regiões não é recusa: avaliamos conforme volume
+          e frequência. Mande o endereço no WhatsApp.
+        </p>
       </div>
 
-      <div class="cobertura-busca revelar">
-        <form id="form-cobertura" novalidate>
-          <div class="cobertura-busca__linha">
-            <div class="campo">
-              <label class="campo__rotulo apenas-leitor" for="cobertura-local">
-                Bairro ou município de entrega
-              </label>
-              <input type="text" id="cobertura-local" name="local"
-                     placeholder="Ex.: Bonsucesso, Niterói…"
-                     autocomplete="address-level3"
-                     role="combobox" aria-expanded="false"
-                     aria-controls="cobertura-sugestoes"
-                     aria-describedby="cobertura-resposta">
-            </div>
-            <button class="btn btn--primario" type="submit">Verificar</button>
-          </div>
-          <ul class="cobertura-sugestoes" id="cobertura-sugestoes" role="listbox"
-              aria-label="Sugestões de bairro ou município"></ul>
-        </form>
+      <div class="grid grid--2 revelar" style="max-width:46rem">
+        <div class="card"><h3 class="card__titulo">Rio</h3></div>
+        <div class="card"><h3 class="card__titulo">Grande Rio</h3></div>
+      </div>
 
-        <div class="cobertura-resposta" id="cobertura-resposta" role="status" aria-live="polite"></div>
+      <div style="margin-top:var(--e-7)">
+        <a class="btn btn--zap" data-zap="cobertura">Consultar meu endereço no WhatsApp</a>
       </div>
 
     </div>
@@ -134,7 +123,7 @@
         </div>
 
         <div class="card">
-          <h3 class="card__titulo">Janela de entrega</h3>
+          <h3 class="card__titulo">Dias fixos na semana dependendo da região</h3>
           <p class="secao-apoio" style="font-size:var(--t-sm)" data-config="entrega.janela"></p>
         </div>
 
@@ -148,30 +137,6 @@
     </div>
   </section>
 
-
-  <!-- ===================================================================
-       LISTA COMPLETA — preenchida por js/cobertura.js
-       =================================================================== -->
-  <section class="secao">
-    <div class="container">
-
-      <div class="secao-cabecalho revelar">
-        <span class="secao-rotulo">Onde entregamos</span>
-        <h2>Bairros e municípios atendidos.</h2>
-        <p class="secao-apoio">
-          Endereço fora desta lista não é recusa: avaliamos conforme volume
-          e frequência.
-        </p>
-      </div>
-
-      <div class="revelar" id="lista-cobertura"></div>
-
-      <div style="margin-top:var(--e-7)">
-        <a class="btn btn--zap" data-zap="cobertura">Consultar meu endereço no WhatsApp</a>
-      </div>
-
-    </div>
-  </section>
 
 </main>
 
@@ -245,6 +210,5 @@
 
 <script src="js/config.js"></script>
 <script src="js/main.js"></script>
-<script src="js/cobertura.js"></script>
 </body>
 </html>
