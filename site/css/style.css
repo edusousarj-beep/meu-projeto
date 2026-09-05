@@ -1042,3 +1042,79 @@ body { letter-spacing: -0.005em; }
 
 /* Foco visível — faltava nas duas referências. */
 :focus-visible { outline: 2px solid var(--amarelo-3s); outline-offset: 3px; }
+
+/* =========================================================================
+   9. COMPOSIÇÃO
+   O site tinha sete seções com o mesmo compasso: container centrado,
+   cabeçalho, grade de N cartões iguais. Repetir o mesmo ritmo sete vezes é
+   o que faz uma página parecer gerada. Estas primitivas quebram isso:
+   sangria de um lado só, listas densas no lugar de cartão, e grades
+   assimétricas onde o conteúdo não é simétrico.
+   ========================================================================= */
+
+/* --- 9.1 Sangria de um lado ---------------------------------------------
+   Puxa a borda direita do elemento até a borda da tela, saindo do container
+   centrado. É o que tira a página do eixo sem quebrar a leitura do texto. */
+.sangra-dir { margin-right: calc(50% - 50vw); }
+
+/* --- 9.2 Hero assimétrico ------------------------------------------------
+   Texto respeitando a medida de leitura à esquerda, imagem em retrato
+   sangrando à direita. Deixa de ser "headline centrada + banner deitado". */
+.hero__split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.82fr);
+  gap: clamp(2rem, 4vw, 4.5rem);
+  align-items: center;
+}
+.hero__texto { max-width: 34rem; }
+.hero__midia {
+  position: relative;
+  aspect-ratio: 4 / 5;             /* retrato: a foto da operação é vertical */
+  max-height: min(74vh, 620px);    /* trava a altura: sem isso o retrato
+                                      empurra o hero para além da dobra */
+  overflow: hidden;
+  border-radius: var(--raio) 0 0 var(--raio);
+}
+.hero__midia img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Enquanto não há foto, o vão fica declarado em vez de disfarçado. */
+.hero__midia--vazia {
+  border: 1px dashed var(--placa-linha);
+  display: grid; place-items: center; text-align: center;
+  color: var(--placa-apoio); font-size: var(--t-sm); padding: var(--e-5);
+}
+
+/* --- 9.3 Razão: lista densa no lugar de cartão ---------------------------
+   Quatro cartões idênticos dizem "quatro coisas equivalentes". Quando o
+   conteúdo é uma sequência de fatos, linha com filete diz melhor e ocupa
+   metade da altura. */
+.razao { display: grid; }
+.razao__item {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 3rem);
+  padding-block: var(--e-5);
+  border-top: 1px solid var(--cinza-linha);
+}
+.razao__item:last-child { border-bottom: 1px solid var(--cinza-linha); }
+.razao__item h3 { font-size: var(--t-lg); margin: 0; }
+.razao__item p  { margin: 0; color: var(--cinza-medio); }
+.secao--placa .razao__item { border-color: var(--placa-linha); }
+.secao--placa .razao__item h3 { color: var(--branco); }
+.secao--placa .razao__item p  { color: var(--placa-apoio); }
+
+/* --- 9.4 Grade assimétrica ----------------------------------------------
+   Conteúdo desigual em colunas iguais achata a hierarquia. */
+.grid--assim { display: grid; grid-template-columns: 1.55fr 1fr 1fr; gap: var(--e-5); }
+
+/* --- 9.5 Bloco sem moldura ----------------------------------------------
+   Borda, fundo e raio dizem "objeto separado". Gastar em todo bloco anula
+   o efeito. Este desliga a moldura mantendo o espaçamento do cartão. */
+.card--limpo { border: 0; padding-left: 0; padding-right: 0; background: transparent; }
+
+@media (max-width: 860px) {
+  .hero__split { grid-template-columns: 1fr; }
+  .hero__midia { aspect-ratio: 16 / 10; border-radius: var(--raio); }
+  .sangra-dir { margin-right: 0; }
+  .razao__item { grid-template-columns: 1fr; gap: var(--e-2); }
+  .grid--assim { grid-template-columns: 1fr; }
+}
