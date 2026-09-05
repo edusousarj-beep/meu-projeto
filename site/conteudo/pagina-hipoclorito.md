@@ -149,7 +149,18 @@ informações:
 
 # CAMPOS A CONFIRMAR
 
-## Dependem do boletim de análise do RT (CRQ 3ª Região 03412765)
+> **Atualização — posição na cadeia definida.** A 3S Química é o segundo elo:
+> compra a granel e **não dilui**. O produto é revendido no teor de origem.
+> Isso fecha o item 2 da Parte 5 do documento de origem e muda o caminho dos
+> campos abaixo: a spec não precisa de análise contratada, precisa do **laudo
+> do fabricante, por lote**.
+
+## Dependem de laudo — do fabricante, não de análise própria
+
+Como não há diluição, o teor publicado é o teor de origem. A fonte primária
+passa a ser o boletim de análise que acompanha o lote comprado, mais a FISPQ do
+fabricante. Peça os dois ao fornecedor: é documento que ele já emite, não serviço
+que você contrata. O RT valida e assume a spec publicada.
 
 | Campo | Formato exigido | Onde entra |
 |---|---|---|
@@ -162,10 +173,12 @@ informações:
 
 | Campo | Decisão | Consequência |
 |---|---|---|
-| `<<LOTE>>` | existe controle de lote documentado? | Se **não**, a palavra "lote" não aparece em lugar nenhum — nem aqui, nem no rótulo, nem no WhatsApp. Se **sim**, entra uma linha na ficha e vira argumento de contrato |
+| `<<LOTE>>` | existe controle de lote documentado? | Envasando a partir de lote do fabricante, a rastreabilidade é viável — basta amarrar lote de origem a lote de envase. Se **não** houver esse registro, a palavra "lote" não aparece em lugar nenhum. Se **sim**, entra uma linha na ficha e vira argumento de contrato |
 | Aspecto visual | incluir na ficha? | Linha padrão de ficha técnica. Não estava nos fatos fornecidos, então não escrevi. Sai do mesmo boletim |
 | Temperatura máxima de estocagem | publicar o número? | Seu doc técnico interno usa 30 °C, mas esse número não estava nos FATOS do prompt, então tirei do corpo. Se for para publicar, tem que vir do boletim junto com o critério de perda de teor |
-| Categoria regulatória | o produto é diluído por você ou revendido no teor de origem? | É a Parte 5 do seu documento. Enquanto não fechar, a página não sai. Sua própria apuração diz que diluir é fabricação, e o CNAE atual é comércio |
+| ~~Diluição~~ | **RESOLVIDO** | Não há diluição. Revenda no teor de origem, CNAE de comércio coerente com a atividade |
+| Envase sob rótulo próprio | qual a classificação dessa atividade? | **A pergunta em aberto agora.** `simulacao-lucro.md` traz "Rótulo — R$ 2,00" por galão: o produto é envasado em embalagem da 3S com rótulo da 3S. Envase sob marca própria é gatilho regulatório distinto do da diluição, e quem põe o rótulo responde pelo produto. Não consigo confirmar se caracteriza fabricação para saneantes — é pergunta para o RT ou consultor regulatório, não para mim |
+| Registro do fabricante | o produto de origem tem registro ou notificação ANVISA? | Se tiver, existe a alternativa de revender na embalagem lacrada do fabricante, sob o registro dele. Muda o modelo comercial e a margem, mas remove a discussão de envase. É uma opção real, não necessariamente a melhor |
 
 ## Dependem da AFE
 
