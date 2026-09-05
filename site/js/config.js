@@ -93,7 +93,7 @@ const CONFIG = {
       volume: 1000,
       nome: 'IBC 1.000L',
       aplicacao: 'Abastecimento industrial e reenvase.',
-      publico: 'Distribuidores, indústria, grandes contratos',
+      publico: 'Operações de grande volume e contratos de abastecimento',
       embalagem: '',
       trocaVasilhame: false,
     },

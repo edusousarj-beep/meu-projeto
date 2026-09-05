@@ -198,21 +198,24 @@ que ele lista estão desatualizados em relação ao código:
 
 | Prompt diz | Código diz | Adotado |
 |---|---|---|
-| azul `#004AAD` | `--azul-3s: #1268E0` | o do código |
-| verde WhatsApp `#25D366` | `--verde-zap: #3DDC7F` | o do código |
+| azul `#004AAD` | era `#1268E0` | **o do prompt** — CSS corrigido |
+| verde WhatsApp `#25D366` | `--verde-zap: #3DDC7F` | o do código, pendente de decisão |
 | "Archivo 900 nos títulos" | Fraunces 300 (migração já feita) | o do código |
 
-Se `#004AAD` for o azul correto da marca e `#1268E0` for que está errado no CSS,
-é o CSS que precisa mudar — e aí muda o site inteiro, não esta página.
+O azul foi resolvido a favor do prompt: `#004AAD` é a cor da marca e dá 8,13:1
+sobre papel, contra 5,14:1 do valor que estava no CSS — sobe de AA para AAA. O
+hover teve de ser refeito junto (`#003A85`, 10,80:1), porque o antigo era mais
+claro que a nova primária e o botão clarearia no hover.
 
-## Conflito de público com a home
+## Conflito de público com a home — RESOLVIDO
 
-O item [M3] do seu documento cobra um recorte de público por página. A home hoje
-diz "facilities, revendedores, distribuidores, condomínios, hotelaria e cozinhas
-industriais" — texto que **eu** escrevi. Esta página obedece a trava e fala só
-com facilities e empresa de limpeza. As duas coisas não podem continuar
-convivendo sem decisão: ou a home vira porta institucional genérica e cada página
-de produto recorta um público, ou a home também recorta.
+O item [M3] foi decidido a favor do recorte. A home agora fala só com gestor de
+facilities e empresa de limpeza, igual a esta página: título, meta description,
+apoio do hero e público do IBC foram reescritos, e o bloco de revenda saiu.
+
+**Revenda ficou sem porta.** Revendedor e distribuidor são público de outra
+página, que ainda não existe. Enquanto ela não existir, esse canal não tem
+entrada no site — decisão consciente, não esquecimento.
 
 ## Uma linha publicada hoje que o seu próprio documento reprova
 

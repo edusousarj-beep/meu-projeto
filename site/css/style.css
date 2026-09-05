@@ -17,8 +17,8 @@
 
 :root {
   /* --- Cor ------------------------------------------------------------ */
-  --azul-3s:      #1268E0;   /* primária, tom claro — 5,14:1 com branco */
-  --azul-escuro:  #0D4FA3;   /* fundos e hover — 7,88:1 com branco */
+  --azul-3s:      #004AAD;   /* primária da marca — 8,13:1 com branco, AAA */
+  --azul-escuro:  #003A85;   /* hover e texto sobre azul-claro — 10,80:1 */
   --azul-claro:   #EAF2FE;   /* blocos de destaque */
   --amarelo-3s:   #F2C80F;   /* acento — convertido do CMYK C3 M20 Y94 K2 */
   --vermelho-3s:  #D0021B;   /* EXCLUSIVO para segurança química */

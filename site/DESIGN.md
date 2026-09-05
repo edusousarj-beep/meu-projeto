@@ -25,8 +25,8 @@ decorativa.
 | Cinza médio | `#5A6270` | Texto secundário, apoio de seção, trilha de navegação — 6,15:1 |
 | Cinza linha | `#DDE2E8` | Hairline de cartão, divisória de tabela, borda de campo |
 | Cinza fundo | `#F5F7FA` | Fundo alternado de seção, para separar bandas sem mudar de tema |
-| Azul 3S | `#1268E0` | Primária da marca: link, botão de ação, ícone hexagonal — 5,14:1 |
-| Azul escuro | `#0D4FA3` | Hover de ação, texto sobre azul claro — 7,88:1 |
+| Azul 3S | `#004AAD` | Primária da marca: link, botão de ação, ícone hexagonal — 8,13:1, AAA |
+| Azul escuro | `#003A85` | Hover de ação, texto sobre azul claro — 10,80:1. Precisa ser mais escuro que a primária, senão o botão clareia no hover |
 | Azul claro | `#EAF2FE` | Bloco de destaque, fundo de badge |
 | Placa | `#071A2F` | Superfície escura profunda: hero, rodapé, painel de resultado |
 | Placa 2 | `#0E2743` | Cartão apoiado sobre a placa — a vitrine |
