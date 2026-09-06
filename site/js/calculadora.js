@@ -25,6 +25,9 @@
 
   // Embalagens da menor para a maior, para escolher a recomendada.
   var ESCALA = ['5l', '20l', '50l', 'ibc'];
+
+  // Alterna entre a combinação de embalagens (padrão) e uma embalagem só.
+  var formatoUnico = false;
   function porId(id) {
     return CONFIG.produtos.filter(function (p) { return p.id === id; })[0];
   }
@@ -49,6 +52,57 @@
       }
     }
     return ESCALA[0];               // volume pequeno demais: fica na de 5L
+  }
+
+
+  /* --- Combinação de embalagens ------------------------------------------
+     Uma embalagem só obriga a arredondar para cima no formato escolhido:
+     120L viravam 3x50L = 150L, 25% acima do que a tela promete. Misturando
+     formatos dá para fechar em 120L exatos (2x50 + 1x20).
+
+     Critério, nesta ordem:
+       1. menor sobra sobre o volume com margem — como existe a bombona de
+          5L, a sobra mínima é sempre menor que 5L;
+       2. entre as que empatam em sobra, menos peças para receber e
+          movimentar.
+
+     Menos peças otimiza a logística da 3S; menor sobra otimiza o caixa do
+     cliente. A ordem acima coloca o cliente primeiro, e a embalagem única
+     continua a um clique de distância na tela.
+     -------------------------------------------------------------------- */
+
+  function combinar(litros) {
+    var vols = ESCALA.map(function (id) { return porId(id).volume; });
+    var passo = vols[0];                               // menor embalagem
+    var alvo  = Math.ceil(litros / passo);             // em passos
+    var un    = vols.map(function (v) { return v / passo; });
+
+    // A maior embalagem entra primeiro: 1 peça vence qualquer alternativa
+    // sem aumentar a sobra, porque só é usada em múltiplos inteiros dela.
+    var maior  = un[un.length - 1];
+    var nMaior = Math.floor(alvo / maior);
+    var resto  = alvo - nMaior * maior;
+
+    // Menor número de peças para fechar o resto, sem a maior embalagem.
+    var pecas = [0], veio = [-1];
+    for (var v = 1; v <= resto; v++) {
+      pecas[v] = Infinity; veio[v] = -1;
+      for (var k = 0; k < un.length - 1; k++) {
+        if (un[k] <= v && pecas[v - un[k]] + 1 < pecas[v]) {
+          pecas[v] = pecas[v - un[k]] + 1; veio[v] = k;
+        }
+      }
+    }
+
+    var contagem = ESCALA.map(function () { return 0; });
+    contagem[contagem.length - 1] = nMaior;
+    for (var r = resto; r > 0; ) { var k = veio[r]; contagem[k]++; r -= un[k]; }
+
+    var itens = [];
+    for (var i = ESCALA.length - 1; i >= 0; i--) {
+      if (contagem[i] > 0) itens.push({ produto: porId(ESCALA[i]), quantidade: contagem[i] });
+    }
+    return { itens: itens, volume: alvo * passo };
   }
 
 
@@ -83,6 +137,8 @@
       seguiuRecomendacao: id === recomendada,
       qtdNaMenor: qtdNaMenor,
       ganhaTrocandoDeFormato: id !== '5l' && qtdNaMenor > qtd * 3,
+      combinacao: combinar(comMargem),
+      formatoUnico: formatoUnico,
     };
   }
 
@@ -104,28 +160,56 @@
       return;
     }
 
+    // Volume efetivamente contratado nos dois modos, para a frase da margem
+    // sempre bater com o número grande que está acima dela.
+    var volume = r.formatoUnico ? r.volumeContratado : r.combinacao.volume;
+    var sobra  = volume - Math.ceil(r.comMargem);
+
     var html =
       '<p class="calc__rotulo">Abastecimento mensal recomendado</p>' +
-      '<p class="calc__numero" data-atualizado="true">' + numero.format(r.quantidade) + '</p>' +
-      '<p class="calc__unidade">' + nomeFlexionado(r) + ' por mês</p>' +
-      '<p class="calc__margem">' + numero.format(r.volumeContratado) + ' L no mês — ' +
-        'seu consumo de ' + numero.format(r.consumo) + ' L mais margem de segurança de ' +
-        numero.format(MARGEM * 100) + '% (' + numero.format(Math.ceil(r.comMargem)) + ' L), ' +
-        'fechado em embalagens inteiras.</p>';
+      '<p class="calc__numero" data-atualizado="true">' + numero.format(volume) + '</p>' +
+      '<p class="calc__unidade">litros por mês</p>';
+
+    if (r.formatoUnico) {
+      html += '<p class="calc__unidade">' + nomeFlexionado(r) + '</p>';
+    } else {
+      html += '<ul class="calc__composicao">';
+      r.combinacao.itens.forEach(function (i) {
+        html += '<li>' + numero.format(i.quantidade) + ' &times; ' + i.produto.nome + '</li>';
+      });
+      html += '</ul>';
+    }
+
+    html += '<p class="calc__margem">Seu consumo de ' + numero.format(r.consumo) +
+      ' L mais margem de segurança de ' + numero.format(MARGEM * 100) + '% dá ' +
+      numero.format(Math.ceil(r.comMargem)) + ' L' +
+      (sobra > 0
+        ? ', e o formato fecha em ' + numero.format(volume) + ' L — ' + numero.format(sobra) + ' L acima.'
+        : ', fechados sem sobra.') + '</p>';
+
+    // O alternador fica ao lado do resultado, não escondido: a escolha entre
+    // menos peças e menos sobra é do cliente, não da 3S.
+    html += '<button type="button" class="calc__secundario" id="calc-formato">' +
+      (r.formatoUnico
+        ? 'Prefiro fechar sem sobra, misturando embalagens'
+        : 'Prefiro uma embalagem só') + '</button>';
 
     html += '<ul class="calc__ganhos">';
     html += item('<strong>Estoque garantido o mês inteiro.</strong> Sem hipoclorito, ' +
                  'a limpeza para — e equipe parada custa mais caro que a margem');
-    html += item('<strong>Uma entrega por mês</strong>, em dia fixo, sem precisar ' +
-                 'lembrar de pedir');
-    if (r.ganhaTrocandoDeFormato) {
+    html += item('<strong>Uma entrega por mês</strong>, sem precisar lembrar ' +
+                 'de pedir');
+    if (r.formatoUnico && r.ganhaTrocandoDeFormato) {
       html += item('O mesmo volume em bombonas de 5L seriam <strong>' +
                    numero.format(r.qtdNaMenor) + ' peças</strong> para receber e movimentar');
     }
-    if (r.produto.trocaVasilhame) {
+    var temTroca = r.formatoUnico
+      ? r.produto.trocaVasilhame
+      : r.combinacao.itens.some(function (i) { return i.produto.trocaVasilhame; });
+    if (temTroca) {
       html += item('Vasilhame trocado na entrega seguinte, sem acúmulo no estoque');
     }
-    html += item('Volume reservado para você, mesmo em mês de pico');
+    html += item('Volume combinado com antecedência entra na programação do mês');
     html += '</ul>';
 
     // Caminho principal.
@@ -151,6 +235,14 @@
   function ligarCta(r) {
     ligar('calc-cta', mensagemMensal(r), 'calculadora_mensal', r);
     ligar('calc-cta-avulso', mensagemAvulsa(r), 'calculadora_avulso', r);
+
+    var alternar = document.getElementById('calc-formato');
+    if (alternar) {
+      alternar.addEventListener('click', function () {
+        formatoUnico = !formatoUnico;
+        atualizar();
+      });
+    }
   }
 
   function ligar(id, extra, origem, r) {

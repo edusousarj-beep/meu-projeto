@@ -1133,3 +1133,21 @@ body { letter-spacing: -0.005em; }
   .razao__item { grid-template-columns: 1fr; gap: var(--e-2); }
   .grid--assim { grid-template-columns: 1fr; }
 }
+
+/* --- 9.6 Composição do abastecimento ------------------------------------
+   Lista das embalagens que fecham o volume do mês. Fica sob o número
+   grande, no painel de resultado da calculadora. */
+.calc__composicao {
+  list-style: none; margin: var(--e-3) 0 0; padding: 0;
+  display: grid; gap: 6px;
+}
+.calc__composicao li {
+  font-size: var(--t-md); font-weight: 500; color: var(--placa-texto);
+  font-variant-numeric: tabular-nums;
+}
+/* O alternador é um <button>, então precisa perder a aparência nativa. */
+button.calc__secundario {
+  background: none; border: 0; cursor: pointer;
+  font: inherit; text-align: left; padding: 0;
+  text-decoration: underline; text-underline-offset: 3px;
+}
