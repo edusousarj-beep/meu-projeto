@@ -1055,7 +1055,13 @@ body { letter-spacing: -0.005em; }
 /* --- 9.1 Sangria de um lado ---------------------------------------------
    Puxa a borda direita do elemento até a borda da tela, saindo do container
    centrado. É o que tira a página do eixo sem quebrar a leitura do texto. */
-.sangra-dir { margin-right: calc(50% - 50vw); }
+.sangra-dir {
+  /* A conta tem de sair do container, não da coluna. Um calc(50% - 50vw)
+     resolve o 50% contra a coluna da grade, o que joga centenas de pixels
+     para fora da tela e come o lado direito da imagem. Aqui: metade da
+     calha entre o container e a janela, mais o respiro do container. */
+  margin-right: calc(-1 * ((100vw - min(100vw, var(--largura-max))) / 2 + var(--e-5)));
+}
 
 /* --- 9.2 Hero assimétrico ------------------------------------------------
    Texto respeitando a medida de leitura à esquerda, imagem em retrato
@@ -1069,10 +1075,10 @@ body { letter-spacing: -0.005em; }
 .hero__texto { max-width: 34rem; }
 .hero__midia {
   position: relative;
-  /* Quadrado, não retrato: a foto de origem é horizontal e tem 1102px de
-     largura. Um corte 4:5 tiraria uma fatia de ~509px e ampliaria na tela.
-     1:1 aproveita 636x636 do original. */
-  aspect-ratio: 1 / 1;
+  /* 4:3 em vez de quadrado: a fatia sobe de 636 para 848px dos 1102 de
+     origem, o que faz caber a cabine e o primeiro IBC no mesmo quadro.
+     Também é o corte que menos amplia — usa mais da foto. */
+  aspect-ratio: 4 / 3;
   max-height: min(74vh, 620px);
   overflow: hidden;
   border-radius: var(--raio) 0 0 var(--raio);
@@ -1080,10 +1086,10 @@ body { letter-spacing: -0.005em; }
 .hero__midia img {
   width: 100%; height: 100%; display: block;
   object-fit: cover;
-  /* Corte puxado para a esquerda, onde está a cabine. Em 68% o quadro
-     pegava só as rodas. Este número é a forma de reenquadrar sem reeditar
-     a imagem: menor puxa para a cabine, maior puxa para os IBCs. */
-  object-position: 14% center;
+  /* Com o quadro mais largo, sobra pouca margem para deslocar: a fatia de
+     848px cabe em 1102px de origem. Menor puxa para a cabine, maior puxa
+     para os IBCs. */
+  object-position: 22% center;
 }
 /* Enquanto não há foto, o vão fica declarado em vez de disfarçado. */
 .hero__midia--vazia {
