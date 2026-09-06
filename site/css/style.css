@@ -1080,11 +1080,10 @@ body { letter-spacing: -0.005em; }
 .hero__midia img {
   width: 100%; height: 100%; display: block;
   object-fit: cover;
-  /* A foto de origem é horizontal e o slot é retrato, então o corte é
-     inevitável. Puxado para a direita porque é onde estão os IBCs — o
-     produto é o assunto, o caminhão é o cenário. Ajustar este número é a
-     forma de reenquadrar sem reeditar a imagem. */
-  object-position: 68% center;
+  /* Corte puxado para a esquerda, onde está a cabine. Em 68% o quadro
+     pegava só as rodas. Este número é a forma de reenquadrar sem reeditar
+     a imagem: menor puxa para a cabine, maior puxa para os IBCs. */
+  object-position: 14% center;
 }
 /* Enquanto não há foto, o vão fica declarado em vez de disfarçado. */
 .hero__midia--vazia {
