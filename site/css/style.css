@@ -1069,9 +1069,11 @@ body { letter-spacing: -0.005em; }
 .hero__texto { max-width: 34rem; }
 .hero__midia {
   position: relative;
-  aspect-ratio: 4 / 5;             /* retrato: a foto da operação é vertical */
-  max-height: min(74vh, 620px);    /* trava a altura: sem isso o retrato
-                                      empurra o hero para além da dobra */
+  /* Quadrado, não retrato: a foto de origem é horizontal e tem 1102px de
+     largura. Um corte 4:5 tiraria uma fatia de ~509px e ampliaria na tela.
+     1:1 aproveita 636x636 do original. */
+  aspect-ratio: 1 / 1;
+  max-height: min(74vh, 620px);
   overflow: hidden;
   border-radius: var(--raio) 0 0 var(--raio);
 }
