@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mentoria Inglês Funcional · Objetivos</title>
+<meta name="description" content="Dashboard de objetivos: cumprimento por área, progresso mensal e projeção de fechamento.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root {
+  --bg: #0E100A;
+  --card: #161A10;
+  --card-2: #1B2014;
+  --card-3: #21271A;
+  --border: rgba(255,255,255,0.06);
+  --border-2: rgba(255,255,255,0.11);
+  --text: #F2F5EA;
+  --text-2: #B4BBA5;
+  --text-3: #818A72;
+  --lime: #D9F548;
+  --lime-2: #A3E635;
+  --grad: linear-gradient(135deg, #D9F548 0%, #A3E635 100%);
+  --glow: 0 0 32px -6px rgba(217,245,72,0.45);
+  --on: #A3E635;
+  --behind: #F59E0B;
+  --risk: #EF4444;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --ease: cubic-bezier(.22,.8,.24,1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(900px 480px at 12% -10%, rgba(217,245,72,0.07), transparent 60%),
+              radial-gradient(700px 400px at 100% 0%, rgba(163,230,53,0.04), transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+.num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; border-radius: 6px; }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.wrap { position: relative; z-index: 1; max-width: 1360px; margin: 0 auto; padding: 24px 24px 64px; }
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 16px; }
+.s3 { grid-column: span 3; } .s4 { grid-column: span 4; } .s5 { grid-column: span 5; }
+.s6 { grid-column: span 6; } .s7 { grid-column: span 7; } .s8 { grid-column: span 8; } .s12 { grid-column: span 12; }
+@media (max-width: 1120px) {
+  .s3, .s4, .s5, .s6, .s7 { grid-column: span 6; }
+  .s8, .s12 { grid-column: span 12; }
+}
+@media (max-width: 720px) {
+  .wrap { padding: 16px 16px 48px; }
+  .grid { gap: 12px; }
+  .s3, .s4, .s5, .s6, .s7, .s8, .s12 { grid-column: span 12; }
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header.top {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  flex-wrap: wrap; margin-bottom: 20px;
+}
+.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.logo {
+  width: 44px; height: 44px; border-radius: 12px; background: var(--grad);
+  display: grid; place-items: center; color: #0E100A; font-weight: 800; font-size: 17px;
+  box-shadow: var(--glow); flex-shrink: 0;
+}
+.brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+.brand .sub { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 4px; color: var(--text-2); font-size: 12.5px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px;
+  border: 1px solid var(--border-2); background: rgba(255,255,255,0.03); font-size: 12px; color: var(--text-2);
+  white-space: nowrap;
+}
+.chip.lime { color: var(--lime); border-color: rgba(217,245,72,0.3); background: rgba(217,245,72,0.07); font-weight: 600; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px;
+  border: 1px solid var(--border-2); background: var(--card-2); color: var(--text); font-weight: 600; font-size: 13px;
+  transition: transform .15s var(--ease), background .15s, border-color .15s, box-shadow .2s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--card-3); border-color: rgba(255,255,255,0.18); }
+.btn:active { transform: scale(.97); }
+.btn.primary { background: var(--grad); color: #0E100A; border-color: transparent; box-shadow: var(--glow); }
+.btn.primary:hover { box-shadow: 0 0 44px -6px rgba(217,245,72,0.65); }
+.btn.ghost { background: transparent; }
+.btn.sm { padding: 6px 12px; font-size: 12px; }
+.btn.danger { color: #FCA5A5; border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.06); }
+.btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.icon-btn {
+  width: 30px; height: 30px; border-radius: 8px; display: inline-grid; place-items: center;
+  border: 1px solid var(--border); background: transparent; color: var(--text-3);
+}
+.icon-btn:hover { color: var(--text); border-color: var(--border-2); }
+.icon-btn svg { width: 15px; height: 15px; }
+
+/* Example banner */
+.banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 12px 16px; border-radius: var(--radius); margin-bottom: 16px;
+  background: repeating-linear-gradient(135deg, rgba(245,158,11,0.08) 0 12px, rgba(245,158,11,0.03) 12px 24px);
+  border: 1px solid rgba(245,158,11,0.3); color: #FCD34D; font-size: 13px;
+}
+.banner b { color: #FDE68A; }
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; min-width: 0; position: relative;
+  opacity: 0; transform: translateY(8px);
+  animation: rise .6s var(--ease) forwards;
+}
+@keyframes rise { to { opacity: 1; transform: none; } }
+.card-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-3); font-weight: 600; }
+.card-title { font-size: 15px; font-weight: 700; margin-top: 3px; letter-spacing: -0.005em; }
+.muted { color: var(--text-3); }
+.small { font-size: 12px; }
+
+/* Status pills */
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border-radius: 999px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .06em; white-space: nowrap; border: 1px solid;
+}
+.pill i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; font-style: normal; }
+.pill.on { color: var(--on); background: rgba(163,230,53,0.1); border-color: rgba(163,230,53,0.28); }
+.pill.behind { color: var(--behind); background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); }
+.pill.risk { color: #F87171; background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.32); }
+.tag { font-size: 10.5px; padding: 1px 7px; border-radius: 6px; border: 1px dashed rgba(245,158,11,0.45); color: #FCD34D; white-space: nowrap; }
+.tag.ex { border-color: rgba(245,158,11,0.45); }
+
+/* Hero */
+.hero { display: flex; flex-direction: column; }
+.ring-wrap { position: relative; width: 196px; height: 196px; margin: 4px auto 18px; }
+.ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+.ring-track { fill: none; stroke: rgba(255,255,255,0.06); }
+.ring-bar { fill: none; stroke-linecap: round; transition: stroke-dashoffset 1.6s var(--ease); filter: drop-shadow(0 0 7px rgba(217,245,72,0.45)); }
+.ring-center { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; }
+.ring-center .big { font-size: 44px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+.ring-center .big small { font-size: 20px; font-weight: 700; color: var(--text-2); }
+.ring-center .lbl { font-size: 11.5px; color: var(--text-3); margin-top: 6px; }
+.bubbles { display: flex; justify-content: space-around; align-items: flex-end; gap: 8px; min-height: 92px; }
+.bubble-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.bubble {
+  border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 16px;
+  transform: scale(0); animation: pop .7s var(--ease) forwards;
+}
+@keyframes pop { to { transform: scale(1); } }
+.bubble.on { background: rgba(163,230,53,0.16); color: var(--on); box-shadow: inset 0 0 0 1.5px rgba(163,230,53,0.5), 0 0 24px -6px rgba(163,230,53,0.6); }
+.bubble.behind { background: rgba(245,158,11,0.15); color: var(--behind); box-shadow: inset 0 0 0 1.5px rgba(245,158,11,0.5), 0 0 24px -6px rgba(245,158,11,0.6); }
+.bubble.risk { background: rgba(239,68,68,0.15); color: #F87171; box-shadow: inset 0 0 0 1.5px rgba(239,68,68,0.55), 0 0 24px -6px rgba(239,68,68,0.6); }
+.bubble.zero { opacity: .35; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.15); background: transparent; color: var(--text-3); }
+.hero-foot { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 8px; color: var(--text-2); font-size: 12.5px; }
+
+/* Projection */
+.proj-list { display: flex; flex-direction: column; gap: 10px; }
+.proj-row {
+  display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 6px 16px; align-items: center;
+  padding: 14px 16px; border-radius: 12px; background: var(--card-2); border: 1px solid var(--border);
+}
+.proj-row .t { font-weight: 600; font-size: 13.5px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.proj-row .meta { font-size: 12px; color: var(--text-3); }
+.proj-row .verdict { text-align: right; }
+.proj-row .verdict .pct { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+.proj-row .verdict .pct.risk { color: #F87171; } .proj-row .verdict .pct.behind { color: var(--behind); } .proj-row .verdict .pct.on { color: var(--on); }
+.proj-row .verdict .val { font-size: 12px; color: var(--text-2); }
+.proj-bar { grid-column: 1 / -1; position: relative; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.05); margin-top: 4px; }
+.proj-bar .now { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: rgba(255,255,255,0.22); width: 0; transition: width 1.2s var(--ease); }
+.proj-bar .fut { position: absolute; top: 0; bottom: 0; border-radius: 999px; width: 0; transition: width 1.4s var(--ease) .15s, left 1.2s var(--ease); }
+.proj-bar .fut.on { background: repeating-linear-gradient(135deg, rgba(163,230,53,.8) 0 5px, rgba(163,230,53,.45) 5px 9px); }
+.proj-bar .fut.behind { background: repeating-linear-gradient(135deg, rgba(245,158,11,.85) 0 5px, rgba(245,158,11,.45) 5px 9px); }
+.proj-bar .fut.risk { background: repeating-linear-gradient(135deg, rgba(239,68,68,.85) 0 5px, rgba(239,68,68,.45) 5px 9px); }
+.proj-bar .goal { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--lime); border-radius: 2px; box-shadow: 0 0 8px var(--lime); }
+.proj-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px; color: var(--text-3); margin-top: 12px; }
+.proj-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 14px; height: 6px; border-radius: 3px; display: inline-block; }
+
+/* Alerts */
+.alert-list { display: flex; flex-direction: column; gap: 8px; }
+.alert {
+  display: grid; grid-template-columns: 22px minmax(0,1fr); gap: 10px; padding: 11px 12px; border-radius: 12px;
+  background: var(--card-2); border: 1px solid var(--border); font-size: 12.5px;
+}
+.alert .ic { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-weight: 800; font-size: 12px; }
+.alert.risk .ic { background: rgba(239,68,68,0.15); color: #F87171; }
+.alert.warn .ic { background: rgba(245,158,11,0.15); color: var(--behind); }
+.alert.info .ic { background: rgba(255,255,255,0.06); color: var(--text-2); }
+.alert b { font-weight: 600; color: var(--text); display: block; }
+.alert span { color: var(--text-2); }
+.alert-empty { padding: 20px; text-align: center; color: var(--text-3); font-size: 13px; border: 1px dashed var(--border-2); border-radius: 12px; }
+
+/* Areas */
+.area-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.mini-ring { width: 64px; height: 64px; position: relative; flex-shrink: 0; }
+.mini-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.mini-ring .v { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 800; font-size: 15px; }
+.obj { padding: 12px 0; border-top: 1px solid var(--border); }
+.obj:first-of-type { border-top: 0; padding-top: 0; }
+.obj-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.obj-name { font-weight: 600; font-size: 13.5px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.dot { width: 9px; height: 9px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+.obj-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.obj-vals { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-2); margin: 8px 0 6px; gap: 8px; flex-wrap: wrap; }
+.obj-vals b { color: var(--text); font-weight: 700; }
+.bar { position: relative; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.05); }
+.bar .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; width: 0; transition: width 1.3s var(--ease); }
+.bar .fill.on { background: var(--grad); box-shadow: 0 0 12px -2px rgba(217,245,72,0.5); }
+.bar .fill.behind { background: linear-gradient(90deg, #F59E0B, #FBBF24); }
+.bar .fill.risk { background: linear-gradient(90deg, #DC2626, #EF4444); }
+.bar .exp { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--text); opacity: .75; border-radius: 2px; }
+.month-line { font-size: 11.5px; color: var(--text-3); margin-top: 7px; }
+.month-line b { color: var(--text-2); font-weight: 600; }
+.cap { margin-top: 12px; padding: 12px; border-radius: 12px; background: var(--card-2); border: 1px solid var(--border); }
+
+/* Chart */
+.seg { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 3px; border-radius: 999px; background: var(--card-2); border: 1px solid var(--border); }
+.seg button { border: 0; background: transparent; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--text-3); }
+.seg button[aria-pressed="true"] { background: var(--card-3); color: var(--text); box-shadow: inset 0 0 0 1px var(--border-2); }
+.chart-box { position: relative; height: 320px; }
+.chart-fallback { display: grid; place-items: center; height: 100%; color: var(--text-3); font-size: 13px; text-align: center; padding: 20px; border: 1px dashed var(--border-2); border-radius: 12px; }
+
+/* History */
+select.sel, input.inp, textarea.inp {
+  background: var(--card-2); border: 1px solid var(--border-2); border-radius: 10px; padding: 9px 12px; width: 100%;
+  color: var(--text); font-size: 13px;
+}
+select.sel { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--text-3) 50%), linear-gradient(135deg, var(--text-3) 50%, transparent 50%); background-position: calc(100% - 16px) 55%, calc(100% - 11px) 55%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 30px; }
+textarea.inp { resize: vertical; min-height: 38px; }
+input.inp::placeholder, textarea.inp::placeholder { color: var(--text-3); }
+.timeline { position: relative; margin-top: 14px; padding-left: 18px; max-height: 360px; overflow: auto; }
+.timeline::before { content: ''; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 2px; background: var(--border-2); border-radius: 2px; }
+.tl { position: relative; padding: 0 0 16px 10px; }
+.tl::before { content: ''; position: absolute; left: -18px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--card); border: 2px solid var(--lime-2); box-shadow: 0 0 10px -2px var(--lime-2); }
+.tl.start::before { border-color: var(--text-3); box-shadow: none; }
+.tl-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.tl-date { font-size: 11.5px; color: var(--text-3); }
+.tl-v { font-weight: 700; font-size: 14px; }
+.tl-d { font-size: 11.5px; font-weight: 600; margin-left: 6px; }
+.tl-d.up { color: var(--on); } .tl-d.down { color: #F87171; }
+.tl-n { font-size: 12.5px; color: var(--text-2); margin-top: 3px; }
+
+/* Students */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.stat { padding: 14px; border-radius: 12px; background: var(--card-2); border: 1px solid var(--border); }
+.stat .k { font-size: 11px; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
+.stat .v { font-size: 24px; font-weight: 800; margin-top: 4px; letter-spacing: -0.02em; }
+.stat .h { font-size: 11.5px; color: var(--text-3); }
+.levels { display: flex; flex-direction: column; gap: 8px; }
+.lv { display: grid; grid-template-columns: 96px minmax(0,1fr) 44px; gap: 10px; align-items: center; font-size: 12.5px; }
+.lv .b { height: 10px; border-radius: 999px; background: rgba(255,255,255,0.05); position: relative; }
+.lv .b i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: var(--grad); width: 0; transition: width 1.2s var(--ease); }
+.table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 12px; max-height: 420px; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 760px; }
+.tbl th { position: sticky; top: 0; background: var(--card-2); text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); font-weight: 600; padding: 10px 12px; border-bottom: 1px solid var(--border-2); z-index: 1; }
+.tbl td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: 0; }
+.st { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.st.ativo { color: var(--on); background: rgba(163,230,53,0.1); }
+.st.timeoff { color: #93C5FD; background: rgba(147,197,253,0.1); }
+.st.encerrado { color: var(--text-3); background: rgba(255,255,255,0.05); }
+.st.estornado { color: #F87171; background: rgba(239,68,68,0.1); }
+.st.futuro { color: var(--text-2); background: rgba(255,255,255,0.05); }
+.st.fim { color: var(--behind); background: rgba(245,158,11,0.1); }
+.two { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,2fr); gap: 16px; }
+@media (max-width: 900px) { .two { grid-template-columns: minmax(0,1fr); } }
+
+footer.foot { margin-top: 24px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--text-3); font-size: 12px; }
+footer.foot .actions .btn { font-size: 12px; padding: 7px 12px; }
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+.overlay {
+  position: fixed; inset: 0; background: rgba(6,8,4,0.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: none; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow: auto; z-index: 50;
+}
+.overlay.open { display: flex; animation: fade .2s ease; }
+@keyframes fade { from { opacity: 0; } }
+.modal {
+  width: 100%; max-width: 760px; background: var(--card); border: 1px solid var(--border-2); border-radius: 20px;
+  box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7); animation: rise .35s var(--ease) forwards; opacity: 0; transform: translateY(8px);
+}
+.modal-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 22px 14px; border-bottom: 1px solid var(--border); }
+.modal-h h2 { font-size: 18px; font-weight: 700; }
+.modal-b { padding: 18px 22px; }
+.modal-f { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 22px 20px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.upd-row { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.3fr); gap: 10px; align-items: start; padding: 14px 0; border-top: 1px solid var(--border); }
+.upd-row:first-child { border-top: 0; padding-top: 4px; }
+.upd-row label.h { font-weight: 600; font-size: 13.5px; display: flex; gap: 7px; align-items: center; }
+.upd-row .hint { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
+@media (max-width: 640px) { .upd-row { grid-template-columns: 1fr; } }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.form-grid .full { grid-column: 1 / -1; }
+@media (max-width: 560px) { .form-grid { grid-template-columns: 1fr; } }
+.field label { display: block; font-size: 12px; color: var(--text-2); margin-bottom: 5px; font-weight: 600; }
+.field .help { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2); }
+.obj-admin { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.obj-admin:first-child { border-top: 0; }
+.row-actions { display: flex; gap: 6px; }
+
+/* Toast */
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; z-index: 80;
+  background: var(--card-3); border: 1px solid var(--border-2); padding: 11px 16px; border-radius: 12px; font-size: 13px;
+  transition: all .3s var(--ease); pointer-events: none; box-shadow: 0 16px 40px -12px rgba(0,0,0,.7);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ============================================================
+   MEETING MODE
+   ============================================================ */
+#meeting { position: fixed; inset: 0; z-index: 70; background: var(--bg); overflow: auto; display: none; }
+#meeting.open { display: block; animation: fade .25s ease; }
+.mt-wrap { max-width: 1280px; margin: 0 auto; padding: 28px 28px 60px; }
+.mt-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.mt-top h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.mt-sum { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.mt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.mt-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; border-top-width: 3px; }
+.mt-card.risk { border-top-color: var(--risk); } .mt-card.behind { border-top-color: var(--behind); } .mt-card.on { border-top-color: var(--on); }
+.mt-card h3 { font-size: 19px; font-weight: 700; margin: 12px 0 2px; }
+.mt-big { display: flex; align-items: baseline; gap: 10px; margin: 16px 0 12px; flex-wrap: wrap; }
+.mt-big .v { font-size: 38px; font-weight: 800; letter-spacing: -0.03em; }
+.mt-big .t { color: var(--text-3); font-size: 15px; }
+.mt-proj { margin-top: 14px; font-size: 15px; color: var(--text-2); }
+.mt-proj b { font-size: 18px; }
+.mt-note { margin-top: 12px; font-size: 13.5px; color: var(--text-2); padding: 10px 12px; border-radius: 10px; background: var(--card-2); border-left: 3px solid var(--border-2); }
+.mt-q { margin-top: 12px; font-size: 13px; color: #FCA5A5; }
+@media (max-width: 720px) { .mt-wrap { padding: 16px; } .mt-grid { grid-template-columns: 1fr; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  .card, .modal { opacity: 1; transform: none; }
+  .bubble { transform: none; }
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">IF</div>
+      <div>
+        <h1 id="bizName">Mentoria Inglês Funcional</h1>
+        <div class="sub">
+          <span class="chip lime" id="periodChip">Q4 2026</span>
+          <span class="chip num" id="periodRange"></span>
+          <span class="chip num" id="daysLeft"></span>
+          <span class="chip" id="storeChip"></span>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" id="btnMeeting" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+        Modo reunião
+      </button>
+      <button class="btn ghost" id="btnManage" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+        Objetivos
+      </button>
+      <button class="btn primary" id="btnUpdate" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Atualizar progresso
+      </button>
+    </div>
+  </header>
+
+  <div id="exampleBanner" class="banner" hidden>
+    <div><b>Modo exemplo.</b> Os check-ins e os alunos marcados como "exemplo" são simulados, e a data de hoje está fixada em <b class="num" id="demoDate"></b>. Os pontos de partida e as metas são reais.</div>
+    <button class="btn sm" id="btnClearExamples" type="button">Apagar exemplos e começar</button>
+  </div>
+
+  <main class="grid" id="grid">
+    <!-- 2. Global -->
+    <section class="card s4 hero" id="cardGlobal" aria-labelledby="gTitle"></section>
+    <!-- 5. Projeção -->
+    <section class="card s5" id="cardProj" aria-labelledby="pTitle" style="animation-delay:.06s"></section>
+    <!-- 7. Alertas -->
+    <section class="card s3" id="cardAlerts" aria-labelledby="aTitle" style="animation-delay:.12s"></section>
+    <!-- 3. Áreas -->
+    <div class="s12 grid" id="areas" style="gap:inherit"></div>
+    <!-- 4. Progresso mensal -->
+    <section class="card s8" id="cardChart" style="animation-delay:.2s">
+      <div class="card-h" style="flex-wrap:wrap">
+        <div>
+          <div class="eyebrow">Progresso mensal</div>
+          <div class="card-title">Real vs. esperado (% do caminho até a meta)</div>
+        </div>
+        <div class="seg" id="chartSeg" role="group" aria-label="Escolher objetivo"></div>
+      </div>
+      <div class="chart-box"><canvas id="chart" aria-label="Gráfico de progresso real versus esperado"></canvas></div>
+      <div class="small muted" id="chartNote" style="margin-top:10px"></div>
+    </section>
+    <!-- 6. Histórico -->
+    <section class="card s4" id="cardHistory" style="animation-delay:.24s">
+      <div class="card-h">
+        <div>
+          <div class="eyebrow">Histórico de check-ins</div>
+          <div class="card-title">Linha do tempo</div>
+        </div>
+      </div>
+      <select class="sel" id="histSel" aria-label="Objetivo do histórico"></select>
+      <div class="timeline" id="timeline"></div>
+    </section>
+    <!-- Base de alunos -->
+    <section class="card s12" id="cardStudents" style="animation-delay:.28s"></section>
+  </main>
+
+  <footer class="foot">
+    <div id="footInfo"></div>
+    <div class="actions">
+      <button class="btn ghost" id="btnExport" type="button">Exportar objetivos (CSV)</button>
+      <button class="btn ghost" id="btnImport" type="button">Importar objetivos (CSV)</button>
+      <input type="file" id="fileObj" accept=".csv,text/csv" hidden>
+    </div>
+  </footer>
+</div>
+
+<!-- Modal: atualizar progresso -->
+<div class="overlay" id="mUpdate" role="dialog" aria-modal="true" aria-labelledby="mUpdateT">
+  <div class="modal">
+    <div class="modal-h">
+      <div>
+        <div class="eyebrow">Check-in</div>
+        <h2 id="mUpdateT">Atualizar progresso</h2>
+        <div class="small muted" style="margin-top:4px">Preencha só o que mudou. Campos vazios não geram check-in.</div>
+      </div>
+      <button class="icon-btn" data-close aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="modal-b">
+      <div class="field" style="max-width:220px;margin-bottom:10px">
+        <label for="updDate">Data do check-in</label>
+        <input class="inp num" type="date" id="updDate">
+      </div>
+      <div id="updRows"></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn ghost" data-close type="button">Cancelar</button>
+      <button class="btn primary" id="updSave" type="button">Salvar check-in</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: gerenciar objetivos -->
+<div class="overlay" id="mManage" role="dialog" aria-modal="true" aria-labelledby="mManageT">
+  <div class="modal">
+    <div class="modal-h">
+      <div>
+        <div class="eyebrow">Gerenciar</div>
+        <h2 id="mManageT">Objetivos</h2>
+      </div>
+      <button class="icon-btn" data-close aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="modal-b">
+      <div id="manageList"></div>
+      <div id="archList" style="margin-top:18px"></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn primary" id="btnNewObj" type="button">+ Novo objetivo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: formulário objetivo -->
+<div class="overlay" id="mObj" role="dialog" aria-modal="true" aria-labelledby="mObjT">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-h">
+      <div><div class="eyebrow">Objetivo</div><h2 id="mObjT">Editar objetivo</h2></div>
+      <button class="icon-btn" data-close aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <form class="modal-b" id="objForm" autocomplete="off">
+      <div class="form-grid">
+        <div class="field full"><label for="fTitle">Objetivo</label><input class="inp" id="fTitle" required placeholder="Ex.: Valor vendido no mês"></div>
+        <div class="field"><label for="fArea">Área</label><input class="inp" id="fArea" list="areaList" required><datalist id="areaList"></datalist></div>
+        <div class="field"><label for="fOwner">Responsável (1 pessoa)</label><input class="inp" id="fOwner" required></div>
+        <div class="field"><label for="fUnit">Unidade</label>
+          <select class="sel" id="fUnit"><option value="brl">R$ (dinheiro)</option><option value="count">Número</option><option value="pct">% (percentual)</option></select></div>
+        <div class="field"><label for="fKind">Como medir</label>
+          <select class="sel" id="fKind"><option value="stock">Valor atual (ex.: alunos ativos)</option><option value="monthly">Acumulado no mês (ex.: vendido no mês)</option></select>
+          <div class="help">"Acumulado no mês" zera todo mês e tem meta mensal crescente.</div></div>
+        <div class="field"><label for="fStart">Valor inicial</label><input class="inp num" id="fStart" type="number" step="any" required></div>
+        <div class="field"><label for="fTarget">Meta</label><input class="inp num" id="fTarget" type="number" step="any" required></div>
+        <div class="field"><label for="fStartDate">Início</label><input class="inp num" id="fStartDate" type="date" required></div>
+        <div class="field"><label for="fDeadline">Prazo</label><input class="inp num" id="fDeadline" type="date" required></div>
+        <div class="field full"><label for="fSource">Onde está o número</label><input class="inp" id="fSource" placeholder="Ex.: Gateway, Google Agenda, planilha"></div>
+        <label class="check full"><input type="checkbox" id="fEst"> Valor inicial é estimado (substituir pelo real no 1º check-in)</label>
+      </div>
+    </form>
+    <div class="modal-f">
+      <button class="btn ghost" data-close type="button">Cancelar</button>
+      <button class="btn primary" id="objSave" type="button">Salvar objetivo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: aluno -->
+<div class="overlay" id="mStudent" role="dialog" aria-modal="true" aria-labelledby="mStudentT">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-h">
+      <div><div class="eyebrow">Base de alunos</div><h2 id="mStudentT">Aluno</h2></div>
+      <button class="icon-btn" data-close aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <form class="modal-b" id="stuForm" autocomplete="off">
+      <div class="form-grid">
+        <div class="field full"><label for="sName">Nome</label><input class="inp" id="sName" required></div>
+        <div class="field"><label for="sPlan">Plano</label><input class="inp" id="sPlan" list="planList" placeholder="Ex.: Mentoria 12 meses"><datalist id="planList"></datalist></div>
+        <div class="field"><label for="sLevel">Nivelamento</label>
+          <select class="sel" id="sLevel"><option value="">Não informado</option><option>0</option><option>Iniciante</option><option>Básico</option><option>Intermediário</option></select></div>
+        <div class="field"><label for="sStart">Data de matrícula (início)</label><input class="inp num" id="sStart" type="date" required></div>
+        <div class="field"><label for="sEnd">Data de encerramento</label><input class="inp num" id="sEnd" type="date">
+          <div class="help">Vazio = início + 12 meses.</div></div>
+        <div class="field"><label for="sToStart">Time off: início</label><input class="inp num" id="sToStart" type="date"></div>
+        <div class="field"><label for="sToEnd">Time off: fim</label><input class="inp num" id="sToEnd" type="date"></div>
+        <label class="check full"><input type="checkbox" id="sRefund"> Estornado (sai da base de ativos)</label>
+      </div>
+    </form>
+    <div class="modal-f">
+      <button class="btn danger" id="stuDelete" type="button" style="margin-right:auto">Excluir</button>
+      <button class="btn ghost" data-close type="button">Cancelar</button>
+      <button class="btn primary" id="stuSave" type="button">Salvar aluno</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modo reunião -->
+<div id="meeting" role="dialog" aria-modal="true" aria-label="Modo reunião"></div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   CONFIG: preencha SUPABASE_URL e SUPABASE_ANON_KEY para usar a nuvem.
+   Vazios = os dados ficam só neste navegador (localStorage).
+   ===================================================================== */
+const CONFIG = {
+  SUPABASE_URL: '',
+  SUPABASE_ANON_KEY: '',
+  TABELA: 'dashboard_objetivos'
+};
+
+/* ---------------------------------------------------------------------
+   Constantes de negócio (combinadas na entrevista)
+   --------------------------------------------------------------------- */
+const RULES = {
+  onTrackGap: -5,        // até 5 pontos abaixo do esperado = ON TRACK
+  riskGap: -15,          // mais de 15 pontos abaixo = AT RISK
+  riskProjection: 80,    // projeção abaixo de 80% da meta = AT RISK
+  staleDays: 3,          // dias sem atualização até acender o alerta
+  earlyDay: 10,          // alerta de 1ª quinzena: no dia 10...
+  earlyPct: 25,          // ...abaixo de 25% da meta do mês
+  capacity: 108,         // 3 professores x 36 aulas/semana
+  lessonsPerStudent: 1,  // aulas individuais por aluno por semana
+  capacityWarn: 90,      // alerta de ocupação acima de 90%
+  planMonths: 12,        // mentoria de 12 meses
+  projWindowDays: 21     // janela do "ritmo atual" em objetivos de valor atual
+};
+const DEMO_TODAY = '2026-10-22';
+const STORAGE_KEY = 'mif.dashboard.v1';
+const SERIES = ['#3987E5', '#D55181', '#2A9D8F', '#C98500', '#9085E9', '#199E70'];
+const POINTS = ['circle', 'rectRot', 'triangle', 'rect', 'star', 'crossRot'];
+const LEVELS = ['0', 'Iniciante', 'Básico', 'Intermediário'];
+const STATUS = {
+  on:     { label: 'ON TRACK', cls: 'on' },
+  behind: { label: 'BEHIND',   cls: 'behind' },
+  risk:   { label: 'AT RISK',  cls: 'risk' }
+};
+
+/* ---------------------------------------------------------------------
+   Dados iniciais (entrevista de 23/09/2026)
+   --------------------------------------------------------------------- */
+function seedState() {
+  const base = { startDate: '2026-09-23', deadline: '2026-12-31', archived: false };
+  return {
+    meta: { business: 'Mentoria Inglês Funcional', period: 'Q4 2026', exampleMode: true },
+    objectives: [
+      { ...base, id: 'c1', order: 0, area: 'Comercial', title: 'Valor vendido no mês', unit: 'brl', kind: 'monthly', start: 35000, target: 70000, owner: 'Eduardo', estimated: false, source: 'Gateway Dom Pagamentos' },
+      { ...base, id: 'c2', order: 1, area: 'Comercial', title: 'Comparecimento às calls', unit: 'pct', kind: 'stock', start: 38, target: 60, owner: 'Mateus', estimated: true, source: 'Google Agenda (verde = compareceu, vermelho = faltou)' },
+      { ...base, id: 'm1', order: 2, area: 'Marketing', title: 'Calls agendadas no mês', unit: 'count', kind: 'monthly', start: 55, target: 100, owner: 'Mateus', estimated: true, source: 'Google Agenda' },
+      { ...base, id: 'p1', order: 3, area: 'Pedagógico', title: 'Alunos ativos', unit: 'count', kind: 'stock', start: 67, target: 100, owner: 'Bruna', estimated: false, source: 'Planilha de alunos' }
+    ],
+    checkins: [
+      { id: 'ex1', objectiveId: 'c1', date: '2026-10-07', value: 9994,  note: '2 vendas na primeira semana de outubro.', example: true },
+      { id: 'ex2', objectiveId: 'c1', date: '2026-10-21', value: 19988, note: 'Só mais 2 vendas em duas semanas. Muitas faltas nas calls da semana 3.', example: true },
+      { id: 'ex3', objectiveId: 'c2', date: '2026-10-07', value: 40,    note: 'Mateus passou a confirmar as calls na véspera.', example: true },
+      { id: 'ex4', objectiveId: 'c2', date: '2026-10-21', value: 43,    note: 'Lembrete 1h antes ajudou. Lead de segunda ainda responde só na sexta.', example: true },
+      { id: 'ex5', objectiveId: 'm1', date: '2026-10-07', value: 18,    note: '', example: true },
+      { id: 'ex6', objectiveId: 'm1', date: '2026-10-21', value: 50,    note: 'Semana forte de agendamentos depois do criativo novo.', example: true },
+      { id: 'ex7', objectiveId: 'p1', date: '2026-10-07', value: 71,    note: '4 matrículas em outubro, nenhuma saída.', example: true }
+    ],
+    students: [
+      { id: 'sx1', name: 'Aluno Exemplo 1', plan: 'Mentoria 12 meses', start: '2025-10-15', end: '', level: 'Iniciante',     timeoffStart: '', timeoffEnd: '', refunded: false, example: true },
+      { id: 'sx2', name: 'Aluno Exemplo 2', plan: 'Mentoria 12 meses', start: '2025-12-01', end: '', level: 'Básico',        timeoffStart: '', timeoffEnd: '', refunded: false, example: true },
+      { id: 'sx3', name: 'Aluno Exemplo 3', plan: 'Mentoria 12 meses', start: '2026-02-10', end: '', level: '0',             timeoffStart: '', timeoffEnd: '', refunded: false, example: true },
+      { id: 'sx4', name: 'Aluno Exemplo 4', plan: 'Mentoria 12 meses', start: '2026-05-20', end: '', level: 'Intermediário', timeoffStart: '2026-10-01', timeoffEnd: '2026-10-31', refunded: false, example: true },
+      { id: 'sx5', name: 'Aluno Exemplo 5', plan: 'Mentoria 12 meses', start: '2026-08-05', end: '', level: 'Básico',        timeoffStart: '', timeoffEnd: '', refunded: false, example: true },
+      { id: 'sx6', name: 'Aluno Exemplo 6', plan: 'Mentoria 12 meses', start: '2026-10-10', end: '', level: 'Iniciante',     timeoffStart: '', timeoffEnd: '', refunded: false, example: true }
+    ]
+  };
+}
+
+/* ---------------------------------------------------------------------
+   Utilidades
+   --------------------------------------------------------------------- */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const uid = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function isoLocal(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function toUTC(iso) { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d); }
+function daysBetween(a, b) { return Math.round((toUTC(b) - toUTC(a)) / 864e5); }
+function addDays(iso, n) { const d = new Date(toUTC(iso) + n * 864e5); return d.toISOString().slice(0, 10); }
+function addMonths(iso, n) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const t = new Date(Date.UTC(y, m - 1 + n, 1));
+  const dim = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + 1, 0)).getUTCDate();
+  t.setUTCDate(Math.min(d, dim));
+  return t.toISOString().slice(0, 10);
+}
+function daysInMonth(iso) { const [y, m] = iso.split('-').map(Number); return new Date(Date.UTC(y, m, 0)).getUTCDate(); }
+function monthIndex(iso) { const [y, m] = iso.split('-').map(Number); return y * 12 + (m - 1); }
+const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+function monthName(iso) { return MONTHS[+iso.slice(5, 7) - 1]; }
+function fmtDate(iso) { return iso ? iso.slice(8, 10) + '/' + iso.slice(5, 7) : '—'; }
+function fmtDateFull(iso) { return iso ? iso.slice(8, 10) + '/' + iso.slice(5, 7) + '/' + iso.slice(0, 4) : '—'; }
+function validISO(s) { return /^\d{4}-\d{2}-\d{2}$/.test(s || '') && !isNaN(toUTC(s)); }
+function parseAnyDate(s) {
+  s = String(s || '').trim();
+  if (!s) return '';
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
+  m = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+  if (m) { const y = m[3].length === 2 ? '20' + m[3] : m[3]; return y + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0'); }
+  return '';
+}
+function parseNum(v) {
+  if (typeof v === 'number') return v;
+  let s = String(v ?? '').trim().replace(/[R$\s%]/g, '');
+  if (!s) return NaN;
+  if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+  return Number(s);
+}
+const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
+const nf1 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 });
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+function fmt(v, unit) {
+  if (v == null || isNaN(v)) return '—';
+  if (unit === 'brl') return brl.format(v);
+  if (unit === 'pct') return nf1.format(v) + '%';
+  return nf0.format(v);
+}
+function fmtShort(v, unit) {
+  if (unit === 'brl' && Math.abs(v) >= 1000) return 'R$ ' + nf1.format(v / 1000) + ' mil';
+  return fmt(v, unit);
+}
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ---------------------------------------------------------------------
+   Persistência: localStorage (padrão) ou Supabase (se CONFIG preenchido)
+   Cada objetivo, check-in e aluno é uma linha da tabela, então duas pessoas
+   atualizando objetivos diferentes não sobrescrevem uma à outra.
+   --------------------------------------------------------------------- */
+const Store = {
+  mode: 'local',
+  client: null,
+  useCloud() { return !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY); },
+  loadScript(src) {
+    return new Promise((res, rej) => {
+      const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Falha ao carregar ' + src));
+      document.head.appendChild(s);
+    });
+  },
+  readLocal() {
+    try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+  },
+  writeLocal(state) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* armazenamento bloqueado */ }
+  },
+  async init() {
+    if (!this.useCloud()) { this.mode = 'local'; return this.readLocal(); }
+    try {
+      await this.loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js');
+      this.client = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+      const { data, error } = await this.client.from(CONFIG.TABELA).select('id,tipo,dados');
+      if (error) throw error;
+      this.mode = 'cloud';
+      if (!data.length) return null;
+      const st = { meta: {}, objectives: [], checkins: [], students: [] };
+      data.forEach((r) => {
+        if (r.tipo === 'config') st.meta = r.dados;
+        else if (r.tipo === 'objetivo') st.objectives.push(r.dados);
+        else if (r.tipo === 'checkin') st.checkins.push(r.dados);
+        else if (r.tipo === 'aluno') st.students.push(r.dados);
+      });
+      return st;
+    } catch (e) {
+      console.warn('Supabase indisponível, usando dados locais:', e.message || e);
+      this.mode = 'local-fallback';
+      return this.readLocal();
+    }
+  },
+  rowsFor(state) {
+    return [{ id: 'config', tipo: 'config', dados: state.meta }]
+      .concat(state.objectives.map((o) => ({ id: o.id, tipo: 'objetivo', dados: o })))
+      .concat(state.checkins.map((c) => ({ id: c.id, tipo: 'checkin', dados: c })))
+      .concat(state.students.map((s) => ({ id: s.id, tipo: 'aluno', dados: s })));
+  },
+  async commit(state, { upserts = [], deletes = [] } = {}) {
+    this.writeLocal(state);
+    if (this.mode !== 'cloud') return;
+    try {
+      if (upserts.length) {
+        const rows = upserts.map(([tipo, dados]) => ({ id: tipo === 'config' ? 'config' : dados.id, tipo, dados, updated_at: new Date().toISOString() }));
+        const { error } = await this.client.from(CONFIG.TABELA).upsert(rows);
+        if (error) throw error;
+      }
+      if (deletes.length) {
+        const { error } = await this.client.from(CONFIG.TABELA).delete().in('id', deletes);
+        if (error) throw error;
+      }
+    } catch (e) {
+      console.warn('Falha ao salvar no Supabase:', e.message || e);
+      toast('Não consegui salvar na nuvem. Os dados ficaram salvos neste navegador.');
+    }
+  },
+  async replaceAll(state, previousIds) {
+    this.writeLocal(state);
+    if (this.mode !== 'cloud') return;
+    const rows = this.rowsFor(state);
+    const keep = new Set(rows.map((r) => r.id));
+    const del = previousIds.filter((id) => !keep.has(id));
+    try {
+      if (del.length) { const { error } = await this.client.from(CONFIG.TABELA).delete().in('id', del); if (error) throw error; }
+      const { error } = await this.client.from(CONFIG.TABELA).upsert(rows.map((r) => ({ ...r, updated_at: new Date().toISOString() })));
+      if (error) throw error;
+    } catch (e) {
+      console.warn('Falha ao sincronizar com o Supabase:', e.message || e);
+      toast('Não consegui sincronizar com a nuvem.');
+    }
+  }
+};
+
+let S = null;          // estado
+let chart = null;      // instância Chart.js
+let chartSel = 'all';  // objetivo no gráfico
+let histSel = null;    // objetivo no histórico
+
+function allIds() { return Store.rowsFor(S).map((r) => r.id); }
+function today() { return S.meta.exampleMode ? DEMO_TODAY : isoLocal(new Date()); }
+function activeObjectives() { return S.objectives.filter((o) => !o.archived).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)); }
+function colorOf(o) { const i = S.objectives.indexOf(o); return SERIES[i % SERIES.length]; }
+function pointOf(o) { const i = S.objectives.indexOf(o); return POINTS[i % POINTS.length]; }
+
+/* ---------------------------------------------------------------------
+   Motor de cálculo
+   --------------------------------------------------------------------- */
+function periodDays(o) { return Math.max(1, daysBetween(o.startDate, o.deadline)); }
+function elapsedFrac(o, iso) { return clamp(daysBetween(o.startDate, iso) / periodDays(o), 0, 1); }
+function monthFrac(iso) { return +iso.slice(8, 10) / daysInMonth(iso); }
+function checkinsOf(o) { return S.checkins.filter((c) => c.objectiveId === o.id).sort((a, b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id))); }
+
+// Meta do mês para objetivos "acumulado no mês": sobe em degraus do valor inicial até a meta.
+function monthTarget(o, iso) {
+  const n = monthIndex(o.deadline) - monthIndex(o.startDate);
+  const i = monthIndex(iso) - monthIndex(o.startDate);
+  if (n <= 0 || i >= n) return o.target;
+  if (i <= 0) return o.start;
+  const raw = o.start + (o.target - o.start) * (i / n);
+  if (o.unit === 'brl') return Math.round(raw / 1000) * 1000;
+  if (o.unit === 'pct') return Math.round(raw * 10) / 10;
+  return Math.round(raw);
+}
+// Valor "efetivo" que representa o ritmo: no acumulado do mês, projeta o mês inteiro.
+function effValue(o, c) {
+  if (o.kind !== 'monthly') return c.value;
+  return c.value / Math.max(monthFrac(c.date), 0.25);
+}
+function progressPct(o, v) {
+  const span = o.target - o.start;
+  if (span === 0) return v >= o.target ? 100 : 0;
+  return (v - o.start) / span * 100;
+}
+function regression(pts) {
+  const n = pts.length;
+  if (n < 2) return null;
+  const mx = pts.reduce((s, p) => s + p.x, 0) / n;
+  const my = pts.reduce((s, p) => s + p.y, 0) / n;
+  let num = 0, den = 0;
+  pts.forEach((p) => { num += (p.x - mx) * (p.y - my); den += (p.x - mx) ** 2; });
+  if (den === 0) return null;
+  const b = num / den;
+  return { a: my - b * mx, b };
+}
+// Projeção: mantendo o ritmo atual, onde o objetivo chega no prazo?
+function projectionAt(o, chks) {
+  if (!chks.length) return null;
+  const all = [{ x: 0, y: o.start }].concat(chks.map((c) => ({ x: daysBetween(o.startDate, c.date), y: effValue(o, c) })));
+  let pts = all;
+  if (o.kind !== 'monthly') {
+    const lastX = all[all.length - 1].x;
+    pts = all.filter((p) => p.x >= lastX - RULES.projWindowDays);
+    if (pts.length < 2) pts = all.slice(-2);
+  }
+  const r = regression(pts);
+  if (!r) return all[all.length - 1].y;
+  return r.a + r.b * periodDays(o);
+}
+function statusFrom(gap, projPct) {
+  if (gap < RULES.riskGap || (projPct != null && projPct < RULES.riskProjection)) return 'risk';
+  if (gap < RULES.onTrackGap) return 'behind';
+  return 'on';
+}
+// Distância (em pontos) entre o real e o esperado numa data.
+function gapAt(o, c, iso) {
+  if (!c) return 0 - elapsedFrac(o, iso) * 100;
+  if (o.kind === 'monthly') {
+    const mt = monthTarget(o, c.date);
+    return (mt ? c.value / mt * 100 : 0) - monthFrac(c.date) * 100;
+  }
+  return progressPct(o, c.value) - elapsedFrac(o, c.date) * 100;
+}
+function statusHistory(o) {
+  const chks = checkinsOf(o);
+  return chks.map((c, i) => {
+    const proj = projectionAt(o, chks.slice(0, i + 1));
+    return { date: c.date, status: statusFrom(gapAt(o, c), progressPct(o, proj)) };
+  });
+}
+function summarize(o) {
+  const chks = checkinsOf(o);
+  const last = chks[chks.length - 1] || null;
+  const t = today();
+  const eff = last ? effValue(o, last) : o.start;
+  const progress = progressPct(o, eff);
+  const expected = elapsedFrac(o, t) * 100;
+  const gap = last ? gapAt(o, last) : gapAt(o, null, t);
+  const proj = projectionAt(o, chks);
+  const projPct = proj == null ? null : progressPct(o, proj);
+  const status = statusFrom(gap, projPct);
+  const sinceUpdate = daysBetween(last ? last.date : o.startDate, t);
+  let month = null;
+  if (o.kind === 'monthly') {
+    const inMonth = last && last.date.slice(0, 7) === t.slice(0, 7);
+    const mt = monthTarget(o, t);
+    month = { name: monthName(t), target: mt, mtd: inMonth ? last.value : 0, hasData: !!inMonth, expectedToDate: mt * monthFrac(t) };
+  }
+  return { o, chks, last, current: last ? last.value : o.start, eff, progress, expected, gap, proj, projPct, status, sinceUpdate, month };
+}
+
+/* ---------------------------------------------------------------------
+   Base de alunos
+   --------------------------------------------------------------------- */
+function studentEnd(s) { return s.end || (s.start ? addMonths(s.start, RULES.planMonths) : ''); }
+function studentStatus(s, t) {
+  if (s.refunded) return 'estornado';
+  if (!s.start) return 'futuro';
+  if (s.start > t) return 'futuro';
+  if (studentEnd(s) <= t) return 'encerrado';
+  if (s.timeoffStart && s.timeoffStart <= t && (!s.timeoffEnd || s.timeoffEnd >= t)) return 'timeoff';
+  return 'ativo';
+}
+function studentStats() {
+  const t = today();
+  const dl = activeObjectives()[0]?.deadline || '2026-12-31';
+  const list = S.students.map((s) => ({ s, st: studentStatus(s, t), end: studentEnd(s) }));
+  const active = list.filter((x) => x.st === 'ativo' || x.st === 'timeoff');
+  return {
+    list, active,
+    total: list.length,
+    timeoff: list.filter((x) => x.st === 'timeoff').length,
+    endingByDeadline: active.filter((x) => x.end > t && x.end <= dl),
+    levels: LEVELS.map((l) => ({ l, n: active.filter((x) => x.s.level === l).length })),
+    noLevel: active.filter((x) => !LEVELS.includes(x.s.level)).length,
+    deadline: dl
+  };
+}
+function capacityInfo() {
+  const p = S.objectives.find((o) => o.id === 'p1' && !o.archived) || activeObjectives().find((o) => /ativos/i.test(o.title));
+  if (!p) return null;
+  const s = summarize(p);
+  const used = s.current * RULES.lessonsPerStudent;
+  return { students: s.current, used, cap: RULES.capacity, pct: used / RULES.capacity * 100 };
+}
+
+/* ---------------------------------------------------------------------
+   Alertas
+   --------------------------------------------------------------------- */
+function buildAlerts(sums) {
+  const t = today();
+  const out = [];
+  sums.forEach((s) => {
+    const o = s.o;
+    if (s.gap <= RULES.riskGap) {
+      out.push({ lvl: 'risk', w: 0, icon: '!', title: `${o.title}: ${nf0.format(Math.abs(s.gap))} pontos abaixo do esperado`,
+        text: o.kind === 'monthly' ? `No mês: ${fmt(s.last?.value ?? 0, o.unit)} de ${fmt(monthTarget(o, s.last?.date || t), o.unit)}. Responsável: ${o.owner}.` : `Real ${fmt(s.current, o.unit)}, esperado ${fmt(o.start + (o.target - o.start) * s.expected / 100, o.unit)}. Responsável: ${o.owner}.` });
+    }
+    if (s.sinceUpdate > RULES.staleDays) {
+      out.push({ lvl: 'warn', w: 2, icon: '⏱', title: `${o.title}: ${s.sinceUpdate} dias sem atualização`,
+        text: `O combinado é atualizar a cada dia útil. Alerta a partir de ${RULES.staleDays} dias. Cobrar: ${o.owner}.` });
+    }
+    const h = statusHistory(o);
+    if (h.length && h[h.length - 1].status === 'risk' && h[h.length - 1].date.slice(0, 7) === t.slice(0, 7)) {
+      const prev = h[h.length - 2];
+      if (!prev || prev.status !== 'risk') {
+        out.push({ lvl: 'risk', w: 1, icon: '↓', title: `${o.title} virou AT RISK neste mês`,
+          text: `Mudou em ${fmtDate(h[h.length - 1].date)}${prev ? ` (antes: ${STATUS[prev.status].label})` : ''}.` });
+      }
+    }
+    if (o.kind === 'monthly' && +t.slice(8, 10) >= RULES.earlyDay && s.month) {
+      const pct = s.month.target ? s.month.mtd / s.month.target * 100 : 0;
+      if (pct < RULES.earlyPct) {
+        out.push({ lvl: 'warn', w: 1, icon: '½', title: `1ª quinzena: ${o.title} em ${nf0.format(pct)}% da meta de ${s.month.name}`,
+          text: `No dia ${RULES.earlyDay}, o piso é ${RULES.earlyPct}% (${fmt(s.month.target * RULES.earlyPct / 100, o.unit)}). Ainda dá tempo de reagir.` });
+      }
+    }
+    if (o.estimated && !s.chks.some((c) => !c.example)) {
+      out.push({ lvl: 'info', w: 4, icon: 'i', title: `${o.title}: ponto de partida estimado`, text: `Substitua pelo número real no primeiro check-in (${o.source || 'fonte a definir'}).` });
+    }
+  });
+  const cap = capacityInfo();
+  if (cap && cap.pct >= RULES.capacityWarn) {
+    out.push({ lvl: 'risk', w: 1, icon: '▲', title: `Professores com ${nf0.format(cap.pct)}% da capacidade`, text: `${nf0.format(cap.used)} de ${cap.cap} aulas por semana. Contratar antes de travar as vendas.` });
+  }
+  const st = studentStats();
+  if (st.endingByDeadline.length) {
+    out.push({ lvl: 'info', w: 3, icon: '→', title: `${st.endingByDeadline.length} aluno(s) encerram o plano até ${fmtDate(st.deadline)}`, text: 'Eles saem da contagem de ativos. Considere isso na meta de alunos ativos.' });
+  }
+  const order = { risk: 0, warn: 1, info: 2 };
+  return out.sort((a, b) => order[a.lvl] - order[b.lvl] || a.w - b.w);
+}
+
+/* ---------------------------------------------------------------------
+   Render
+   --------------------------------------------------------------------- */
+function ringSVG(size, stroke, pct, id) {
+  const r = (size - stroke) / 2, c = 2 * Math.PI * r;
+  const p = clamp(pct, 0, 100) / 100;
+  return `<svg viewBox="0 0 ${size} ${size}" aria-hidden="true">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D9F548"/><stop offset="1" stop-color="#A3E635"/></linearGradient></defs>
+    <circle class="ring-track" cx="${size / 2}" cy="${size / 2}" r="${r}" stroke-width="${stroke}"/>
+    <circle class="ring-bar" cx="${size / 2}" cy="${size / 2}" r="${r}" stroke-width="${stroke}" stroke="url(#${id})"
+      stroke-dasharray="${c}" stroke-dashoffset="${c}" data-target="${c * (1 - p)}"/>
+  </svg>`;
+}
+function pill(st) { const s = STATUS[st]; return `<span class="pill ${s.cls}"><i></i>${s.label}</span>`; }
+function animateIn(root = document) {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    $$('.ring-bar[data-target]', root).forEach((el) => { el.style.strokeDashoffset = el.dataset.target; });
+    $$('[data-w]', root).forEach((el) => { el.style.width = el.dataset.w + '%'; });
+    $$('[data-l]', root).forEach((el) => { el.style.left = el.dataset.l + '%'; });
+  }));
+}
+
+function renderHeader(sums) {
+  const objs = activeObjectives();
+  const start = objs.map((o) => o.startDate).sort()[0] || today();
+  const end = objs.map((o) => o.deadline).sort().slice(-1)[0] || today();
+  $('#bizName').textContent = S.meta.business;
+  document.title = S.meta.business + ' · Objetivos';
+  $('#periodChip').textContent = S.meta.period || 'Período ativo';
+  $('#periodRange').textContent = `${fmtDateFull(start)} → ${fmtDateFull(end)}`;
+  const left = Math.max(0, daysBetween(today(), end));
+  $('#daysLeft').textContent = `${left} dias restantes`;
+  $('#storeChip').textContent = Store.mode === 'cloud' ? '☁ Supabase' : Store.mode === 'local-fallback' ? '⚠ Nuvem indisponível · local' : '● Salvo neste navegador';
+  $('#exampleBanner').hidden = !S.meta.exampleMode;
+  $('#demoDate').textContent = fmtDateFull(DEMO_TODAY);
+}
+
+function renderGlobal(sums) {
+  const avg = sums.length ? sums.reduce((s, x) => s + clamp(x.progress, 0, 100), 0) / sums.length : 0;
+  const exp = sums.length ? sums.reduce((s, x) => s + x.expected, 0) / sums.length : 0;
+  const count = { on: 0, behind: 0, risk: 0 };
+  sums.forEach((s) => count[s.status]++);
+  const max = Math.max(1, ...Object.values(count));
+  const bub = (k, label) => {
+    const n = count[k];
+    const d = n ? Math.round(34 + 46 * Math.sqrt(n / max)) : 34;
+    return `<div class="bubble-col"><div class="bubble ${n ? k : 'zero'} num" style="width:${d}px;height:${d}px;animation-delay:${k === 'on' ? .3 : k === 'behind' ? .4 : .5}s" aria-label="${n} ${label}">${n}</div>${pill(k)}</div>`;
+  };
+  $('#cardGlobal').innerHTML = `
+    <div class="card-h"><div><div class="eyebrow">Cumprimento global</div><div class="card-title" id="gTitle">Média do progresso dos ${sums.length} objetivos</div></div></div>
+    <div class="ring-wrap">${ringSVG(200, 16, avg, 'gGlobal')}
+      <div class="ring-center"><div><div class="big num">${nf0.format(avg)}<small>%</small></div><div class="lbl num">esperado hoje: ${nf0.format(exp)}%</div></div></div>
+    </div>
+    <div class="bubbles">${bub('on', 'no ritmo')}${bub('behind', 'atrasados')}${bub('risk', 'em risco')}</div>
+    <div class="hero-foot"><span>Hoje: <b class="num">${fmtDateFull(today())}</b></span><span class="num">${avg >= exp - 5 ? 'No ritmo' : nf0.format(exp - avg) + ' pts abaixo do ritmo'}</span></div>`;
+}
+
+function renderProjection(sums) {
+  const rows = sums.slice().sort((a, b) => (a.projPct ?? -1e9) - (b.projPct ?? -1e9));
+  $('#cardProj').innerHTML = `
+    <div class="card-h"><div><div class="eyebrow">Projeção de fechamento</div><div class="card-title" id="pTitle">Mantendo o ritmo atual, onde cada objetivo chega em ${fmtDate(rows[0]?.o.deadline || '')}?</div></div></div>
+    <div class="proj-list">${rows.map((s) => {
+      const o = s.o;
+      const has = s.projPct != null;
+      const pp = has ? s.projPct : 0;
+      const nowW = clamp(s.progress, 0, 100);
+      const futW = clamp(pp, 0, 100);
+      const needed = o.target - s.eff;
+      return `<div class="proj-row">
+        <div>
+          <div class="t"><span class="dot" style="background:${colorOf(o)}"></span>${esc(o.title)} ${pill(s.status)}</div>
+          <div class="meta">${esc(o.area)} · ${esc(o.owner)} · meta ${fmt(o.target, o.unit)}${o.kind === 'monthly' ? '/mês' : ''}</div>
+        </div>
+        <div class="verdict">
+          ${has ? `<div class="small muted">você chegará a</div><div class="pct num ${s.status}">${nf0.format(Math.max(0, pp))}%</div>
+          <div class="val num">≈ ${fmt(Math.max(0, s.proj), o.unit)}${o.kind === 'monthly' ? '/mês' : ''}</div>`
+          : `<div class="small muted">sem check-in</div><div class="pct num" style="color:var(--text-3)">—</div>`}
+        </div>
+        <div class="proj-bar" title="Barra cinza: onde está hoje. Listrada: projeção até o prazo. Linha: meta.">
+          <div class="fut ${s.status}" data-w="${Math.max(0, futW - nowW)}" data-l="${nowW}" style="left:0"></div>
+          <div class="now" data-w="${nowW}"></div>
+          <div class="goal" style="left:calc(100% - 2px)"></div>
+        </div>
+        ${has && s.projPct < 100 ? `<div class="meta num" style="grid-column:1/-1">Faltam ${fmt(Math.max(0, needed), o.unit)} até a meta. No ritmo atual, fica ${fmt(Math.max(0, o.target - s.proj), o.unit)} abaixo.</div>` : ''}
+      </div>`;
+    }).join('')}</div>
+    <div class="proj-legend"><span><i class="sw" style="background:rgba(255,255,255,.22)"></i>hoje</span><span><i class="sw" style="background:repeating-linear-gradient(135deg,#A3E635 0 3px,rgba(163,230,53,.4) 3px 6px)"></i>projeção</span><span><i class="sw" style="background:var(--lime);width:3px;height:12px"></i>meta</span><span>Ordenado do mais arriscado para o mais seguro.</span></div>`;
+}
+
+function renderAlerts(sums) {
+  const alerts = buildAlerts(sums);
+  $('#cardAlerts').innerHTML = `
+    <div class="card-h"><div><div class="eyebrow">Alertas</div><div class="card-title" id="aTitle">${alerts.filter((a) => a.lvl !== 'info').length} pedem ação</div></div></div>
+    ${alerts.length ? `<div class="alert-list">${alerts.map((a) => `<div class="alert ${a.lvl}"><div class="ic" aria-hidden="true">${a.icon}</div><div><b>${esc(a.title)}</b><span>${esc(a.text)}</span></div></div>`).join('')}</div>`
+    : `<div class="alert-empty">Nenhum alerta. Tudo no ritmo.</div>`}`;
+}
+
+function renderAreas(sums) {
+  const areas = [];
+  sums.forEach((s) => { if (!areas.includes(s.o.area)) areas.push(s.o.area); });
+  const span = areas.length >= 3 ? 's4' : areas.length === 2 ? 's6' : 's12';
+  const cap = capacityInfo();
+  $('#areas').innerHTML = areas.map((area, ai) => {
+    const list = sums.filter((s) => s.o.area === area);
+    const avg = list.reduce((a, s) => a + clamp(s.progress, 0, 100), 0) / list.length;
+    const worst = list.some((s) => s.status === 'risk') ? 'risk' : list.some((s) => s.status === 'behind') ? 'behind' : 'on';
+    const capHtml = (cap && list.some((s) => s.o.id === 'p1')) ? `
+      <div class="cap"><div class="obj-top"><div><div class="obj-name">Capacidade dos professores</div><div class="obj-sub">3 professores × 36 aulas · ${RULES.lessonsPerStudent} aula/aluno/semana</div></div>
+      <span class="pill ${cap.pct >= RULES.capacityWarn ? 'risk' : cap.pct >= 75 ? 'behind' : 'on'}"><i></i>${nf0.format(cap.pct)}%</span></div>
+      <div class="obj-vals"><span><b class="num">${nf0.format(cap.used)}</b> de ${cap.cap} aulas/semana</span><span class="num">alerta em ${RULES.capacityWarn}%</span></div>
+      <div class="bar"><div class="fill ${cap.pct >= RULES.capacityWarn ? 'risk' : cap.pct >= 75 ? 'behind' : 'on'}" data-w="${clamp(cap.pct, 0, 100)}"></div></div></div>` : '';
+    return `<section class="card ${span}" style="animation-delay:${.14 + ai * .04}s">
+      <div class="area-head">
+        <div class="mini-ring">${ringSVG(64, 7, avg, 'gA' + ai)}<div class="v num">${nf0.format(avg)}%</div></div>
+        <div><div class="eyebrow">Área</div><div class="card-title">${esc(area)}</div><div style="margin-top:6px">${pill(worst)}</div></div>
+      </div>
+      ${list.map((s) => {
+        const o = s.o;
+        const w = clamp(s.progress, 0, 100);
+        return `<div class="obj">
+          <div class="obj-top">
+            <div><div class="obj-name"><span class="dot" style="background:${colorOf(o)}"></span>${esc(o.title)}${o.estimated && !s.chks.some((c) => !c.example) ? ' <span class="tag">estimado</span>' : ''}</div>
+            <div class="obj-sub">Responsável: <b style="color:var(--text-2)">${esc(o.owner)}</b> · até ${fmtDate(o.deadline)}</div></div>
+            ${pill(s.status)}
+          </div>
+          <div class="obj-vals num"><span>${o.kind === 'monthly' ? 'Ritmo' : 'Atual'}: <b>${fmt(o.kind === 'monthly' ? s.eff : s.current, o.unit)}</b>${o.kind === 'monthly' ? '/mês' : ''}</span><span>${fmt(o.start, o.unit)} → <b>${fmt(o.target, o.unit)}</b></span></div>
+          <div class="bar" title="Linha branca: onde deveria estar hoje"><div class="fill ${s.status}" data-w="${w}"></div><div class="exp" style="left:calc(${clamp(s.expected, 0, 100)}% - 1px)"></div></div>
+          ${s.month ? `<div class="month-line num">Em ${s.month.name}: <b>${fmt(s.month.mtd, o.unit)}</b> de ${fmt(s.month.target, o.unit)} · esperado até hoje ${fmt(s.month.expectedToDate, o.unit)}${s.month.hasData ? '' : ' · <b>sem check-in no mês</b>'}</div>` : ''}
+        </div>`;
+      }).join('')}
+      ${capHtml}
+    </section>`;
+  }).join('');
+}
+
+function renderChart(sums) {
+  const seg = $('#chartSeg');
+  const objs = sums.map((s) => s.o);
+  if (chartSel !== 'all' && !objs.some((o) => o.id === chartSel)) chartSel = 'all';
+  seg.innerHTML = `<button type="button" data-id="all" aria-pressed="${chartSel === 'all'}">Todos</button>` +
+    objs.map((o) => `<button type="button" data-id="${o.id}" aria-pressed="${chartSel === o.id}">${esc(o.id.toUpperCase())}</button>`).join('');
+  $$('button', seg).forEach((b) => b.onclick = () => { chartSel = b.dataset.id; renderChart(sums); });
+
+  const box = $('.chart-box');
+  if (typeof window.Chart === 'undefined') {
+    box.innerHTML = '<div class="chart-fallback">O gráfico precisa de internet para carregar a biblioteca Chart.js.<br>O restante do dashboard funciona normalmente.</div>';
+    return;
+  }
+  if (!$('#chart')) box.innerHTML = '<canvas id="chart" aria-label="Gráfico de progresso real versus esperado"></canvas>';
+
+  const shown = chartSel === 'all' ? sums : sums.filter((s) => s.o.id === chartSel);
+  const ref = shown[0]?.o || objs[0];
+  if (!ref) return;
+  const total = periodDays(ref);
+  const tDay = daysBetween(ref.startDate, today());
+  const datasets = [];
+  shown.forEach((s) => {
+    const o = s.o;
+    const col = colorOf(o);
+    const pts = [{ x: 0, y: 0, raw: o.start, date: o.startDate, note: 'Ponto de partida' }]
+      .concat(s.chks.map((c) => ({ x: daysBetween(o.startDate, c.date), y: Math.round(progressPct(o, effValue(o, c)) * 10) / 10, raw: c.value, date: c.date, note: c.note, ex: c.example })));
+    datasets.push({
+      label: o.title, data: pts, borderColor: col, backgroundColor: col, borderWidth: 2,
+      pointStyle: pointOf(o), pointRadius: 5, pointHoverRadius: 7, pointBorderColor: '#161A10', pointBorderWidth: 2,
+      tension: 0.25, _o: o
+    });
+    if (chartSel !== 'all') {
+      datasets.push({ label: 'Projeção', data: s.proj != null ? [pts[pts.length - 1], { x: total, y: Math.round(s.projPct * 10) / 10, raw: s.proj, date: o.deadline, note: 'Projeção no ritmo atual' }] : [],
+        borderColor: col, borderDash: [2, 4], borderWidth: 2, pointRadius: [0, 5], pointStyle: pointOf(o), backgroundColor: col, _o: o });
+    }
+  });
+  datasets.push({ label: 'Esperado (linear)', data: [{ x: 0, y: 0 }, { x: total, y: 100 }], borderColor: 'rgba(217,245,72,0.55)', borderDash: [6, 6], borderWidth: 2, pointRadius: 0, pointHoverRadius: 0, _exp: true });
+
+  const monthTicks = [];
+  for (let d = 0; d <= total; d++) { const iso = addDays(ref.startDate, d); if (iso.endsWith('-01')) monthTicks.push(d); }
+  const guides = {
+    id: 'guides',
+    beforeDatasetsDraw(c) {
+      const { ctx, chartArea: a, scales: { x } } = c;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1;
+      monthTicks.forEach((d) => { const px = x.getPixelForValue(d); ctx.beginPath(); ctx.moveTo(px, a.top); ctx.lineTo(px, a.bottom); ctx.stroke(); });
+      if (tDay >= 0 && tDay <= total) {
+        const px = x.getPixelForValue(tDay);
+        ctx.strokeStyle = 'rgba(242,245,234,0.35)'; ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(px, a.top); ctx.lineTo(px, a.bottom); ctx.stroke();
+        ctx.setLineDash([]); ctx.fillStyle = 'rgba(242,245,234,0.6)'; ctx.font = '600 11px Inter, system-ui'; ctx.textAlign = 'center';
+        ctx.fillText('hoje', px, a.top - 6);
+      }
+      ctx.restore();
+    }
+  };
+  if (chart) { chart.destroy(); chart = null; }
+  chart = new Chart($('#chart'), {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: reduceMotion ? false : { duration: 900 },
+      parsing: false, layout: { padding: { top: 16 } },
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
+      scales: {
+        x: { type: 'linear', min: 0, max: total, grid: { display: false }, border: { color: 'rgba(255,255,255,0.1)' },
+          ticks: { color: '#818A72', font: { size: 11 }, autoSkip: false, callback: (v) => (v === 0 || monthTicks.includes(v) || v === total) ? fmtDate(addDays(ref.startDate, v)) : '' },
+          afterBuildTicks: (ax) => { ax.ticks = [0].concat(monthTicks).concat([total]).filter((v, i, arr) => i === 0 || v - arr[i - 1] >= 10 || v === total).filter((v, i, arr) => !(i === 0 && arr[1] != null && arr[1] - v < 10)).map((v) => ({ value: v })); } },
+        y: { suggestedMin: 0, suggestedMax: 110, grid: { color: 'rgba(255,255,255,0.05)' }, border: { display: false },
+          ticks: { color: '#818A72', font: { size: 11 }, callback: (v) => v + '%', stepSize: 25 } }
+      },
+      plugins: {
+        legend: { position: 'top', align: 'start', labels: { color: '#B4BBA5', usePointStyle: true, boxWidth: 8, boxHeight: 8, padding: 14, font: { size: 11.5 },
+          filter: (item, data) => data.datasets[item.datasetIndex].label !== 'Projeção' } },
+        tooltip: {
+          backgroundColor: '#21271A', borderColor: 'rgba(255,255,255,0.12)', borderWidth: 1, titleColor: '#F2F5EA', bodyColor: '#B4BBA5', padding: 10, usePointStyle: true,
+          filter: (it) => !it.dataset._exp,
+          callbacks: {
+            title: (items) => items.length ? fmtDateFull(addDays(ref.startDate, Math.round(items[0].parsed.x))) : '',
+            label: (it) => { const o = it.dataset._o; const r = it.raw; return ` ${o.title}: ${nf0.format(it.parsed.y)}% · ${fmt(r.raw, o.unit)}${o.kind === 'monthly' && r.note !== 'Ponto de partida' && it.dataset.label !== 'Projeção' ? ' no mês' : ''}${r.ex ? ' (exemplo)' : ''}`; },
+            afterLabel: (it) => it.raw.note ? '   ' + it.raw.note : ''
+          }
+        }
+      }
+    },
+    plugins: [guides]
+  });
+  $('#chartNote').textContent = 'Linha tracejada = progresso esperado se o avanço fosse linear entre o início e o prazo. ' +
+    (sums.some((s) => s.o.kind === 'monthly') ? 'Nos objetivos "no mês", o ponto mostra o ritmo mensal (vendido no mês projetado para o mês inteiro).' : '');
+}
+
+function renderHistory(sums) {
+  const sel = $('#histSel');
+  const objs = S.objectives.slice().sort((a, b) => (a.archived - b.archived) || ((a.order ?? 0) - (b.order ?? 0)));
+  if (!histSel || !objs.some((o) => o.id === histSel)) histSel = objs[0]?.id || null;
+  sel.innerHTML = objs.map((o) => `<option value="${o.id}" ${o.id === histSel ? 'selected' : ''}>${esc(o.title)}${o.archived ? ' (arquivado)' : ''}</option>`).join('');
+  sel.onchange = () => { histSel = sel.value; renderHistory(sums); };
+  const o = S.objectives.find((x) => x.id === histSel);
+  if (!o) { $('#timeline').innerHTML = '<div class="alert-empty">Sem objetivos.</div>'; return; }
+  const chks = checkinsOf(o);
+  const items = chks.map((c, i) => {
+    const prev = i ? chks[i - 1].value : o.start;
+    const sameMonth = !i || chks[i - 1].date.slice(0, 7) === c.date.slice(0, 7);
+    const d = c.value - prev;
+    const showDelta = o.kind !== 'monthly' || (i && sameMonth);
+    return `<div class="tl"><div class="tl-h"><div><span class="tl-date num">${fmtDateFull(c.date)}</span> ${c.example ? '<span class="tag ex">exemplo</span>' : ''}</div>
+      <button class="icon-btn" data-del="${c.id}" aria-label="Excluir check-in de ${fmtDateFull(c.date)}" title="Excluir check-in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div><span class="tl-v num">${fmt(c.value, o.unit)}</span>${o.kind === 'monthly' ? `<span class="small muted"> em ${monthName(c.date)}</span>` : ''}${showDelta && d ? `<span class="tl-d num ${(d > 0) === (o.target >= o.start) ? 'up' : 'down'}">${d > 0 ? '+' : ''}${fmt(d, o.unit)}</span>` : ''}</div>
+      ${c.note ? `<div class="tl-n">${esc(c.note)}</div>` : ''}</div>`;
+  }).reverse();
+  items.push(`<div class="tl start"><div class="tl-date num">${fmtDateFull(o.startDate)}</div><div><span class="tl-v num">${fmt(o.start, o.unit)}</span> <span class="small muted">ponto de partida${o.estimated ? ' (estimado)' : ''}</span></div><div class="tl-n">Fonte: ${esc(o.source || '—')}</div></div>`);
+  $('#timeline').innerHTML = items.join('');
+  $$('[data-del]', $('#timeline')).forEach((b) => b.onclick = async () => {
+    if (!confirm('Excluir este check-in?')) return;
+    S.checkins = S.checkins.filter((c) => c.id !== b.dataset.del);
+    await Store.commit(S, { deletes: [b.dataset.del] });
+    render(); toast('Check-in excluído.');
+  });
+}
+
+function renderStudents() {
+  const st = studentStats();
+  const t = today();
+  const labels = { ativo: 'Ativo', timeoff: 'Time off', encerrado: 'Encerrado', estornado: 'Estornado', futuro: 'Futuro' };
+  const maxL = Math.max(1, ...st.levels.map((l) => l.n));
+  const rows = st.list.slice().sort((a, b) => (a.s.start || '').localeCompare(b.s.start || ''));
+  $('#cardStudents').innerHTML = `
+    <div class="card-h" style="flex-wrap:wrap">
+      <div><div class="eyebrow">Pedagógico · informação</div><div class="card-title">Base de alunos</div>
+      <div class="small muted" style="margin-top:2px">Ficha de consulta, sem meta. Encerramento = matrícula + ${RULES.planMonths} meses (ou a data informada).</div></div>
+      <div class="actions">
+        <button class="btn sm ghost" id="stuTemplate" type="button">Baixar modelo CSV</button>
+        <button class="btn sm ghost" id="stuImport" type="button">Importar planilha (CSV)</button>
+        <button class="btn sm ghost" id="stuExport" type="button">Exportar CSV</button>
+        <button class="btn sm primary" id="stuNew" type="button">+ Aluno</button>
+        <input type="file" id="fileStu" accept=".csv,text/csv" hidden>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">Na base</div><div class="v num">${st.total}</div><div class="h">cadastros</div></div>
+      <div class="stat"><div class="k">Ativos</div><div class="v num" style="color:var(--on)">${st.active.length}</div><div class="h">inclui time off</div></div>
+      <div class="stat"><div class="k">Em time off</div><div class="v num" style="color:#93C5FD">${st.timeoff}</div><div class="h">hoje, ${fmtDate(t)}</div></div>
+      <div class="stat"><div class="k">Encerram até ${fmtDate(st.deadline)}</div><div class="v num" style="color:var(--behind)">${st.endingByDeadline.length}</div><div class="h">saem da contagem de ativos</div></div>
+    </div>
+    <div class="two">
+      <div>
+        <div class="eyebrow" style="margin-bottom:10px">Nivelamento dos ativos</div>
+        <div class="levels">${st.levels.map((l) => `<div class="lv"><span>${esc(l.l)}</span><div class="b"><i data-w="${l.n / maxL * 100}"></i></div><span class="num muted" style="text-align:right">${l.n}</span></div>`).join('')}
+        ${st.noLevel ? `<div class="small muted">${st.noLevel} sem nivelamento informado</div>` : ''}</div>
+      </div>
+      <div>
+        ${rows.length ? `<div class="table-wrap"><table class="tbl"><thead><tr><th>Aluno</th><th>Plano</th><th>Matrícula</th><th>Encerramento</th><th>Nível</th><th>Time off</th><th>Status</th></tr></thead><tbody>
+        ${rows.map(({ s, st: ss, end }) => {
+          const soon = (ss === 'ativo' || ss === 'timeoff') && end <= st.deadline;
+          return `<tr data-stu="${s.id}" style="cursor:pointer" tabindex="0" title="Clique para editar">
+            <td>${esc(s.name)} ${s.example ? '<span class="tag ex">exemplo</span>' : ''}</td>
+            <td>${esc(s.plan || '—')}</td>
+            <td class="num">${fmtDateFull(s.start)}</td>
+            <td class="num">${fmtDateFull(end)}${soon ? ' <span class="st fim">encerra no período</span>' : ''}</td>
+            <td>${esc(s.level || '—')}</td>
+            <td class="num">${s.timeoffStart ? fmtDate(s.timeoffStart) + ' → ' + (s.timeoffEnd ? fmtDate(s.timeoffEnd) : '…') : '—'}</td>
+            <td><span class="st ${ss}">${labels[ss]}</span></td></tr>`;
+        }).join('')}</tbody></table></div>`
+        : `<div class="alert-empty">Nenhum aluno cadastrado. Importe a planilha (CSV) ou adicione manualmente.</div>`}
+      </div>
+    </div>`;
+  $('#stuNew').onclick = () => openStudent(null);
+  $('#stuExport').onclick = exportStudents;
+  $('#stuTemplate').onclick = () => download('modelo-alunos.csv', toCSV([['nome', 'plano', 'matricula', 'encerramento', 'nivelamento', 'timeoff_inicio', 'timeoff_fim', 'estornado'], ['Maria Silva', 'Mentoria 12 meses', '15/03/2026', '', 'Básico', '', '', 'nao']]));
+  $('#stuImport').onclick = () => $('#fileStu').click();
+  $('#fileStu').onchange = (e) => { const f = e.target.files[0]; if (f) importStudents(f); e.target.value = ''; };
+  $$('[data-stu]').forEach((tr) => {
+    tr.onclick = () => openStudent(tr.dataset.stu);
+    tr.onkeydown = (e) => { if (e.key === 'Enter') openStudent(tr.dataset.stu); };
+  });
+}
+
+function renderFooter() {
+  $('#footInfo').innerHTML = Store.mode === 'cloud'
+    ? 'Dados no Supabase: cada responsável atualiza do próprio dispositivo.'
+    : 'Dados salvos neste navegador. Para compartilhar entre dispositivos, preencha o bloco CONFIG (Supabase).';
+}
+
+function render() {
+  const sums = activeObjectives().map(summarize);
+  renderHeader(sums);
+  renderGlobal(sums);
+  renderProjection(sums);
+  renderAlerts(sums);
+  renderAreas(sums);
+  renderChart(sums);
+  renderHistory(sums);
+  renderStudents();
+  renderFooter();
+  animateIn();
+}
+
+/* ---------------------------------------------------------------------
+   Modais
+   --------------------------------------------------------------------- */
+function openModal(id) { const m = $('#' + id); m.classList.add('open'); const f = $('input:not([type=hidden]):not([type=checkbox]), select, textarea', m); if (f) setTimeout(() => f.focus(), 50); }
+function closeModal(el) { el.classList.remove('open'); }
+$$('.overlay').forEach((ov) => {
+  ov.addEventListener('mousedown', (e) => { if (e.target === ov) closeModal(ov); });
+  $$('[data-close]', ov).forEach((b) => b.addEventListener('click', () => closeModal(ov)));
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if ($('#meeting').classList.contains('open')) { closeMeeting(); return; }
+  const open = $$('.overlay.open'); if (open.length) closeModal(open[open.length - 1]);
+});
+
+async function clearExamples(silent) {
+  const del = S.checkins.filter((c) => c.example).map((c) => c.id).concat(S.students.filter((s) => s.example).map((s) => s.id));
+  S.checkins = S.checkins.filter((c) => !c.example);
+  S.students = S.students.filter((s) => !s.example);
+  S.meta.exampleMode = false;
+  await Store.commit(S, { deletes: del, upserts: [['config', S.meta]] });
+  render();
+  if (!silent) toast('Exemplos apagados. Agora os dados são só os reais.');
+}
+
+// 1. Atualizar progresso: todos os objetivos em uma etapa
+function openUpdate() {
+  if (S.meta.exampleMode) {
+    if (!confirm('O dashboard está em modo exemplo. Para registrar números reais, os check-ins e alunos de exemplo serão apagados. Continuar?')) return;
+    clearExamples(true);
+  }
+  $('#updDate').value = today();
+  $('#updRows').innerHTML = activeObjectives().map((o) => {
+    const s = summarize(o);
+    const hint = o.kind === 'monthly' ? `Acumulado no mês até a data (${fmt(monthTarget(o, today()), o.unit)} é a meta de ${monthName(today())})` : 'Valor atual';
+    return `<div class="upd-row">
+      <div><label class="h" for="u_${o.id}"><span class="dot" style="background:${colorOf(o)}"></span>${esc(o.title)}</label>
+        <div class="hint">${esc(o.owner)} · último: <span class="num">${s.last ? fmt(s.last.value, o.unit) + ' em ' + fmtDate(s.last.date) : fmt(o.start, o.unit) + ' (início)'}</span></div>
+        <div class="hint">${esc(o.source || '')}</div></div>
+      <div><input class="inp num" id="u_${o.id}" type="number" step="any" inputmode="decimal" placeholder="${o.unit === 'brl' ? 'R$' : o.unit === 'pct' ? '%' : 'nº'}" aria-describedby="uh_${o.id}"><div class="hint" id="uh_${o.id}">${hint}</div></div>
+      <div><textarea class="inp" id="n_${o.id}" rows="1" placeholder="O que aconteceu? (opcional)" aria-label="Observação para ${esc(o.title)}"></textarea></div>
+    </div>`;
+  }).join('');
+  openModal('mUpdate');
+}
+async function saveUpdate() {
+  const date = $('#updDate').value;
+  if (!validISO(date)) { toast('Informe uma data válida.'); return; }
+  const ups = [];
+  activeObjectives().forEach((o) => {
+    const raw = $('#u_' + o.id).value;
+    if (raw === '') return;
+    const v = parseNum(raw);
+    if (isNaN(v)) return;
+    const c = { id: uid('ck'), objectiveId: o.id, date, value: v, note: $('#n_' + o.id).value.trim(), example: false };
+    S.checkins.push(c); ups.push(['checkin', c]);
+  });
+  if (!ups.length) { toast('Nenhum valor preenchido.'); return; }
+  await Store.commit(S, { upserts: ups });
+  closeModal($('#mUpdate'));
+  render();
+  toast(`${ups.length} check-in(s) salvos.`);
+}
+
+// Gerenciar objetivos
+let editingObj = null;
+function renderManage() {
+  const act = activeObjectives();
+  const arch = S.objectives.filter((o) => o.archived);
+  $('#manageList').innerHTML = act.map((o) => `<div class="obj-admin">
+      <div><div class="obj-name"><span class="dot" style="background:${colorOf(o)}"></span>${esc(o.title)}</div>
+      <div class="obj-sub num">${esc(o.area)} · ${esc(o.owner)} · ${fmt(o.start, o.unit)} → ${fmt(o.target, o.unit)} · até ${fmtDateFull(o.deadline)}</div></div>
+      <div class="row-actions"><button class="btn sm" data-edit="${o.id}" type="button">Editar</button><button class="btn sm ghost" data-arch="${o.id}" type="button">Arquivar</button></div>
+    </div>`).join('') || '<div class="alert-empty">Nenhum objetivo ativo.</div>';
+  $('#archList').innerHTML = arch.length ? `<div class="eyebrow" style="margin-bottom:6px">Arquivados (concluídos)</div>` + arch.map((o) => `<div class="obj-admin">
+      <div><div class="obj-name muted">${esc(o.title)}</div><div class="obj-sub num">${esc(o.area)} · ${fmt(o.target, o.unit)}</div></div>
+      <div class="row-actions"><button class="btn sm" data-restore="${o.id}" type="button">Restaurar</button><button class="btn sm danger" data-remove="${o.id}" type="button">Excluir</button></div>
+    </div>`).join('') : '';
+  $$('[data-edit]').forEach((b) => b.onclick = () => openObj(b.dataset.edit));
+  $$('[data-arch]').forEach((b) => b.onclick = () => setArchived(b.dataset.arch, true));
+  $$('[data-restore]').forEach((b) => b.onclick = () => setArchived(b.dataset.restore, false));
+  $$('[data-remove]').forEach((b) => b.onclick = async () => {
+    const o = S.objectives.find((x) => x.id === b.dataset.remove);
+    if (!confirm(`Excluir "${o.title}" e todo o histórico dele? Isso não tem volta.`)) return;
+    const del = [o.id].concat(S.checkins.filter((c) => c.objectiveId === o.id).map((c) => c.id));
+    S.objectives = S.objectives.filter((x) => x.id !== o.id);
+    S.checkins = S.checkins.filter((c) => c.objectiveId !== o.id);
+    await Store.commit(S, { deletes: del });
+    renderManage(); render();
+  });
+}
+async function setArchived(id, v) {
+  const o = S.objectives.find((x) => x.id === id);
+  o.archived = v;
+  await Store.commit(S, { upserts: [['objetivo', o]] });
+  renderManage(); render();
+  toast(v ? 'Objetivo arquivado.' : 'Objetivo restaurado.');
+}
+function openObj(id) {
+  editingObj = id ? S.objectives.find((o) => o.id === id) : null;
+  const o = editingObj || { title: '', area: '', owner: '', unit: 'count', kind: 'stock', start: '', target: '', startDate: today(), deadline: activeObjectives()[0]?.deadline || today(), source: '', estimated: false };
+  $('#mObjT').textContent = editingObj ? 'Editar objetivo' : 'Novo objetivo';
+  $('#areaList').innerHTML = [...new Set(S.objectives.map((x) => x.area))].map((a) => `<option value="${esc(a)}">`).join('');
+  $('#fTitle').value = o.title; $('#fArea').value = o.area; $('#fOwner').value = o.owner;
+  $('#fUnit').value = o.unit; $('#fKind').value = o.kind; $('#fStart').value = o.start; $('#fTarget').value = o.target;
+  $('#fStartDate').value = o.startDate; $('#fDeadline').value = o.deadline; $('#fSource').value = o.source || ''; $('#fEst').checked = !!o.estimated;
+  openModal('mObj');
+}
+async function saveObj() {
+  const f = {
+    title: $('#fTitle').value.trim(), area: $('#fArea').value.trim(), owner: $('#fOwner').value.trim(),
+    unit: $('#fUnit').value, kind: $('#fKind').value, start: parseNum($('#fStart').value), target: parseNum($('#fTarget').value),
+    startDate: $('#fStartDate').value, deadline: $('#fDeadline').value, source: $('#fSource').value.trim(), estimated: $('#fEst').checked
+  };
+  if (!f.title || !f.area || !f.owner) { toast('Preencha objetivo, área e responsável.'); return; }
+  if (/[\/,&]| e /i.test(f.owner)) { if (!confirm('Parece que há mais de um responsável. O combinado é 1 pessoa por objetivo. Salvar assim mesmo?')) return; }
+  if (isNaN(f.start) || isNaN(f.target)) { toast('Valor inicial e meta precisam ser números.'); return; }
+  if (!validISO(f.startDate) || !validISO(f.deadline) || f.deadline <= f.startDate) { toast('O prazo precisa ser depois do início.'); return; }
+  let o;
+  if (editingObj) { o = Object.assign(editingObj, f); }
+  else { o = { id: uid('ob'), order: S.objectives.length, archived: false, ...f }; S.objectives.push(o); }
+  await Store.commit(S, { upserts: [['objetivo', o]] });
+  closeModal($('#mObj'));
+  renderManage(); render();
+  toast('Objetivo salvo.');
+}
+
+// Aluno
+let editingStu = null;
+function openStudent(id) {
+  editingStu = id ? S.students.find((s) => s.id === id) : null;
+  const s = editingStu || { name: '', plan: 'Mentoria 12 meses', start: today(), end: '', level: '', timeoffStart: '', timeoffEnd: '', refunded: false };
+  $('#mStudentT').textContent = editingStu ? 'Editar aluno' : 'Novo aluno';
+  $('#planList').innerHTML = [...new Set(S.students.map((x) => x.plan).filter(Boolean).concat(['Mentoria 12 meses']))].map((p) => `<option value="${esc(p)}">`).join('');
+  $('#sName').value = s.name; $('#sPlan').value = s.plan; $('#sStart').value = s.start; $('#sEnd').value = s.end;
+  $('#sLevel').value = LEVELS.includes(s.level) ? s.level : ''; $('#sToStart').value = s.timeoffStart; $('#sToEnd').value = s.timeoffEnd; $('#sRefund').checked = !!s.refunded;
+  $('#stuDelete').style.display = editingStu ? '' : 'none';
+  openModal('mStudent');
+}
+async function saveStudent() {
+  const f = { name: $('#sName').value.trim(), plan: $('#sPlan').value.trim(), start: $('#sStart').value, end: $('#sEnd').value, level: $('#sLevel').value,
+    timeoffStart: $('#sToStart').value, timeoffEnd: $('#sToEnd').value, refunded: $('#sRefund').checked };
+  if (!f.name || !validISO(f.start)) { toast('Nome e data de matrícula são obrigatórios.'); return; }
+  let s;
+  if (editingStu) s = Object.assign(editingStu, f, { example: false });
+  else { s = { id: uid('al'), example: false, ...f }; S.students.push(s); }
+  await Store.commit(S, { upserts: [['aluno', s]] });
+  closeModal($('#mStudent')); render(); toast('Aluno salvo.');
+}
+async function deleteStudent() {
+  if (!editingStu || !confirm(`Excluir ${editingStu.name}?`)) return;
+  const id = editingStu.id;
+  S.students = S.students.filter((s) => s.id !== id);
+  await Store.commit(S, { deletes: [id] });
+  closeModal($('#mStudent')); render(); toast('Aluno excluído.');
+}
+
+/* ---------------------------------------------------------------------
+   8. Modo reunião
+   --------------------------------------------------------------------- */
+const MEETING_Q = {
+  risk: 'Pergunta da reunião: o que muda ATÉ a próxima revisão, quem faz e quando?',
+  behind: 'Pergunta da reunião: qual é o menor ajuste que recoloca no ritmo esta semana?',
+  on: ''
+};
+function openMeeting() {
+  const sums = activeObjectives().map(summarize);
+  const order = { risk: 0, behind: 1, on: 2 };
+  sums.sort((a, b) => order[a.status] - order[b.status] || a.gap - b.gap);
+  const count = { on: 0, behind: 0, risk: 0 }; sums.forEach((s) => count[s.status]++);
+  const avg = sums.length ? sums.reduce((a, s) => a + clamp(s.progress, 0, 100), 0) / sums.length : 0;
+  $('#meeting').innerHTML = `<div class="mt-wrap">
+    <div class="mt-top">
+      <div><div class="eyebrow">Modo reunião · ${fmtDateFull(today())}</div><h2>${esc(S.meta.business)} · ${esc(S.meta.period || '')}</h2></div>
+      <div class="mt-sum">
+        <span class="chip lime num">Cumprimento global ${nf0.format(avg)}%</span>
+        <span class="pill risk"><i></i>${count.risk} AT RISK</span><span class="pill behind"><i></i>${count.behind} BEHIND</span><span class="pill on"><i></i>${count.on} ON TRACK</span>
+        <button class="btn" id="mtClose" type="button">Sair (Esc)</button>
+      </div>
+    </div>
+    <div class="mt-grid">${sums.map((s) => {
+      const o = s.o;
+      const lastNote = s.chks.slice().reverse().find((c) => c.note);
+      return `<article class="mt-card ${s.status}">
+        ${pill(s.status)}
+        <h3>${esc(o.title)}</h3>
+        <div class="muted">${esc(o.area)} · Responsável: <b style="color:var(--text)">${esc(o.owner)}</b></div>
+        <div class="mt-big num"><span class="v">${o.kind === 'monthly' ? fmtShort(s.month?.mtd ?? 0, o.unit) : fmtShort(s.current, o.unit)}</span>
+          <span class="t">${o.kind === 'monthly' ? `de ${fmtShort(s.month?.target ?? o.target, o.unit)} em ${s.month?.name}` : `de ${fmtShort(o.target, o.unit)}`}</span></div>
+        <div class="bar"><div class="fill ${s.status}" data-w="${clamp(s.progress, 0, 100)}"></div><div class="exp" style="left:calc(${clamp(s.expected, 0, 100)}% - 1px)"></div></div>
+        <div class="small muted num" style="margin-top:6px">Progresso ${nf0.format(s.progress)}% · esperado ${nf0.format(s.expected)}% · última atualização há ${s.sinceUpdate} dia(s)</div>
+        <div class="mt-proj num">${s.projPct != null ? `No ritmo atual chega a <b style="color:${s.status === 'on' ? 'var(--on)' : s.status === 'behind' ? 'var(--behind)' : '#F87171'}">${nf0.format(Math.max(0, s.projPct))}%</b> (≈ ${fmtShort(Math.max(0, s.proj), o.unit)}${o.kind === 'monthly' ? '/mês' : ''}) em ${fmtDate(o.deadline)}` : 'Sem check-in ainda.'}</div>
+        ${lastNote ? `<div class="mt-note">“${esc(lastNote.note)}” <span class="muted small">(${fmtDate(lastNote.date)})</span></div>` : ''}
+        ${MEETING_Q[s.status] ? `<div class="mt-q">${MEETING_Q[s.status]}</div>` : ''}
+      </article>`;
+    }).join('')}</div></div>`;
+  $('#meeting').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  $('#mtClose').onclick = closeMeeting;
+  if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  }
+  animateIn($('#meeting'));
+}
+function closeMeeting() {
+  $('#meeting').classList.remove('open');
+  document.body.style.overflow = '';
+  if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+}
+
+/* ---------------------------------------------------------------------
+   CSV
+   --------------------------------------------------------------------- */
+function csvCell(v) { const s = String(v ?? ''); return /[;"\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+function toCSV(rows) { return '﻿' + rows.map((r) => r.map(csvCell).join(';')).join('\r\n'); }
+function parseCSV(text) {
+  text = text.replace(/^﻿/, '');
+  const first = text.split(/\r?\n/)[0] || '';
+  const delim = (first.match(/;/g) || []).length >= (first.match(/,/g) || []).length ? ';' : ',';
+  const rows = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) {
+      if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+      else cell += ch;
+    } else if (ch === '"') q = true;
+    else if (ch === delim) { row.push(cell); cell = ''; }
+    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; }
+    else cell += ch;
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+  const clean = rows.filter((r) => r.some((c) => c.trim() !== ''));
+  if (!clean.length) return [];
+  const norm = (h) => h.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '_');
+  const head = clean[0].map(norm);
+  return clean.slice(1).map((r) => Object.fromEntries(head.map((h, i) => [h, (r[i] ?? '').trim()])));
+}
+function download(name, content) {
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+const OBJ_COLS = ['registro', 'id', 'area', 'titulo', 'unidade', 'medida', 'inicial', 'meta', 'data_inicio', 'prazo', 'responsavel', 'estimado', 'arquivado', 'fonte', 'objetivo_id', 'data', 'valor', 'observacao', 'exemplo'];
+function exportObjectives() {
+  const rows = [OBJ_COLS];
+  S.objectives.forEach((o) => rows.push(['objetivo', o.id, o.area, o.title, o.unit, o.kind, o.start, o.target, o.startDate, o.deadline, o.owner, o.estimated ? 'sim' : 'nao', o.archived ? 'sim' : 'nao', o.source || '', '', '', '', '', '']));
+  S.checkins.slice().sort((a, b) => a.date.localeCompare(b.date)).forEach((c) => rows.push(['checkin', c.id, '', '', '', '', '', '', '', '', '', '', '', '', c.objectiveId, c.date, c.value, c.note || '', c.example ? 'sim' : 'nao']));
+  download(`objetivos-${today()}.csv`, toCSV(rows));
+  toast('CSV exportado.');
+}
+const yes = (v) => /^(s|sim|y|yes|true|1|x)$/i.test(String(v || '').trim());
+async function importObjectives(file) {
+  const rows = parseCSV(await file.text());
+  const objs = [], chks = [];
+  rows.forEach((r) => {
+    if (r.registro === 'objetivo') {
+      const o = { id: r.id || uid('ob'), order: objs.length, area: r.area, title: r.titulo, unit: ['brl', 'pct', 'count'].includes(r.unidade) ? r.unidade : 'count',
+        kind: r.medida === 'monthly' ? 'monthly' : 'stock', start: parseNum(r.inicial), target: parseNum(r.meta), startDate: parseAnyDate(r.data_inicio), deadline: parseAnyDate(r.prazo),
+        owner: r.responsavel, estimated: yes(r.estimado), archived: yes(r.arquivado), source: r.fonte };
+      if (o.title && !isNaN(o.start) && !isNaN(o.target) && validISO(o.startDate) && validISO(o.deadline)) objs.push(o);
+    } else if (r.registro === 'checkin') {
+      const c = { id: r.id || uid('ck'), objectiveId: r.objetivo_id, date: parseAnyDate(r.data), value: parseNum(r.valor), note: r.observacao || '', example: yes(r.exemplo) };
+      if (c.objectiveId && validISO(c.date) && !isNaN(c.value)) chks.push(c);
+    }
+  });
+  if (!objs.length) { toast('Nenhum objetivo válido no arquivo. Use um CSV exportado por este dashboard.'); return; }
+  const ids = new Set(objs.map((o) => o.id));
+  const validChks = chks.filter((c) => ids.has(c.objectiveId));
+  if (!confirm(`Substituir os objetivos atuais por ${objs.length} objetivo(s) e ${validChks.length} check-in(s) do arquivo?`)) return;
+  const prev = allIds();
+  S.objectives = objs; S.checkins = validChks;
+  S.meta.exampleMode = validChks.some((c) => c.example);
+  await Store.replaceAll(S, prev);
+  render(); toast('Objetivos importados.');
+}
+function exportStudents() {
+  const rows = [['nome', 'plano', 'matricula', 'encerramento', 'nivelamento', 'timeoff_inicio', 'timeoff_fim', 'estornado', 'exemplo']];
+  S.students.forEach((s) => rows.push([s.name, s.plan, fmtDateFull(s.start), fmtDateFull(studentEnd(s)), s.level, s.timeoffStart ? fmtDateFull(s.timeoffStart) : '', s.timeoffEnd ? fmtDateFull(s.timeoffEnd) : '', s.refunded ? 'sim' : 'nao', s.example ? 'sim' : 'nao']));
+  download(`alunos-${today()}.csv`, toCSV(rows));
+  toast('CSV de alunos exportado.');
+}
+async function importStudents(file) {
+  const rows = parseCSV(await file.text());
+  const pick = (r, ...keys) => { for (const k of keys) if (r[k] != null && r[k] !== '') return r[k]; return ''; };
+  const list = [];
+  let bad = 0;
+  rows.forEach((r) => {
+    const name = pick(r, 'nome', 'aluno', 'name');
+    const start = parseAnyDate(pick(r, 'matricula', 'data_de_matricula', 'inicio', 'data_inicio', 'data_matricula'));
+    if (!name || !start) { bad++; return; }
+    const lvRaw = pick(r, 'nivelamento', 'nivel', 'teste_de_nivelamento');
+    const lv = LEVELS.find((l) => l.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '') === lvRaw.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')) || '';
+    list.push({ id: uid('al'), name, plan: pick(r, 'plano', 'plan'), start, end: parseAnyDate(pick(r, 'encerramento', 'data_de_encerramento', 'fim', 'data_fim')),
+      level: lv, timeoffStart: parseAnyDate(pick(r, 'timeoff_inicio', 'time_off_inicio', 'trancamento_inicio')), timeoffEnd: parseAnyDate(pick(r, 'timeoff_fim', 'time_off_fim', 'trancamento_fim')),
+      refunded: yes(pick(r, 'estornado', 'estorno')), example: false });
+  });
+  if (!list.length) { toast('Nenhum aluno válido. O CSV precisa das colunas "nome" e "matricula".'); return; }
+  if (!confirm(`Importar ${list.length} aluno(s)${bad ? ` (${bad} linha(s) ignoradas por falta de nome ou data)` : ''}? A base atual de alunos será substituída.`)) return;
+  const del = S.students.map((s) => s.id);
+  S.students = list;
+  await Store.commit(S, { deletes: del, upserts: list.map((s) => ['aluno', s]) });
+  render(); toast(`${list.length} aluno(s) importados.`);
+}
+
+/* ---------------------------------------------------------------------
+   Inicialização
+   --------------------------------------------------------------------- */
+function wire() {
+  $('#btnUpdate').onclick = openUpdate;
+  $('#updSave').onclick = saveUpdate;
+  $('#btnManage').onclick = () => { renderManage(); openModal('mManage'); };
+  $('#btnNewObj').onclick = () => openObj(null);
+  $('#objSave').onclick = saveObj;
+  $('#objForm').onsubmit = (e) => { e.preventDefault(); saveObj(); };
+  $('#stuSave').onclick = saveStudent;
+  $('#stuForm').onsubmit = (e) => { e.preventDefault(); saveStudent(); };
+  $('#stuDelete').onclick = deleteStudent;
+  $('#btnMeeting').onclick = openMeeting;
+  $('#btnClearExamples').onclick = () => { if (confirm('Apagar todos os check-ins e alunos de exemplo? Os objetivos e metas continuam.')) clearExamples(false); };
+  $('#btnExport').onclick = exportObjectives;
+  $('#btnImport').onclick = () => $('#fileObj').click();
+  $('#fileObj').onchange = (e) => { const f = e.target.files[0]; if (f) importObjectives(f); e.target.value = ''; };
+  let rt;
+  window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => chart && chart.resize(), 150); });
+}
+
+async function boot() {
+  const loaded = await Store.init();
+  if (loaded && Array.isArray(loaded.objectives) && loaded.objectives.length) {
+    S = { meta: Object.assign({ business: 'Mentoria Inglês Funcional', period: 'Q4 2026', exampleMode: false }, loaded.meta),
+      objectives: loaded.objectives, checkins: loaded.checkins || [], students: loaded.students || [] };
+  } else {
+    S = seedState();
+    if (Store.mode === 'cloud') await Store.replaceAll(S, []);
+    else Store.writeLocal(S);
+  }
+  wire();
+  render();
+}
+// Chart.js carrega com defer; o DOMContentLoaded dispara depois dele.
+document.addEventListener('DOMContentLoaded', boot);
+</script>
+</body>
+</html>
