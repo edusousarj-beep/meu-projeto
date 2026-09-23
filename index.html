@@ -14,6 +14,7 @@
    TOKENS
    ============================================================ */
 :root {
+  color-scheme: dark;
   --bg: #0E100A;
   --card: #161A10;
   --card-2: #1B2014;
@@ -554,6 +555,17 @@ footer.foot .actions .btn { font-size: 12px; padding: 7px 12px; }
 <!-- Modo reunião -->
 <div id="meeting" role="dialog" aria-modal="true" aria-label="Modo reunião"></div>
 
+<!-- Confirmação -->
+<div class="overlay" id="mAsk" role="alertdialog" aria-modal="true" aria-labelledby="askText" style="align-items:center">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-b" style="padding-top:22px"><div class="eyebrow">Confirmar</div><p id="askText" style="margin-top:8px;font-size:15px;line-height:1.5"></p></div>
+    <div class="modal-f">
+      <button class="btn ghost" id="askNo" type="button">Cancelar</button>
+      <button class="btn primary" id="askYes" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -689,6 +701,21 @@ function fmtShort(v, unit) {
 function toast(msg) {
   const t = $('#toast'); t.textContent = msg; t.classList.add('show');
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// Confirmação dentro da página (não depende de janelas do navegador).
+function ask(msg) {
+  return new Promise((resolve) => {
+    const ov = $('#mAsk');
+    $('#askText').textContent = msg;
+    const done = (v) => { ov.classList.remove('open'); $('#askYes').onclick = $('#askNo').onclick = null; ov.onkeydown = null; resolve(v); };
+    $('#askYes').onclick = () => done(true);
+    $('#askNo').onclick = () => done(false);
+    ov.onmousedown = (e) => { if (e.target === ov) done(false); };
+    ov.onkeydown = (e) => { if (e.key === 'Escape') { e.stopPropagation(); done(false); } };
+    ov.classList.add('open');
+    setTimeout(() => $('#askYes').focus(), 30);
+  });
 }
 
 /* ---------------------------------------------------------------------
@@ -1214,7 +1241,7 @@ function renderHistory(sums) {
   items.push(`<div class="tl start"><div class="tl-date num">${fmtDateFull(o.startDate)}</div><div><span class="tl-v num">${fmt(o.start, o.unit)}</span> <span class="small muted">ponto de partida${o.estimated ? ' (estimado)' : ''}</span></div><div class="tl-n">Fonte: ${esc(o.source || '—')}</div></div>`);
   $('#timeline').innerHTML = items.join('');
   $$('[data-del]', $('#timeline')).forEach((b) => b.onclick = async () => {
-    if (!confirm('Excluir este check-in?')) return;
+    if (!(await ask('Excluir este check-in?'))) return;
     S.checkins = S.checkins.filter((c) => c.id !== b.dataset.del);
     await Store.commit(S, { deletes: [b.dataset.del] });
     render(); toast('Check-in excluído.');
@@ -1303,14 +1330,14 @@ function render() {
    --------------------------------------------------------------------- */
 function openModal(id) { const m = $('#' + id); m.classList.add('open'); const f = $('input:not([type=hidden]):not([type=checkbox]), select, textarea', m); if (f) setTimeout(() => f.focus(), 50); }
 function closeModal(el) { el.classList.remove('open'); }
-$$('.overlay').forEach((ov) => {
+$$('.overlay:not(#mAsk)').forEach((ov) => {
   ov.addEventListener('mousedown', (e) => { if (e.target === ov) closeModal(ov); });
   $$('[data-close]', ov).forEach((b) => b.addEventListener('click', () => closeModal(ov)));
 });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if ($('#meeting').classList.contains('open')) { closeMeeting(); return; }
-  const open = $$('.overlay.open'); if (open.length) closeModal(open[open.length - 1]);
+  const open = $$('.overlay.open:not(#mAsk)'); if ($('#mAsk').classList.contains('open')) return; if (open.length) closeModal(open[open.length - 1]);
 });
 
 async function clearExamples(silent) {
@@ -1324,10 +1351,10 @@ async function clearExamples(silent) {
 }
 
 // 1. Atualizar progresso: todos os objetivos em uma etapa
-function openUpdate() {
+async function openUpdate() {
   if (S.meta.exampleMode) {
-    if (!confirm('O dashboard está em modo exemplo. Para registrar números reais, os check-ins e alunos de exemplo serão apagados. Continuar?')) return;
-    clearExamples(true);
+    if (!(await ask('O dashboard está em modo exemplo. Para registrar números reais, os check-ins e alunos de exemplo serão apagados. Continuar?'))) return;
+    await clearExamples(true);
   }
   $('#updDate').value = today();
   $('#updRows').innerHTML = activeObjectives().map((o) => {
@@ -1381,7 +1408,7 @@ function renderManage() {
   $$('[data-restore]').forEach((b) => b.onclick = () => setArchived(b.dataset.restore, false));
   $$('[data-remove]').forEach((b) => b.onclick = async () => {
     const o = S.objectives.find((x) => x.id === b.dataset.remove);
-    if (!confirm(`Excluir "${o.title}" e todo o histórico dele? Isso não tem volta.`)) return;
+    if (!(await ask(`Excluir "${o.title}" e todo o histórico dele? Isso não tem volta.`))) return;
     const del = [o.id].concat(S.checkins.filter((c) => c.objectiveId === o.id).map((c) => c.id));
     S.objectives = S.objectives.filter((x) => x.id !== o.id);
     S.checkins = S.checkins.filter((c) => c.objectiveId !== o.id);
@@ -1413,7 +1440,7 @@ async function saveObj() {
     startDate: $('#fStartDate').value, deadline: $('#fDeadline').value, source: $('#fSource').value.trim(), estimated: $('#fEst').checked
   };
   if (!f.title || !f.area || !f.owner) { toast('Preencha objetivo, área e responsável.'); return; }
-  if (/[\/,&]| e /i.test(f.owner)) { if (!confirm('Parece que há mais de um responsável. O combinado é 1 pessoa por objetivo. Salvar assim mesmo?')) return; }
+  if (/[\/,&]| e /i.test(f.owner)) { if (!(await ask('Parece que há mais de um responsável. O combinado é 1 pessoa por objetivo. Salvar assim mesmo?'))) return; }
   if (isNaN(f.start) || isNaN(f.target)) { toast('Valor inicial e meta precisam ser números.'); return; }
   if (!validISO(f.startDate) || !validISO(f.deadline) || f.deadline <= f.startDate) { toast('O prazo precisa ser depois do início.'); return; }
   let o;
@@ -1448,7 +1475,7 @@ async function saveStudent() {
   closeModal($('#mStudent')); render(); toast('Aluno salvo.');
 }
 async function deleteStudent() {
-  if (!editingStu || !confirm(`Excluir ${editingStu.name}?`)) return;
+  if (!editingStu || !(await ask(`Excluir ${editingStu.name}?`))) return;
   const id = editingStu.id;
   S.students = S.students.filter((s) => s.id !== id);
   await Store.commit(S, { deletes: [id] });
@@ -1566,7 +1593,7 @@ async function importObjectives(file) {
   if (!objs.length) { toast('Nenhum objetivo válido no arquivo. Use um CSV exportado por este dashboard.'); return; }
   const ids = new Set(objs.map((o) => o.id));
   const validChks = chks.filter((c) => ids.has(c.objectiveId));
-  if (!confirm(`Substituir os objetivos atuais por ${objs.length} objetivo(s) e ${validChks.length} check-in(s) do arquivo?`)) return;
+  if (!(await ask(`Substituir os objetivos atuais por ${objs.length} objetivo(s) e ${validChks.length} check-in(s) do arquivo?`))) return;
   const prev = allIds();
   S.objectives = objs; S.checkins = validChks;
   S.meta.exampleMode = validChks.some((c) => c.example);
@@ -1595,7 +1622,7 @@ async function importStudents(file) {
       refunded: yes(pick(r, 'estornado', 'estorno')), example: false });
   });
   if (!list.length) { toast('Nenhum aluno válido. O CSV precisa das colunas "nome" e "matricula".'); return; }
-  if (!confirm(`Importar ${list.length} aluno(s)${bad ? ` (${bad} linha(s) ignoradas por falta de nome ou data)` : ''}? A base atual de alunos será substituída.`)) return;
+  if (!(await ask(`Importar ${list.length} aluno(s)${bad ? ` (${bad} linha(s) ignoradas por falta de nome ou data)` : ''}? A base atual de alunos será substituída.`))) return;
   const del = S.students.map((s) => s.id);
   S.students = list;
   await Store.commit(S, { deletes: del, upserts: list.map((s) => ['aluno', s]) });
@@ -1616,7 +1643,7 @@ function wire() {
   $('#stuForm').onsubmit = (e) => { e.preventDefault(); saveStudent(); };
   $('#stuDelete').onclick = deleteStudent;
   $('#btnMeeting').onclick = openMeeting;
-  $('#btnClearExamples').onclick = () => { if (confirm('Apagar todos os check-ins e alunos de exemplo? Os objetivos e metas continuam.')) clearExamples(false); };
+  $('#btnClearExamples').onclick = async () => { if (await ask('Apagar todos os check-ins e alunos de exemplo? Os objetivos e metas continuam.')) clearExamples(false); };
   $('#btnExport').onclick = exportObjectives;
   $('#btnImport').onclick = () => $('#fileObj').click();
   $('#fileObj').onchange = (e) => { const f = e.target.files[0]; if (f) importObjectives(f); e.target.value = ''; };
