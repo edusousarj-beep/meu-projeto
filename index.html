@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mentoria Inglês Funcional · Objetivos</title>
+<meta name="description" content="Dashboard de objetivos: cumprimento por área, progresso mensal e projeção de fechamento.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root {
+  color-scheme: dark;
+  --bg: #000000;
+  --side: #0B0B0F;
+  --card: #1D1D25;
+  --card-2: #25252F;
+  --card-3: #2E2E3A;
+  --border: rgba(255,255,255,0.06);
+  --border-2: rgba(255,255,255,0.11);
+  --text: #F4F4F7;
+  --text-2: #B3B3C0;
+  --text-3: #8C8C9B;
+  --primary: #5B2EF0;
+  --primary-2: #6D44FF;
+  --grad: linear-gradient(90deg, #F97316 0%, #EC4899 55%, #8B5CF6 100%);
+  --on: #22C55E;
+  --on-text: #4ADE80;
+  --behind: #F59E0B;
+  --risk: #EF4444;
+  --risk-text: #F87171;
+  --radius: 18px;
+  --display: 'Sora', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ease: cubic-bezier(.22,.8,.24,1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px; line-height: 1.5; min-height: 100vh; -webkit-font-smoothing: antialiased;
+}
+.num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--primary-2); outline-offset: 2px; border-radius: 8px; }
+
+/* ============================================================
+   SHELL: barra lateral + topo
+   ============================================================ */
+.side {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 68px; background: var(--side);
+  border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center;
+  padding: 14px 0; gap: 6px; z-index: 20;
+}
+.side .logo {
+  width: 40px; height: 40px; border-radius: 9px; background: #fff; color: #000; display: grid; place-items: center;
+  font-family: var(--display); font-weight: 700; font-size: 15px; margin-bottom: 18px; letter-spacing: -0.03em;
+}
+.nav-btn {
+  width: 68px; height: 46px; display: grid; place-items: center; color: var(--text-3); border: 0; background: transparent;
+  position: relative; transition: color .15s, background .15s;
+}
+.nav-btn svg { width: 19px; height: 19px; }
+.nav-btn:hover { color: var(--text); }
+.nav-btn.active { color: var(--text); background: linear-gradient(90deg, rgba(236,72,153,0.16), rgba(236,72,153,0.03)); }
+.nav-btn.active::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: #EC4899; }
+.nav-btn .badge { position: absolute; top: 10px; right: 18px; width: 7px; height: 7px; border-radius: 50%; background: var(--primary-2); }
+.nav-btn[data-tip]:hover::after {
+  content: attr(data-tip); position: absolute; left: 62px; top: 50%; transform: translateY(-50%); white-space: nowrap;
+  background: var(--card-3); color: var(--text); font-size: 12px; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--border-2); pointer-events: none;
+}
+.main { margin-left: 68px; min-width: 0; }
+.topbar {
+  height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 28px 0 40px;
+  border-bottom: 1px solid var(--border); background: var(--side); position: sticky; top: 0; z-index: 15;
+}
+.hello { color: var(--text-2); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.hello b { color: var(--text); font-weight: 700; }
+.top-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.tbtn {
+  height: 40px; display: inline-flex; align-items: center; gap: 10px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--card); color: var(--text); font-weight: 500; font-size: 14px; white-space: nowrap; transition: background .15s;
+}
+.tbtn:hover { background: var(--card-2); }
+.tbtn svg { width: 17px; height: 17px; }
+.tbtn.sq { width: 40px; padding: 0; justify-content: center; position: relative; }
+.tbtn .count { position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--risk); color: #fff; font-size: 10.5px; font-weight: 700; display: grid; place-items: center; }
+.avatar { width: 40px; height: 40px; border-radius: 12px; background: var(--primary); color: #fff; font-weight: 700; font-size: 13px; border: 0; display: grid; place-items: center; }
+.user-menu {
+  position: absolute; right: 28px; top: 62px; background: var(--card-2); border: 1px solid var(--border-2); border-radius: 14px; padding: 6px;
+  min-width: 220px; box-shadow: 0 20px 50px -10px rgba(0,0,0,.8); z-index: 30;
+}
+.user-menu .lbl { font-size: 11px; color: var(--text-3); padding: 8px 10px 4px; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
+.user-menu button { display: flex; width: 100%; justify-content: space-between; align-items: center; border: 0; background: transparent; padding: 9px 10px; border-radius: 9px; font-size: 14px; text-align: left; }
+.user-menu button:hover, .user-menu button[aria-checked="true"] { background: var(--card-3); }
+
+.content { padding: 32px 28px 64px 40px; max-width: 1480px; }
+.page-h { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.page-h h1 { font-family: var(--display); font-weight: 300; font-size: 34px; letter-spacing: -0.02em; line-height: 1.1; }
+.page-h .sub { color: var(--text-3); font-size: 13px; margin-top: 6px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn-dark {
+  height: 48px; display: inline-flex; align-items: center; gap: 10px; padding: 0 22px; border-radius: 12px; border: 0;
+  background: var(--card); color: var(--text); font-weight: 700; font-size: 15px;
+}
+.btn-dark:hover { background: var(--card-2); }
+.btn-dark svg { width: 20px; height: 20px; }
+
+/* Grid */
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 16px; align-items: start; }
+.col-main { grid-column: span 9; display: grid; gap: 16px; min-width: 0; }
+.col-side { grid-column: span 3; display: grid; gap: 16px; min-width: 0; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+.s3 { grid-column: span 3; } .s4 { grid-column: span 4; } .s5 { grid-column: span 5; }
+.s6 { grid-column: span 6; } .s7 { grid-column: span 7; } .s8 { grid-column: span 8; } .s12 { grid-column: span 12; }
+.row { margin-top: 16px; }
+@media (max-width: 1180px) {
+  .col-main, .col-side { grid-column: span 12; }
+  .col-side { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .s3, .s4, .s5, .s6, .s7 { grid-column: span 6; }
+  .s8 { grid-column: span 12; }
+}
+@media (max-width: 760px) {
+  .side { display: none; }
+  .main { margin-left: 0; }
+  .topbar { padding: 0 16px; height: 60px; }
+  .hello { font-size: 13px; white-space: normal; line-height: 1.3; }
+  .hello .date { display: none; }
+  .tbtn .txt { display: none; }
+  .tbtn { padding: 0 12px; }
+  .user-menu { right: 16px; }
+  .content { padding: 20px 16px 48px; }
+  .page-h h1 { font-size: 28px; }
+  .btn-dark { height: 42px; padding: 0 16px; font-size: 14px; }
+  .grid, .kpis, .col-main, .col-side { gap: 12px; }
+  .s3, .s4, .s5, .s6, .s7, .s8, .s12 { grid-column: span 12; }
+}
+
+/* Banner */
+.banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 12px 16px; border-radius: 14px; margin-bottom: 20px;
+  background: rgba(245,158,11,0.07); border: 1px dashed rgba(245,158,11,0.4); color: #FCD34D; font-size: 13px;
+}
+.banner b { color: #FDE68A; }
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  background: var(--card); border-radius: var(--radius); padding: 20px; min-width: 0; position: relative;
+  animation: rise .55s var(--ease) both;
+}
+@keyframes rise { from { opacity: .001; transform: translateY(8px); } }
+.card-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.card-title { font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.card-sub { font-size: 12.5px; color: var(--text-3); margin-top: 2px; }
+.eyebrow { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); font-weight: 600; }
+.mini { font-size: 11.5px; color: var(--text-2); font-weight: 500; white-space: nowrap; }
+.muted { color: var(--text-3); }
+.small { font-size: 12px; }
+
+/* KPI */
+.kpi { display: flex; flex-direction: column; gap: 10px; }
+.kpi-top { display: flex; align-items: center; gap: 12px; }
+.kpi-ic { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--border-2); flex-shrink: 0; }
+.kpi-ic svg { width: 19px; height: 19px; }
+.kpi-name { font-size: 15px; color: var(--text-2); font-weight: 500; flex: 1; min-width: 0; line-height: 1.25; }
+.kpi-val { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-top: 4px; }
+.kpi-val small { font-size: 14px; color: var(--text-3); font-weight: 500; }
+.kpi-sub { font-size: 13px; color: var(--text-2); }
+.kpi-sub b { color: var(--text); font-weight: 600; }
+.kpi-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
+/* Status */
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border-radius: 999px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .06em; white-space: nowrap;
+}
+.pill i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; font-style: normal; }
+.pill.on { color: var(--on-text); background: rgba(34,197,94,0.12); }
+.pill.behind { color: var(--behind); background: rgba(245,158,11,0.13); }
+.pill.risk { color: var(--risk-text); background: rgba(239,68,68,0.14); }
+.tag { font-size: 10.5px; padding: 1px 7px; border-radius: 6px; border: 1px dashed rgba(245,158,11,0.5); color: #FCD34D; white-space: nowrap; font-weight: 500; }
+
+/* Bars */
+.bar { position: relative; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.08); }
+.bar .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; width: 0; transition: width 1.3s var(--ease); }
+.bar .fill.on { background: var(--on); }
+.bar .fill.behind { background: var(--behind); }
+.bar .fill.risk { background: var(--risk); }
+.bar .fill.grad { background: var(--grad); }
+.bar .exp { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--text); opacity: .7; border-radius: 2px; }
+
+/* Coluna direita */
+.goal-card .big { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; margin: 6px 0 14px; }
+.goal-card .big small { font-size: 15px; color: var(--text-3); font-weight: 500; }
+.goal-card .bar { height: 7px; }
+.goal-card .ends { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--text-2); margin-top: 10px; }
+.wallet h3 { font-family: var(--display); font-size: 16px; font-weight: 600; padding-bottom: 14px; margin: -2px -20px 16px; padding-left: 20px; border-bottom: 1px solid var(--border); }
+.box { border: 1px solid var(--border-2); border-radius: 14px; padding: 14px 16px; }
+.box .k { font-size: 14px; font-weight: 500; }
+.box .v { font-size: 22px; font-weight: 700; margin-top: 2px; }
+.box-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-top: 8px; }
+.box-row .box { padding: 12px; }
+.box-row .k { font-size: 12px; font-weight: 600; }
+.k.on { color: var(--on-text); } .k.behind { color: var(--behind); } .k.risk { color: var(--risk-text); }
+.btn-primary {
+  width: 100%; height: 48px; margin-top: 14px; border: 0; border-radius: 12px; background: var(--primary); color: #fff;
+  font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: background .15s;
+}
+.btn-primary:hover { background: var(--primary-2); }
+.btn-primary svg { width: 18px; height: 18px; }
+
+/* Botões gerais */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px; border-radius: 10px;
+  border: 1px solid var(--border-2); background: var(--card-2); color: var(--text); font-weight: 600; font-size: 13px; white-space: nowrap;
+}
+.btn:hover { background: var(--card-3); }
+.btn.primary { background: var(--primary); border-color: transparent; color: #fff; }
+.btn.primary:hover { background: var(--primary-2); }
+.btn.ghost { background: transparent; }
+.btn.sm { padding: 6px 11px; font-size: 12px; }
+.btn.danger { color: #FCA5A5; border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.06); }
+.icon-btn { width: 30px; height: 30px; border-radius: 8px; display: inline-grid; place-items: center; border: 1px solid var(--border); background: transparent; color: var(--text-3); }
+.icon-btn:hover { color: var(--text); border-color: var(--border-2); }
+.icon-btn svg { width: 15px; height: 15px; }
+
+/* Selects e inputs */
+select.sel, input.inp, textarea.inp {
+  background: transparent; border: 1px solid var(--border-2); border-radius: 12px; padding: 9px 12px; width: 100%;
+  color: var(--text); font-size: 13.5px;
+}
+select.sel { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--text-3) 50%), linear-gradient(135deg, var(--text-3) 50%, transparent 50%); background-position: calc(100% - 16px) 55%, calc(100% - 11px) 55%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 30px; }
+select.sel option { background: var(--card-2); }
+textarea.inp { resize: vertical; min-height: 38px; }
+input.inp::placeholder, textarea.inp::placeholder { color: var(--text-3); }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.seg button { border: 1px solid var(--border-2); background: transparent; padding: 7px 12px; border-radius: 10px; font-size: 12.5px; font-weight: 600; color: var(--text-3); }
+.seg button[aria-pressed="true"] { background: var(--card-3); color: var(--text); }
+
+/* Gráfico */
+.chart-box { position: relative; height: 330px; }
+.chart-fallback { display: grid; place-items: center; height: 100%; color: var(--text-3); font-size: 13px; text-align: center; padding: 20px; border: 1px dashed var(--border-2); border-radius: 12px; }
+
+/* Projeção */
+.proj-list { display: flex; flex-direction: column; gap: 10px; }
+.proj-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 6px 16px; align-items: center; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border-2); }
+.proj-row .t { font-weight: 600; font-size: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.proj-row .meta { font-size: 12px; color: var(--text-3); }
+.proj-row .verdict { text-align: right; }
+.proj-row .verdict .pct { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+.pct.risk { color: var(--risk-text); } .pct.behind { color: var(--behind); } .pct.on { color: var(--on-text); }
+.proj-row .verdict .val { font-size: 12px; color: var(--text-2); }
+.proj-bar { grid-column: 1 / -1; position: relative; height: 7px; border-radius: 999px; background: rgba(255,255,255,0.07); margin-top: 4px; }
+.proj-bar .now { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: rgba(255,255,255,0.3); width: 0; transition: width 1.2s var(--ease); }
+.proj-bar .fut { position: absolute; top: 0; bottom: 0; border-radius: 999px; width: 0; transition: width 1.4s var(--ease) .15s, left 1.2s var(--ease); }
+.proj-bar .fut.on { background: repeating-linear-gradient(135deg, rgba(34,197,94,.9) 0 5px, rgba(34,197,94,.45) 5px 9px); }
+.proj-bar .fut.behind { background: repeating-linear-gradient(135deg, rgba(245,158,11,.9) 0 5px, rgba(245,158,11,.45) 5px 9px); }
+.proj-bar .fut.risk { background: repeating-linear-gradient(135deg, rgba(239,68,68,.9) 0 5px, rgba(239,68,68,.45) 5px 9px); }
+.proj-bar .goal { position: absolute; top: -4px; bottom: -4px; width: 2px; background: #EC4899; border-radius: 2px; }
+.proj-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px; color: var(--text-3); margin-top: 12px; }
+.proj-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 14px; height: 6px; border-radius: 3px; display: inline-block; }
+.dot { width: 9px; height: 9px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+
+/* Alertas */
+.alert-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px; }
+.alert { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 10px; padding: 11px 12px; border-radius: 12px; border: 1px solid var(--border-2); font-size: 12.5px; }
+.alert .ic { width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; font-weight: 800; font-size: 12px; }
+.alert.risk .ic { background: rgba(239,68,68,0.15); color: var(--risk-text); }
+.alert.warn .ic { background: rgba(245,158,11,0.15); color: var(--behind); }
+.alert.info .ic { background: rgba(255,255,255,0.07); color: var(--text-2); }
+.alert b { font-weight: 600; color: var(--text); display: block; }
+.alert span { color: var(--text-2); }
+.alert-empty { padding: 20px; text-align: center; color: var(--text-3); font-size: 13px; border: 1px dashed var(--border-2); border-radius: 12px; }
+
+/* Áreas */
+.area-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.mini-ring { width: 60px; height: 60px; position: relative; flex-shrink: 0; }
+.mini-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: rgba(255,255,255,0.08); }
+.ring-bar { fill: none; stroke-linecap: round; transition: stroke-dashoffset 1.6s var(--ease); }
+.mini-ring .v { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+.obj { padding: 12px 0; border-top: 1px solid var(--border); }
+.obj:first-of-type { border-top: 0; padding-top: 0; }
+.obj-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.obj-name { font-weight: 600; font-size: 13.5px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.obj-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.obj-vals { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-2); margin: 8px 0 6px; gap: 8px; flex-wrap: wrap; }
+.obj-vals b { color: var(--text); font-weight: 700; }
+.month-line { font-size: 11.5px; color: var(--text-3); margin-top: 7px; }
+.month-line b { color: var(--text-2); font-weight: 600; }
+.cap { margin-top: 12px; padding: 12px; border-radius: 12px; border: 1px solid var(--border-2); }
+
+/* Histórico */
+.timeline { position: relative; margin-top: 14px; padding-left: 18px; max-height: 380px; overflow: auto; }
+.timeline::before { content: ''; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 2px; background: var(--border-2); border-radius: 2px; }
+.tl { position: relative; padding: 0 0 16px 10px; }
+.tl::before { content: ''; position: absolute; left: -18px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--card); border: 2px solid #EC4899; }
+.tl.start::before { border-color: var(--text-3); }
+.tl-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.tl-date { font-size: 11.5px; color: var(--text-3); }
+.tl-v { font-weight: 700; font-size: 14px; }
+.tl-d { font-size: 11.5px; font-weight: 600; margin-left: 6px; }
+.tl-d.up { color: var(--on-text); } .tl-d.down { color: var(--risk-text); }
+.tl-n { font-size: 12.5px; color: var(--text-2); margin-top: 3px; }
+
+/* Alunos */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.stat { padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border-2); }
+.stat .k { font-size: 12.5px; color: var(--text-2); font-weight: 500; }
+.stat .v { font-size: 24px; font-weight: 700; margin-top: 2px; letter-spacing: -0.02em; }
+.stat .h { font-size: 11.5px; color: var(--text-3); }
+.levels { display: flex; flex-direction: column; gap: 9px; }
+.lv { display: grid; grid-template-columns: 96px minmax(0,1fr) 36px; gap: 10px; align-items: center; font-size: 12.5px; }
+.lv .b { height: 7px; border-radius: 999px; background: rgba(255,255,255,0.08); position: relative; }
+.lv .b i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: var(--grad); width: 0; transition: width 1.2s var(--ease); }
+.table-wrap { overflow: auto; border: 1px solid var(--border-2); border-radius: 14px; max-height: 420px; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 760px; }
+.tbl th { position: sticky; top: 0; background: var(--card-2); text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); font-weight: 600; padding: 10px 12px; border-bottom: 1px solid var(--border-2); z-index: 1; }
+.tbl td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl tbody tr:hover { background: rgba(255,255,255,0.025); }
+.st { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.st.ativo { color: var(--on-text); background: rgba(34,197,94,0.12); }
+.st.timeoff { color: #93C5FD; background: rgba(147,197,253,0.12); }
+.st.encerrado { color: var(--text-3); background: rgba(255,255,255,0.06); }
+.st.estornado { color: var(--risk-text); background: rgba(239,68,68,0.12); }
+.st.futuro { color: var(--text-2); background: rgba(255,255,255,0.06); }
+.st.fim { color: var(--behind); background: rgba(245,158,11,0.12); }
+.two { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,2fr); gap: 16px; }
+@media (max-width: 900px) { .two { grid-template-columns: minmax(0,1fr); } }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+footer.foot { margin-top: 24px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--text-3); font-size: 12px; align-items: center; }
+
+/* Ocultar valores */
+.hide-values .num, .hide-values .alert span, .hide-values .alert b, .hide-values .chart-box, .hide-values .tl-n, .hide-values .mt-note { filter: blur(8px); user-select: none; }
+
+/* ============================================================
+   MODAIS
+   ============================================================ */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: none; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow: auto; z-index: 50;
+}
+.overlay.open { display: flex; animation: fade .2s ease; }
+@keyframes fade { from { opacity: 0; } }
+.modal { width: 100%; max-width: 760px; background: var(--card); border: 1px solid var(--border-2); border-radius: 20px; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.8); animation: rise .35s var(--ease) both; }
+.modal-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 22px 14px; border-bottom: 1px solid var(--border); }
+.modal-h h2 { font-family: var(--display); font-size: 19px; font-weight: 600; }
+.modal-b { padding: 18px 22px; }
+.modal-f { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 22px 20px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.upd-row { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.3fr); gap: 10px; align-items: start; padding: 14px 0; border-top: 1px solid var(--border); }
+.upd-row:first-child { border-top: 0; padding-top: 4px; }
+.upd-row label.h { font-weight: 600; font-size: 13.5px; display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+.upd-row .hint { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
+.upd-row.mine { background: rgba(91,46,240,0.08); margin: 0 -12px; padding-left: 12px; padding-right: 12px; border-radius: 12px; }
+@media (max-width: 640px) { .upd-row { grid-template-columns: 1fr; } }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.form-grid .full { grid-column: 1 / -1; }
+@media (max-width: 560px) { .form-grid { grid-template-columns: 1fr; } }
+.field label { display: block; font-size: 12px; color: var(--text-2); margin-bottom: 5px; font-weight: 600; }
+.field .help { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2); }
+.obj-admin { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.obj-admin:first-child { border-top: 0; }
+.row-actions { display: flex; gap: 6px; }
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; z-index: 80;
+  background: var(--card-3); border: 1px solid var(--border-2); padding: 11px 16px; border-radius: 12px; font-size: 13px;
+  transition: all .3s var(--ease); pointer-events: none; box-shadow: 0 16px 40px -12px rgba(0,0,0,.8);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ============================================================
+   MODO REUNIÃO
+   ============================================================ */
+#meeting { position: fixed; inset: 0; z-index: 70; background: var(--bg); overflow: auto; display: none; }
+#meeting.open { display: block; animation: fade .25s ease; }
+.mt-wrap { max-width: 1320px; margin: 0 auto; padding: 28px 28px 60px; }
+.mt-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.mt-top h2 { font-family: var(--display); font-size: 28px; font-weight: 300; letter-spacing: -0.02em; }
+.mt-sum { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: var(--card); font-size: 12.5px; color: var(--text-2); white-space: nowrap; }
+.mt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.mt-card { background: var(--card); border-radius: 20px; padding: 24px; border-top: 3px solid transparent; }
+.mt-card.risk { border-top-color: var(--risk); } .mt-card.behind { border-top-color: var(--behind); } .mt-card.on { border-top-color: var(--on); }
+.mt-card h3 { font-family: var(--display); font-size: 19px; font-weight: 600; margin: 12px 0 2px; }
+.mt-big { display: flex; align-items: baseline; gap: 10px; margin: 16px 0 12px; flex-wrap: wrap; }
+.mt-big .v { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; }
+.mt-big .t { color: var(--text-3); font-size: 15px; }
+.mt-proj { margin-top: 14px; font-size: 15px; color: var(--text-2); }
+.mt-proj b { font-size: 18px; }
+.mt-note { margin-top: 12px; font-size: 13.5px; color: var(--text-2); padding: 10px 12px; border-radius: 10px; background: var(--card-2); }
+.mt-q { margin-top: 12px; font-size: 13px; color: #FCA5A5; }
+@media (max-width: 760px) { .mt-wrap { padding: 16px; } .mt-grid { grid-template-columns: 1fr; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<aside class="side" aria-label="Navegação">
+  <div class="logo" aria-hidden="true">IF</div>
+  <button class="nav-btn active" data-go="top" data-tip="Visão geral" aria-label="Visão geral"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg></button>
+  <button class="nav-btn" data-go="cardChart" data-tip="Progresso mensal" aria-label="Progresso mensal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></button>
+  <button class="nav-btn" data-go="cardProj" data-tip="Projeção de fechamento" aria-label="Projeção de fechamento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></button>
+  <button class="nav-btn" data-go="cardAlerts" data-tip="Alertas" aria-label="Alertas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="badge" id="navBadge" hidden></span></button>
+  <button class="nav-btn" data-go="areas" data-tip="Áreas" aria-label="Áreas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
+  <button class="nav-btn" data-go="cardHistory" data-tip="Histórico de check-ins" aria-label="Histórico de check-ins"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg></button>
+  <button class="nav-btn" data-go="cardStudents" data-tip="Base de alunos" aria-label="Base de alunos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></button>
+  <button class="nav-btn" id="btnManage" data-tip="Gerenciar objetivos" aria-label="Gerenciar objetivos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+  <button class="nav-btn" id="btnMeetingSide" data-tip="Modo reunião" aria-label="Modo reunião"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button>
+</aside>
+
+<div class="main">
+  <header class="topbar" id="top">
+    <div class="hello" id="hello"></div>
+    <div class="top-actions">
+      <button class="tbtn" id="btnUpdate" type="button"><span class="txt">Atualizar progresso</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg></button>
+      <span class="tbtn" id="periodChip" style="cursor:default">Q4 2026</span>
+      <button class="tbtn sq" id="btnBell" type="button" aria-label="Ver alertas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="count num" id="bellCount" hidden></span></button>
+      <button class="avatar" id="btnUser" type="button" aria-haspopup="menu" aria-label="Quem está usando"></button>
+    </div>
+    <div class="user-menu" id="userMenu" role="menu" hidden></div>
+  </header>
+
+  <div class="content">
+    <div id="exampleBanner" class="banner" hidden>
+      <div><b>Modo exemplo.</b> Os check-ins e os alunos marcados como "exemplo" são simulados, e a data de hoje está fixada em <b class="num" id="demoDate"></b>. Os pontos de partida e as metas são reais.</div>
+      <button class="btn sm" id="btnClearExamples" type="button">Apagar exemplos e começar</button>
+    </div>
+
+    <div class="page-h">
+      <div>
+        <h1>Dashboard</h1>
+        <div class="sub"><span class="num" id="periodRange"></span><span>·</span><span class="num" id="daysLeft"></span><span>·</span><span id="storeChip"></span></div>
+      </div>
+      <button class="btn-dark" id="btnHide" type="button" aria-pressed="false"></button>
+    </div>
+
+    <div class="grid">
+      <div class="col-main">
+        <div class="kpis" id="kpis"></div>
+        <section class="card" id="cardChart">
+          <div class="card-h">
+            <div><div class="card-title">Progresso mensal</div><div class="card-sub">Real vs. esperado, em % do caminho até a meta</div></div>
+            <div class="seg" id="chartSeg" role="group" aria-label="Escolher objetivo"></div>
+          </div>
+          <div class="chart-box"><canvas id="chart" aria-label="Gráfico de progresso real versus esperado"></canvas></div>
+          <div class="small muted" id="chartNote" style="margin-top:10px"></div>
+        </section>
+        <section class="card" id="cardAlerts"></section>
+      </div>
+      <div class="col-side" id="colSide">
+        <section class="card goal-card" id="cardGlobal"></section>
+        <section class="card wallet" id="cardStatus"></section>
+      </div>
+    </div>
+
+    <div class="grid row">
+      <section class="card s7" id="cardProj"></section>
+      <section class="card s5" id="cardHistory">
+        <div class="card-h"><div><div class="card-title">Histórico de check-ins</div><div class="card-sub">O que aconteceu em cada atualização</div></div></div>
+        <select class="sel" id="histSel" aria-label="Objetivo do histórico"></select>
+        <div class="timeline" id="timeline"></div>
+      </section>
+    </div>
+
+    <div class="grid row" id="areas"></div>
+
+    <div class="grid row">
+      <section class="card s12" id="cardStudents"></section>
+    </div>
+
+    <footer class="foot">
+      <div id="footInfo"></div>
+      <div class="actions">
+        <button class="btn ghost" id="btnExport" type="button">Exportar objetivos (CSV)</button>
+        <button class="btn ghost" id="btnImport" type="button">Importar objetivos (CSV)</button>
+        <input type="file" id="fileObj" accept=".csv,text/csv" hidden>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- Modal: atualizar progresso -->
+<div class="overlay" id="mUpdate" role="dialog" aria-modal="true" aria-labelledby="mUpdateT">
+  <div class="modal">
+    <div class="modal-h">
+      <div>
+        <div class="eyebrow">Check-in</div>
+        <h2 id="mUpdateT">Atualizar progresso</h2>
+        <div class="small muted" style="margin-top:4px">Preencha só o que mudou. Campos vazios não geram check-in.</div>
+      </div>
+      <button class="icon-btn" data-close aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="modal-b">
+      <div class="field" style="max-width:220px;margin-bottom:10px">
+        <label for="updDate">Data do check-in</label>
+        <input class="inp num" type="date" id="updDate">
+      </div>
+      <div id="updRows"></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn ghost" data-close type="button">Cancelar</button>
+      <button class="btn primary" id="updSave" type="button">Salvar check-in</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: gerenciar objetivos -->
+<div class="overlay" id="mManage" role="dialog" aria-modal="true" aria-labelledby="mManageT">
+  <div class="modal">
+    <div class="modal-h">
+      <div>
+        <div class="eyebrow">Gerenciar</div>
+        <h2 id="mManageT">Objetivos</h2>
+      </div>
+      <button class="icon-btn" data-close aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="modal-b">
+      <div id="manageList"></div>
+      <div id="archList" style="margin-top:18px"></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn primary" id="btnNewObj" type="button">+ Novo objetivo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: formulário objetivo -->
+<div class="overlay" id="mObj" role="dialog" aria-modal="true" aria-labelledby="mObjT">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-h">
+      <div><div class="eyebrow">Objetivo</div><h2 id="mObjT">Editar objetivo</h2></div>
+      <button class="icon-btn" data-close aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <form class="modal-b" id="objForm" autocomplete="off">
+      <div class="form-grid">
+        <div class="field full"><label for="fTitle">Objetivo</label><input class="inp" id="fTitle" required placeholder="Ex.: Valor vendido no mês"></div>
+        <div class="field"><label for="fArea">Área</label><input class="inp" id="fArea" list="areaList" required><datalist id="areaList"></datalist></div>
+        <div class="field"><label for="fOwner">Responsável (1 pessoa)</label><input class="inp" id="fOwner" required></div>
+        <div class="field"><label for="fUnit">Unidade</label>
+          <select class="sel" id="fUnit"><option value="brl">R$ (dinheiro)</option><option value="count">Número</option><option value="pct">% (percentual)</option></select></div>
+        <div class="field"><label for="fKind">Como medir</label>
+          <select class="sel" id="fKind"><option value="stock">Valor atual (ex.: alunos ativos)</option><option value="monthly">Acumulado no mês (ex.: vendido no mês)</option></select>
+          <div class="help">"Acumulado no mês" zera todo mês e tem meta mensal crescente.</div></div>
+        <div class="field"><label for="fStart">Valor inicial</label><input class="inp num" id="fStart" type="number" step="any" required></div>
+        <div class="field"><label for="fTarget">Meta</label><input class="inp num" id="fTarget" type="number" step="any" required></div>
+        <div class="field"><label for="fStartDate">Início</label><input class="inp num" id="fStartDate" type="date" required></div>
+        <div class="field"><label for="fDeadline">Prazo</label><input class="inp num" id="fDeadline" type="date" required></div>
+        <div class="field full"><label for="fSource">Onde está o número</label><input class="inp" id="fSource" placeholder="Ex.: Gateway, Google Agenda, planilha"></div>
+        <label class="check full"><input type="checkbox" id="fEst"> Valor inicial é estimado (substituir pelo real no 1º check-in)</label>
+      </div>
+    </form>
+    <div class="modal-f">
+      <button class="btn ghost" data-close type="button">Cancelar</button>
+      <button class="btn primary" id="objSave" type="button">Salvar objetivo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: aluno -->
+<div class="overlay" id="mStudent" role="dialog" aria-modal="true" aria-labelledby="mStudentT">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-h">
+      <div><div class="eyebrow">Base de alunos</div><h2 id="mStudentT">Aluno</h2></div>
+      <button class="icon-btn" data-close aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <form class="modal-b" id="stuForm" autocomplete="off">
+      <div class="form-grid">
+        <div class="field full"><label for="sName">Nome</label><input class="inp" id="sName" required></div>
+        <div class="field"><label for="sPlan">Plano</label><input class="inp" id="sPlan" list="planList" placeholder="Ex.: Mentoria 12 meses"><datalist id="planList"></datalist></div>
+        <div class="field"><label for="sLevel">Nivelamento</label>
+          <select class="sel" id="sLevel"><option value="">Não informado</option><option>0</option><option>Iniciante</option><option>Básico</option><option>Intermediário</option></select></div>
+        <div class="field"><label for="sStart">Data de matrícula (início)</label><input class="inp num" id="sStart" type="date" required></div>
+        <div class="field"><label for="sEnd">Data de encerramento</label><input class="inp num" id="sEnd" type="date">
+          <div class="help">Vazio = início + 12 meses.</div></div>
+        <div class="field"><label for="sToStart">Time off: início</label><input class="inp num" id="sToStart" type="date"></div>
+        <div class="field"><label for="sToEnd">Time off: fim</label><input class="inp num" id="sToEnd" type="date"></div>
+        <label class="check full"><input type="checkbox" id="sRefund"> Estornado (sai da base de ativos)</label>
+      </div>
+    </form>
+    <div class="modal-f">
+      <button class="btn danger" id="stuDelete" type="button" style="margin-right:auto">Excluir</button>
+      <button class="btn ghost" data-close type="button">Cancelar</button>
+      <button class="btn primary" id="stuSave" type="button">Salvar aluno</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modo reunião -->
+<div id="meeting" role="dialog" aria-modal="true" aria-label="Modo reunião"></div>
+
+<!-- Confirmação -->
+<div class="overlay" id="mAsk" role="alertdialog" aria-modal="true" aria-labelledby="askText" style="align-items:center">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-b" style="padding-top:22px"><div class="eyebrow">Confirmar</div><p id="askText" style="margin-top:8px;font-size:15px;line-height:1.5"></p></div>
+    <div class="modal-f">
+      <button class="btn ghost" id="askNo" type="button">Cancelar</button>
+      <button class="btn primary" id="askYes" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   CONFIG: preencha SUPABASE_URL e SUPABASE_ANON_KEY para usar a nuvem.
+   Vazios = os dados ficam só neste navegador (localStorage).
+   ===================================================================== */
+const CONFIG = {
+  SUPABASE_URL: '',
+  SUPABASE_ANON_KEY: '',
+  TABELA: 'dashboard_objetivos'
+};
+
+/* ---------------------------------------------------------------------
+   Constantes de negócio (combinadas na entrevista)
+   --------------------------------------------------------------------- */
+const RULES = {
+  onTrackGap: -5,        // até 5 pontos abaixo do esperado = ON TRACK
+  riskGap: -15,          // mais de 15 pontos abaixo = AT RISK
+  riskProjection: 80,    // projeção abaixo de 80% da meta = AT RISK
+  staleDays: 3,          // dias sem atualização até acender o alerta
+  earlyDay: 10,          // alerta de 1ª quinzena: no dia 10...
+  earlyPct: 25,          // ...abaixo de 25% da meta do mês
+  capacity: 108,         // 3 professores x 36 aulas/semana
+  lessonsPerStudent: 1,  // aulas individuais por aluno por semana
+  capacityWarn: 90,      // alerta de ocupação acima de 90%
+  planMonths: 12,        // mentoria de 12 meses
+  projWindowDays: 21     // janela do "ritmo atual" em objetivos de valor atual
+};
+const DEMO_TODAY = '2026-10-22';
+const STORAGE_KEY = 'mif.dashboard.v1';
+const SERIES = ['#3987E5', '#D55181', '#2A9D8F', '#C98500', '#9085E9', '#199E70'];
+const POINTS = ['circle', 'rectRot', 'triangle', 'rect', 'star', 'crossRot'];
+const LEVELS = ['0', 'Iniciante', 'Básico', 'Intermediário'];
+const STATUS = {
+  on:     { label: 'ON TRACK', cls: 'on' },
+  behind: { label: 'BEHIND',   cls: 'behind' },
+  risk:   { label: 'AT RISK',  cls: 'risk' }
+};
+
+/* ---------------------------------------------------------------------
+   Dados iniciais (entrevista de 23/09/2026)
+   --------------------------------------------------------------------- */
+function seedState() {
+  const base = { startDate: '2026-09-23', deadline: '2026-12-31', archived: false };
+  return {
+    meta: { business: 'Mentoria Inglês Funcional', period: 'Q4 2026', exampleMode: true },
+    objectives: [
+      { ...base, id: 'c1', order: 0, area: 'Comercial', title: 'Valor vendido no mês', unit: 'brl', kind: 'monthly', start: 35000, target: 70000, owner: 'Eduardo', estimated: false, source: 'Gateway Dom Pagamentos' },
+      { ...base, id: 'c2', order: 1, area: 'Comercial', title: 'Comparecimento às calls', unit: 'pct', kind: 'stock', start: 38, target: 60, owner: 'Mateus', estimated: true, source: 'Google Agenda (verde = compareceu, vermelho = faltou)' },
+      { ...base, id: 'm1', order: 2, area: 'Marketing', title: 'Calls agendadas no mês', unit: 'count', kind: 'monthly', start: 55, target: 100, owner: 'Mateus', estimated: true, source: 'Google Agenda' },
+      { ...base, id: 'p1', order: 3, area: 'Pedagógico', title: 'Alunos ativos', unit: 'count', kind: 'stock', start: 67, target: 100, owner: 'Bruna', estimated: false, source: 'Planilha de alunos' }
+    ],
+    checkins: [
+      { id: 'ex1', objectiveId: 'c1', date: '2026-10-07', value: 9994,  note: '2 vendas na primeira semana de outubro.', example: true },
+      { id: 'ex2', objectiveId: 'c1', date: '2026-10-21', value: 19988, note: 'Só mais 2 vendas em duas semanas. Muitas faltas nas calls da semana 3.', example: true },
+      { id: 'ex3', objectiveId: 'c2', date: '2026-10-07', value: 40,    note: 'Mateus passou a confirmar as calls na véspera.', example: true },
+      { id: 'ex4', objectiveId: 'c2', date: '2026-10-21', value: 43,    note: 'Lembrete 1h antes ajudou. Lead de segunda ainda responde só na sexta.', example: true },
+      { id: 'ex5', objectiveId: 'm1', date: '2026-10-07', value: 18,    note: '', example: true },
+      { id: 'ex6', objectiveId: 'm1', date: '2026-10-21', value: 50,    note: 'Semana forte de agendamentos depois do criativo novo.', example: true },
+      { id: 'ex7', objectiveId: 'p1', date: '2026-10-07', value: 71,    note: '4 matrículas em outubro, nenhuma saída.', example: true }
+    ],
+    students: [
+      { id: 'sx1', name: 'Aluno Exemplo 1', plan: 'Mentoria 12 meses', start: '2025-10-15', end: '', level: 'Iniciante',     timeoffStart: '', timeoffEnd: '', refunded: false, example: true },
+      { id: 'sx2', name: 'Aluno Exemplo 2', plan: 'Mentoria 12 meses', start: '2025-12-01', end: '', level: 'Básico',        timeoffStart: '', timeoffEnd: '', refunded: false, example: true },
+      { id: 'sx3', name: 'Aluno Exemplo 3', plan: 'Mentoria 12 meses', start: '2026-02-10', end: '', level: '0',             timeoffStart: '', timeoffEnd: '', refunded: false, example: true },
+      { id: 'sx4', name: 'Aluno Exemplo 4', plan: 'Mentoria 12 meses', start: '2026-05-20', end: '', level: 'Intermediário', timeoffStart: '2026-10-01', timeoffEnd: '2026-10-31', refunded: false, example: true },
+      { id: 'sx5', name: 'Aluno Exemplo 5', plan: 'Mentoria 12 meses', start: '2026-08-05', end: '', level: 'Básico',        timeoffStart: '', timeoffEnd: '', refunded: false, example: true },
+      { id: 'sx6', name: 'Aluno Exemplo 6', plan: 'Mentoria 12 meses', start: '2026-10-10', end: '', level: 'Iniciante',     timeoffStart: '', timeoffEnd: '', refunded: false, example: true }
+    ]
+  };
+}
+
+/* ---------------------------------------------------------------------
+   Utilidades
+   --------------------------------------------------------------------- */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const uid = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function isoLocal(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function toUTC(iso) { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d); }
+function daysBetween(a, b) { return Math.round((toUTC(b) - toUTC(a)) / 864e5); }
+function addDays(iso, n) { const d = new Date(toUTC(iso) + n * 864e5); return d.toISOString().slice(0, 10); }
+function addMonths(iso, n) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const t = new Date(Date.UTC(y, m - 1 + n, 1));
+  const dim = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + 1, 0)).getUTCDate();
+  t.setUTCDate(Math.min(d, dim));
+  return t.toISOString().slice(0, 10);
+}
+function daysInMonth(iso) { const [y, m] = iso.split('-').map(Number); return new Date(Date.UTC(y, m, 0)).getUTCDate(); }
+function monthIndex(iso) { const [y, m] = iso.split('-').map(Number); return y * 12 + (m - 1); }
+const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+function monthName(iso) { return MONTHS[+iso.slice(5, 7) - 1]; }
+function fmtDate(iso) { return iso ? iso.slice(8, 10) + '/' + iso.slice(5, 7) : '—'; }
+function fmtDateFull(iso) { return iso ? iso.slice(8, 10) + '/' + iso.slice(5, 7) + '/' + iso.slice(0, 4) : '—'; }
+function validISO(s) { return /^\d{4}-\d{2}-\d{2}$/.test(s || '') && !isNaN(toUTC(s)); }
+function parseAnyDate(s) {
+  s = String(s || '').trim();
+  if (!s) return '';
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
+  m = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+  if (m) { const y = m[3].length === 2 ? '20' + m[3] : m[3]; return y + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0'); }
+  return '';
+}
+function parseNum(v) {
+  if (typeof v === 'number') return v;
+  let s = String(v ?? '').trim().replace(/[R$\s%]/g, '');
+  if (!s) return NaN;
+  if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+  return Number(s);
+}
+const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
+const nf1 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 });
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+function fmt(v, unit) {
+  if (v == null || isNaN(v)) return '—';
+  if (unit === 'brl') return brl.format(v);
+  if (unit === 'pct') return nf1.format(v) + '%';
+  return nf0.format(v);
+}
+function fmtShort(v, unit) {
+  if (unit === 'brl' && Math.abs(v) >= 1000) return 'R$ ' + nf1.format(v / 1000) + ' mil';
+  return fmt(v, unit);
+}
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// Confirmação dentro da página (não depende de janelas do navegador).
+function ask(msg) {
+  return new Promise((resolve) => {
+    const ov = $('#mAsk');
+    $('#askText').textContent = msg;
+    const done = (v) => { ov.classList.remove('open'); $('#askYes').onclick = $('#askNo').onclick = null; ov.onkeydown = null; resolve(v); };
+    $('#askYes').onclick = () => done(true);
+    $('#askNo').onclick = () => done(false);
+    ov.onmousedown = (e) => { if (e.target === ov) done(false); };
+    ov.onkeydown = (e) => { if (e.key === 'Escape') { e.stopPropagation(); done(false); } };
+    ov.classList.add('open');
+    setTimeout(() => $('#askYes').focus(), 30);
+  });
+}
+
+/* ---------------------------------------------------------------------
+   Persistência: localStorage (padrão) ou Supabase (se CONFIG preenchido)
+   Cada objetivo, check-in e aluno é uma linha da tabela, então duas pessoas
+   atualizando objetivos diferentes não sobrescrevem uma à outra.
+   --------------------------------------------------------------------- */
+const Store = {
+  mode: 'local',
+  client: null,
+  useCloud() { return !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY); },
+  loadScript(src) {
+    return new Promise((res, rej) => {
+      const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Falha ao carregar ' + src));
+      document.head.appendChild(s);
+    });
+  },
+  readLocal() {
+    try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+  },
+  writeLocal(state) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* armazenamento bloqueado */ }
+  },
+  async init() {
+    if (!this.useCloud()) { this.mode = 'local'; return this.readLocal(); }
+    try {
+      await this.loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js');
+      this.client = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+      const { data, error } = await this.client.from(CONFIG.TABELA).select('id,tipo,dados');
+      if (error) throw error;
+      this.mode = 'cloud';
+      if (!data.length) return null;
+      const st = { meta: {}, objectives: [], checkins: [], students: [] };
+      data.forEach((r) => {
+        if (r.tipo === 'config') st.meta = r.dados;
+        else if (r.tipo === 'objetivo') st.objectives.push(r.dados);
+        else if (r.tipo === 'checkin') st.checkins.push(r.dados);
+        else if (r.tipo === 'aluno') st.students.push(r.dados);
+      });
+      return st;
+    } catch (e) {
+      console.warn('Supabase indisponível, usando dados locais:', e.message || e);
+      this.mode = 'local-fallback';
+      return this.readLocal();
+    }
+  },
+  rowsFor(state) {
+    return [{ id: 'config', tipo: 'config', dados: state.meta }]
+      .concat(state.objectives.map((o) => ({ id: o.id, tipo: 'objetivo', dados: o })))
+      .concat(state.checkins.map((c) => ({ id: c.id, tipo: 'checkin', dados: c })))
+      .concat(state.students.map((s) => ({ id: s.id, tipo: 'aluno', dados: s })));
+  },
+  async commit(state, { upserts = [], deletes = [] } = {}) {
+    this.writeLocal(state);
+    if (this.mode !== 'cloud') return;
+    try {
+      if (upserts.length) {
+        const rows = upserts.map(([tipo, dados]) => ({ id: tipo === 'config' ? 'config' : dados.id, tipo, dados, updated_at: new Date().toISOString() }));
+        const { error } = await this.client.from(CONFIG.TABELA).upsert(rows);
+        if (error) throw error;
+      }
+      if (deletes.length) {
+        const { error } = await this.client.from(CONFIG.TABELA).delete().in('id', deletes);
+        if (error) throw error;
+      }
+    } catch (e) {
+      console.warn('Falha ao salvar no Supabase:', e.message || e);
+      toast('Não consegui salvar na nuvem. Os dados ficaram salvos neste navegador.');
+    }
+  },
+  async replaceAll(state, previousIds) {
+    this.writeLocal(state);
+    if (this.mode !== 'cloud') return;
+    const rows = this.rowsFor(state);
+    const keep = new Set(rows.map((r) => r.id));
+    const del = previousIds.filter((id) => !keep.has(id));
+    try {
+      if (del.length) { const { error } = await this.client.from(CONFIG.TABELA).delete().in('id', del); if (error) throw error; }
+      const { error } = await this.client.from(CONFIG.TABELA).upsert(rows.map((r) => ({ ...r, updated_at: new Date().toISOString() })));
+      if (error) throw error;
+    } catch (e) {
+      console.warn('Falha ao sincronizar com o Supabase:', e.message || e);
+      toast('Não consegui sincronizar com a nuvem.');
+    }
+  }
+};
+
+let S = null;          // estado
+let chart = null;      // instância Chart.js
+let chartSel = 'all';  // objetivo no gráfico
+let histSel = null;    // objetivo no histórico
+
+function allIds() { return Store.rowsFor(S).map((r) => r.id); }
+function today() { return S.meta.exampleMode ? DEMO_TODAY : isoLocal(new Date()); }
+function activeObjectives() { return S.objectives.filter((o) => !o.archived).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)); }
+function colorOf(o) { const i = S.objectives.indexOf(o); return SERIES[i % SERIES.length]; }
+function pointOf(o) { const i = S.objectives.indexOf(o); return POINTS[i % POINTS.length]; }
+
+/* ---------------------------------------------------------------------
+   Motor de cálculo
+   --------------------------------------------------------------------- */
+function periodDays(o) { return Math.max(1, daysBetween(o.startDate, o.deadline)); }
+function elapsedFrac(o, iso) { return clamp(daysBetween(o.startDate, iso) / periodDays(o), 0, 1); }
+function monthFrac(iso) { return +iso.slice(8, 10) / daysInMonth(iso); }
+function checkinsOf(o) { return S.checkins.filter((c) => c.objectiveId === o.id).sort((a, b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id))); }
+
+// Meta do mês para objetivos "acumulado no mês": sobe em degraus do valor inicial até a meta.
+function monthTarget(o, iso) {
+  const n = monthIndex(o.deadline) - monthIndex(o.startDate);
+  const i = monthIndex(iso) - monthIndex(o.startDate);
+  if (n <= 0 || i >= n) return o.target;
+  if (i <= 0) return o.start;
+  const raw = o.start + (o.target - o.start) * (i / n);
+  if (o.unit === 'brl') return Math.round(raw / 1000) * 1000;
+  if (o.unit === 'pct') return Math.round(raw * 10) / 10;
+  return Math.round(raw);
+}
+// Valor "efetivo" que representa o ritmo: no acumulado do mês, projeta o mês inteiro.
+function effValue(o, c) {
+  if (o.kind !== 'monthly') return c.value;
+  return c.value / Math.max(monthFrac(c.date), 0.25);
+}
+function progressPct(o, v) {
+  const span = o.target - o.start;
+  if (span === 0) return v >= o.target ? 100 : 0;
+  return (v - o.start) / span * 100;
+}
+function regression(pts) {
+  const n = pts.length;
+  if (n < 2) return null;
+  const mx = pts.reduce((s, p) => s + p.x, 0) / n;
+  const my = pts.reduce((s, p) => s + p.y, 0) / n;
+  let num = 0, den = 0;
+  pts.forEach((p) => { num += (p.x - mx) * (p.y - my); den += (p.x - mx) ** 2; });
+  if (den === 0) return null;
+  const b = num / den;
+  return { a: my - b * mx, b };
+}
+// Projeção: mantendo o ritmo atual, onde o objetivo chega no prazo?
+function projectionAt(o, chks) {
+  if (!chks.length) return null;
+  const all = [{ x: 0, y: o.start }].concat(chks.map((c) => ({ x: daysBetween(o.startDate, c.date), y: effValue(o, c) })));
+  let pts = all;
+  if (o.kind !== 'monthly') {
+    const lastX = all[all.length - 1].x;
+    pts = all.filter((p) => p.x >= lastX - RULES.projWindowDays);
+    if (pts.length < 2) pts = all.slice(-2);
+  }
+  const r = regression(pts);
+  if (!r) return all[all.length - 1].y;
+  return r.a + r.b * periodDays(o);
+}
+function statusFrom(gap, projPct) {
+  if (gap < RULES.riskGap || (projPct != null && projPct < RULES.riskProjection)) return 'risk';
+  if (gap < RULES.onTrackGap) return 'behind';
+  return 'on';
+}
+// Distância (em pontos) entre o real e o esperado numa data.
+function gapAt(o, c, iso) {
+  if (!c) return 0 - elapsedFrac(o, iso) * 100;
+  if (o.kind === 'monthly') {
+    const mt = monthTarget(o, c.date);
+    return (mt ? c.value / mt * 100 : 0) - monthFrac(c.date) * 100;
+  }
+  return progressPct(o, c.value) - elapsedFrac(o, c.date) * 100;
+}
+function statusHistory(o) {
+  const chks = checkinsOf(o);
+  return chks.map((c, i) => {
+    const proj = projectionAt(o, chks.slice(0, i + 1));
+    return { date: c.date, status: statusFrom(gapAt(o, c), progressPct(o, proj)) };
+  });
+}
+function summarize(o) {
+  const chks = checkinsOf(o);
+  const last = chks[chks.length - 1] || null;
+  const t = today();
+  const eff = last ? effValue(o, last) : o.start;
+  const progress = progressPct(o, eff);
+  const expected = elapsedFrac(o, t) * 100;
+  const gap = last ? gapAt(o, last) : gapAt(o, null, t);
+  const proj = projectionAt(o, chks);
+  const projPct = proj == null ? null : progressPct(o, proj);
+  const status = statusFrom(gap, projPct);
+  const sinceUpdate = daysBetween(last ? last.date : o.startDate, t);
+  let month = null;
+  if (o.kind === 'monthly') {
+    const inMonth = last && last.date.slice(0, 7) === t.slice(0, 7);
+    const mt = monthTarget(o, t);
+    month = { name: monthName(t), target: mt, mtd: inMonth ? last.value : 0, hasData: !!inMonth, expectedToDate: mt * monthFrac(t) };
+  }
+  return { o, chks, last, current: last ? last.value : o.start, eff, progress, expected, gap, proj, projPct, status, sinceUpdate, month };
+}
+
+/* ---------------------------------------------------------------------
+   Base de alunos
+   --------------------------------------------------------------------- */
+function studentEnd(s) { return s.end || (s.start ? addMonths(s.start, RULES.planMonths) : ''); }
+function studentStatus(s, t) {
+  if (s.refunded) return 'estornado';
+  if (!s.start) return 'futuro';
+  if (s.start > t) return 'futuro';
+  if (studentEnd(s) <= t) return 'encerrado';
+  if (s.timeoffStart && s.timeoffStart <= t && (!s.timeoffEnd || s.timeoffEnd >= t)) return 'timeoff';
+  return 'ativo';
+}
+function studentStats() {
+  const t = today();
+  const dl = activeObjectives()[0]?.deadline || '2026-12-31';
+  const list = S.students.map((s) => ({ s, st: studentStatus(s, t), end: studentEnd(s) }));
+  const active = list.filter((x) => x.st === 'ativo' || x.st === 'timeoff');
+  return {
+    list, active,
+    total: list.length,
+    timeoff: list.filter((x) => x.st === 'timeoff').length,
+    endingByDeadline: active.filter((x) => x.end > t && x.end <= dl),
+    levels: LEVELS.map((l) => ({ l, n: active.filter((x) => x.s.level === l).length })),
+    noLevel: active.filter((x) => !LEVELS.includes(x.s.level)).length,
+    deadline: dl
+  };
+}
+function capacityInfo() {
+  const p = S.objectives.find((o) => o.id === 'p1' && !o.archived) || activeObjectives().find((o) => /ativos/i.test(o.title));
+  if (!p) return null;
+  const s = summarize(p);
+  const used = s.current * RULES.lessonsPerStudent;
+  return { students: s.current, used, cap: RULES.capacity, pct: used / RULES.capacity * 100 };
+}
+
+/* ---------------------------------------------------------------------
+   Alertas
+   --------------------------------------------------------------------- */
+function buildAlerts(sums) {
+  const t = today();
+  const out = [];
+  sums.forEach((s) => {
+    const o = s.o;
+    if (s.gap <= RULES.riskGap) {
+      out.push({ lvl: 'risk', w: 0, icon: '!', title: `${o.title}: ${nf0.format(Math.abs(s.gap))} pontos abaixo do esperado`,
+        text: o.kind === 'monthly' ? `No mês: ${fmt(s.last?.value ?? 0, o.unit)} de ${fmt(monthTarget(o, s.last?.date || t), o.unit)}. Responsável: ${o.owner}.` : `Real ${fmt(s.current, o.unit)}, esperado ${fmt(o.start + (o.target - o.start) * s.expected / 100, o.unit)}. Responsável: ${o.owner}.` });
+    }
+    if (s.sinceUpdate > RULES.staleDays) {
+      out.push({ lvl: 'warn', w: 2, icon: '⏱', title: `${o.title}: ${s.sinceUpdate} dias sem atualização`,
+        text: `O combinado é atualizar a cada dia útil. Alerta a partir de ${RULES.staleDays} dias. Cobrar: ${o.owner}.` });
+    }
+    const h = statusHistory(o);
+    if (h.length && h[h.length - 1].status === 'risk' && h[h.length - 1].date.slice(0, 7) === t.slice(0, 7)) {
+      const prev = h[h.length - 2];
+      if (!prev || prev.status !== 'risk') {
+        out.push({ lvl: 'risk', w: 1, icon: '↓', title: `${o.title} virou AT RISK neste mês`,
+          text: `Mudou em ${fmtDate(h[h.length - 1].date)}${prev ? ` (antes: ${STATUS[prev.status].label})` : ''}.` });
+      }
+    }
+    if (o.kind === 'monthly' && +t.slice(8, 10) >= RULES.earlyDay && s.month) {
+      const pct = s.month.target ? s.month.mtd / s.month.target * 100 : 0;
+      if (pct < RULES.earlyPct) {
+        out.push({ lvl: 'warn', w: 1, icon: '½', title: `1ª quinzena: ${o.title} em ${nf0.format(pct)}% da meta de ${s.month.name}`,
+          text: `No dia ${RULES.earlyDay}, o piso é ${RULES.earlyPct}% (${fmt(s.month.target * RULES.earlyPct / 100, o.unit)}). Ainda dá tempo de reagir.` });
+      }
+    }
+    if (o.estimated && !s.chks.some((c) => !c.example)) {
+      out.push({ lvl: 'info', w: 4, icon: 'i', title: `${o.title}: ponto de partida estimado`, text: `Substitua pelo número real no primeiro check-in (${o.source || 'fonte a definir'}).` });
+    }
+  });
+  const cap = capacityInfo();
+  if (cap && cap.pct >= RULES.capacityWarn) {
+    out.push({ lvl: 'risk', w: 1, icon: '▲', title: `Professores com ${nf0.format(cap.pct)}% da capacidade`, text: `${nf0.format(cap.used)} de ${cap.cap} aulas por semana. Contratar antes de travar as vendas.` });
+  }
+  const st = studentStats();
+  if (st.endingByDeadline.length) {
+    out.push({ lvl: 'info', w: 3, icon: '→', title: `${st.endingByDeadline.length} aluno(s) encerram o plano até ${fmtDate(st.deadline)}`, text: 'Eles saem da contagem de ativos. Considere isso na meta de alunos ativos.' });
+  }
+  const order = { risk: 0, warn: 1, info: 2 };
+  return out.sort((a, b) => order[a.lvl] - order[b.lvl] || a.w - b.w);
+}
+
+/* ---------------------------------------------------------------------
+   Render
+   --------------------------------------------------------------------- */
+function ringSVG(size, stroke, pct, id) {
+  const r = (size - stroke) / 2, c = 2 * Math.PI * r;
+  const p = clamp(pct, 0, 100) / 100;
+  return `<svg viewBox="0 0 ${size} ${size}" aria-hidden="true">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F97316"/><stop offset=".55" stop-color="#EC4899"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient></defs>
+    <circle class="ring-track" cx="${size / 2}" cy="${size / 2}" r="${r}" stroke-width="${stroke}"/>
+    <circle class="ring-bar" cx="${size / 2}" cy="${size / 2}" r="${r}" stroke-width="${stroke}" stroke="url(#${id})"
+      stroke-dasharray="${c}" stroke-dashoffset="${c}" data-target="${c * (1 - p)}"/>
+  </svg>`;
+}
+function pill(st) { const s = STATUS[st]; return `<span class="pill ${s.cls}"><i></i>${s.label}</span>`; }
+function animateIn(root = document) {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    $$('.ring-bar[data-target]', root).forEach((el) => { el.style.strokeDashoffset = el.dataset.target; });
+    $$('[data-w]', root).forEach((el) => { el.style.width = el.dataset.w + '%'; });
+    $$('[data-l]', root).forEach((el) => { el.style.left = el.dataset.l + '%'; });
+  }));
+}
+
+/* ---------------------------------------------------------------------
+   Quem está usando (saudação e destaque dos próprios objetivos)
+   --------------------------------------------------------------------- */
+const USER_KEY = 'mif.user';
+const HIDE_KEY = 'mif.hide';
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* bloqueado */ } }
+function owners() { return [...new Set(activeObjectives().map((o) => o.owner).filter(Boolean))]; }
+function currentUser() { const u = lsGet(USER_KEY); return u && owners().includes(u) ? u : ''; }
+function isMine(o) { const u = currentUser(); return !!u && o.owner === u; }
+function initials(name) { return (name || 'Equipe').split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase(); }
+const WEEKDAYS = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+const MONTHS_LONG = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+function longDate(iso) {
+  const d = new Date(toUTC(iso));
+  return `${WEEKDAYS[d.getUTCDay()]}, ${d.getUTCDate()} de ${MONTHS_LONG[d.getUTCMonth()]} de ${d.getUTCFullYear()}`;
+}
+function renderUserMenu() {
+  const u = currentUser();
+  $('#userMenu').innerHTML = `<div class="lbl">Quem está usando?</div>` +
+    owners().map((n) => `<button type="button" role="menuitemradio" aria-checked="${n === u}" data-user="${esc(n)}">${esc(n)}<span class="small muted">${activeObjectives().filter((o) => o.owner === n).length} objetivo(s)</span></button>`).join('') +
+    `<button type="button" role="menuitemradio" aria-checked="${!u}" data-user="">Equipe (todos)</button>`;
+  $$('[data-user]', $('#userMenu')).forEach((b) => b.onclick = () => { lsSet(USER_KEY, b.dataset.user); $('#userMenu').hidden = true; render(); toast(b.dataset.user ? `Olá, ${b.dataset.user}! Seus objetivos aparecem primeiro no check-in.` : 'Visão da equipe.'); });
+}
+
+const ICONS = {
+  cart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>',
+  calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M16 11l2 2 4-4"/></svg>',
+  cap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg>'
+};
+function iconFor(o) {
+  if (o.unit === 'brl') return ICONS.cart;
+  if (o.unit === 'pct') return ICONS.check;
+  return o.kind === 'monthly' ? ICONS.calendar : ICONS.cap;
+}
+function lastMonthValue(s) {
+  const t = today();
+  const prevKey = addMonths(t.slice(0, 7) + '-01', -1).slice(0, 7);
+  const inPrev = s.chks.filter((c) => c.date.slice(0, 7) === prevKey);
+  return inPrev.length ? inPrev[inPrev.length - 1].value : null;
+}
+
+function renderHeader(sums) {
+  const objs = activeObjectives();
+  const start = objs.map((o) => o.startDate).sort()[0] || today();
+  const end = objs.map((o) => o.deadline).sort().slice(-1)[0] || today();
+  const u = currentUser();
+  document.title = S.meta.business + ' · Objetivos';
+  $('#hello').innerHTML = `Olá, <b>${esc(u || 'equipe')}!</b> <span class="date">Hoje é ${longDate(today())}</span>`;
+  $('#periodChip').textContent = S.meta.period || 'Período ativo';
+  $('#periodRange').textContent = `${S.meta.business} · ${fmtDateFull(start)} → ${fmtDateFull(end)}`;
+  $('#daysLeft').textContent = `${Math.max(0, daysBetween(today(), end))} dias restantes`;
+  $('#storeChip').textContent = Store.mode === 'cloud' ? 'Supabase' : Store.mode === 'local-fallback' ? 'Nuvem indisponível, salvo local' : 'Salvo neste navegador';
+  $('#exampleBanner').hidden = !S.meta.exampleMode;
+  $('#demoDate').textContent = fmtDateFull(DEMO_TODAY);
+  $('#btnUser').textContent = initials(u);
+  $('#btnUser').title = u ? `Usando como ${u}` : 'Escolher quem está usando';
+  const n = buildAlerts(sums).filter((a) => a.lvl !== 'info').length;
+  $('#bellCount').hidden = !n; $('#bellCount').textContent = n;
+  $('#navBadge').hidden = !n;
+  renderUserMenu();
+  const hidden = document.body.classList.contains('hide-values');
+  $('#btnHide').setAttribute('aria-pressed', String(hidden));
+  $('#btnHide').innerHTML = hidden
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Mostrar'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.9 17.9A10.1 10.1 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.1-5.9M9.9 4.2A9.1 9.1 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2"/><path d="M1 1l22 22"/></svg>Ocultar';
+}
+
+function renderKPIs(sums) {
+  const list = sums.slice().sort((a, b) => (isMine(b.o) - isMine(a.o)));
+  $('#kpis').innerHTML = list.map((s, i) => {
+    const o = s.o;
+    const col = colorOf(o);
+    const monthly = o.kind === 'monthly';
+    const val = monthly ? s.month.mtd : s.current;
+    const pctBar = monthly ? (s.month.target ? s.month.mtd / s.month.target * 100 : 0) : s.progress;
+    const expBar = monthly ? monthFrac(today()) * 100 : s.expected;
+    const prev = monthly ? lastMonthValue(s) : null;
+    return `<section class="card kpi" style="animation-delay:${i * .05}s">
+      <div class="kpi-top"><span class="kpi-ic" style="color:${col}">${iconFor(o)}</span><span class="kpi-name">${esc(o.title)}</span></div>
+      <div><div class="mini" style="color:var(--text-3)">${monthly ? 'Mês atual' : 'Atual'}</div><div class="kpi-val num">${fmt(val, o.unit)}${monthly ? '' : ` <small>/ ${fmt(o.target, o.unit)}</small>`}</div></div>
+      <div class="kpi-sub num">${monthly ? `Meta de ${s.month.name}: <b>${fmt(s.month.target, o.unit)}</b>` : `Início: <b>${fmt(o.start, o.unit)}</b> · até ${fmtDate(o.deadline)}`}</div>
+      ${monthly ? `<div class="kpi-sub num">Mês passado: <b>${prev == null ? '—' : fmt(prev, o.unit)}</b></div>` : `<div class="kpi-sub">Responsável: <b>${esc(o.owner)}</b>${isMine(o) ? ' <span class="tag" style="border-color:rgba(109,68,255,.6);color:#C4B5FD">seu</span>' : ''}</div>`}
+      <div class="bar" title="Linha branca: onde deveria estar hoje"><div class="fill ${s.status}" data-w="${clamp(pctBar, 0, 100)}"></div><div class="exp" style="left:calc(${clamp(expBar, 0, 100)}% - 1px)"></div></div>
+      <div class="kpi-foot">${pill(s.status)}<span class="small muted">${monthly ? esc(o.owner) + (isMine(o) ? ' (você)' : '') : s.last ? 'atualizado ' + fmtDate(s.last.date) : 'sem check-in'}</span></div>
+    </section>`;
+  }).join('');
+}
+
+function renderGlobal(sums) {
+  const avg = sums.length ? sums.reduce((s, x) => s + clamp(x.progress, 0, 100), 0) / sums.length : 0;
+  const exp = sums.length ? sums.reduce((s, x) => s + x.expected, 0) / sums.length : 0;
+  const count = { on: 0, behind: 0, risk: 0 };
+  sums.forEach((s) => count[s.status]++);
+  const gst = statusFrom(avg - exp, null);
+  $('#cardGlobal').innerHTML = `
+    <div class="card-h" style="margin-bottom:4px"><span class="kpi-name" style="font-size:16px">Cumprimento global</span>${pill(gst)}</div>
+    <div class="big num">${nf0.format(avg)}% <small>esperado hoje ${nf0.format(exp)}%</small></div>
+    <div class="bar"><div class="fill grad" data-w="${clamp(avg, 0, 100)}"></div><div class="exp" style="left:calc(${clamp(exp, 0, 100)}% - 1px)"></div></div>
+    <div class="ends num"><span>0%</span><span>Meta 100%</span></div>`;
+  $('#cardStatus').innerHTML = `
+    <h3>Status dos objetivos</h3>
+    <div class="box"><div class="k">Objetivos ativos</div><div class="v num">${sums.length}</div></div>
+    <div class="box-row">
+      <div class="box"><div class="k on">On track</div><div class="v num">${count.on}</div></div>
+      <div class="box"><div class="k behind">Behind</div><div class="v num">${count.behind}</div></div>
+      <div class="box"><div class="k risk">At risk</div><div class="v num">${count.risk}</div></div>
+    </div>
+    <button class="btn-primary" id="btnMeeting" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>Modo reunião</button>`;
+  $('#btnMeetingSide').onclick = openMeeting;
+  $('#btnBell').onclick = () => $('#cardAlerts').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+  $('#btnUser').onclick = (e) => { e.stopPropagation(); $('#userMenu').hidden = !$('#userMenu').hidden; };
+  document.addEventListener('click', (e) => { if (!$('#userMenu').hidden && !e.target.closest('#userMenu')) $('#userMenu').hidden = true; });
+  if (lsGet(HIDE_KEY) === '1') document.body.classList.add('hide-values');
+  $('#btnHide').onclick = () => { const on = document.body.classList.toggle('hide-values'); lsSet(HIDE_KEY, on ? '1' : '0'); render(); };
+  $$('.nav-btn[data-go]').forEach((b) => b.onclick = () => {
+    $$('.nav-btn').forEach((x) => x.classList.remove('active')); b.classList.add('active');
+    const el = document.getElementById(b.dataset.go);
+    if (b.dataset.go === 'top') window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    else if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 84, behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+}
+
+function renderProjection(sums) {
+  const rows = sums.slice().sort((a, b) => (a.projPct ?? -1e9) - (b.projPct ?? -1e9));
+  $('#cardProj').innerHTML = `
+    <div class="card-h"><div><div class="eyebrow">Projeção de fechamento</div><div class="card-title" id="pTitle">Mantendo o ritmo atual, onde cada objetivo chega em ${fmtDate(rows[0]?.o.deadline || '')}?</div></div></div>
+    <div class="proj-list">${rows.map((s) => {
+      const o = s.o;
+      const has = s.projPct != null;
+      const pp = has ? s.projPct : 0;
+      const nowW = clamp(s.progress, 0, 100);
+      const futW = clamp(pp, 0, 100);
+      const needed = o.target - s.eff;
+      return `<div class="proj-row">
+        <div>
+          <div class="t"><span class="dot" style="background:${colorOf(o)}"></span>${esc(o.title)} ${pill(s.status)}</div>
+          <div class="meta">${esc(o.area)} · ${esc(o.owner)} · meta ${fmt(o.target, o.unit)}${o.kind === 'monthly' ? '/mês' : ''}</div>
+        </div>
+        <div class="verdict">
+          ${has ? `<div class="small muted">você chegará a</div><div class="pct num ${s.status}">${nf0.format(Math.max(0, pp))}%</div>
+          <div class="val num">≈ ${fmt(Math.max(0, s.proj), o.unit)}${o.kind === 'monthly' ? '/mês' : ''}</div>`
+          : `<div class="small muted">sem check-in</div><div class="pct num" style="color:var(--text-3)">—</div>`}
+        </div>
+        <div class="proj-bar" title="Barra cinza: onde está hoje. Listrada: projeção até o prazo. Linha: meta.">
+          <div class="fut ${s.status}" data-w="${Math.max(0, futW - nowW)}" data-l="${nowW}" style="left:0"></div>
+          <div class="now" data-w="${nowW}"></div>
+          <div class="goal" style="left:calc(100% - 2px)"></div>
+        </div>
+        ${has && s.projPct < 100 ? `<div class="meta num" style="grid-column:1/-1">Faltam ${fmt(Math.max(0, needed), o.unit)} até a meta. No ritmo atual, fica ${fmt(Math.max(0, o.target - s.proj), o.unit)} abaixo.</div>` : ''}
+      </div>`;
+    }).join('')}</div>
+    <div class="proj-legend"><span><i class="sw" style="background:rgba(255,255,255,.22)"></i>hoje</span><span><i class="sw" style="background:repeating-linear-gradient(135deg,#22C55E 0 3px,rgba(34,197,94,.4) 3px 6px)"></i>projeção</span><span><i class="sw" style="background:#EC4899;width:3px;height:12px"></i>meta</span><span>Ordenado do mais arriscado para o mais seguro.</span></div>`;
+}
+
+function renderAlerts(sums) {
+  const alerts = buildAlerts(sums);
+  $('#cardAlerts').innerHTML = `
+    <div class="card-h"><div><div class="eyebrow">Alertas</div><div class="card-title" id="aTitle">${alerts.filter((a) => a.lvl !== 'info').length} pedem ação</div></div></div>
+    ${alerts.length ? `<div class="alert-list">${alerts.map((a) => `<div class="alert ${a.lvl}"><div class="ic" aria-hidden="true">${a.icon}</div><div><b>${esc(a.title)}</b><span>${esc(a.text)}</span></div></div>`).join('')}</div>`
+    : `<div class="alert-empty">Nenhum alerta. Tudo no ritmo.</div>`}`;
+}
+
+function renderAreas(sums) {
+  const areas = [];
+  sums.forEach((s) => { if (!areas.includes(s.o.area)) areas.push(s.o.area); });
+  const span = areas.length >= 3 ? 's4' : areas.length === 2 ? 's6' : 's12';
+  const cap = capacityInfo();
+  $('#areas').innerHTML = areas.map((area, ai) => {
+    const list = sums.filter((s) => s.o.area === area);
+    const avg = list.reduce((a, s) => a + clamp(s.progress, 0, 100), 0) / list.length;
+    const worst = list.some((s) => s.status === 'risk') ? 'risk' : list.some((s) => s.status === 'behind') ? 'behind' : 'on';
+    const capHtml = (cap && list.some((s) => s.o.id === 'p1')) ? `
+      <div class="cap"><div class="obj-top"><div><div class="obj-name">Capacidade dos professores</div><div class="obj-sub">3 professores × 36 aulas · ${RULES.lessonsPerStudent} aula/aluno/semana</div></div>
+      <span class="pill ${cap.pct >= RULES.capacityWarn ? 'risk' : cap.pct >= 75 ? 'behind' : 'on'}"><i></i>${nf0.format(cap.pct)}%</span></div>
+      <div class="obj-vals"><span><b class="num">${nf0.format(cap.used)}</b> de ${cap.cap} aulas/semana</span><span class="num">alerta em ${RULES.capacityWarn}%</span></div>
+      <div class="bar"><div class="fill ${cap.pct >= RULES.capacityWarn ? 'risk' : cap.pct >= 75 ? 'behind' : 'on'}" data-w="${clamp(cap.pct, 0, 100)}"></div></div></div>` : '';
+    return `<section class="card ${span}" style="animation-delay:${.14 + ai * .04}s">
+      <div class="area-head">
+        <div class="mini-ring">${ringSVG(64, 7, avg, 'gA' + ai)}<div class="v num">${nf0.format(avg)}%</div></div>
+        <div><div class="eyebrow">Área</div><div class="card-title">${esc(area)}</div><div style="margin-top:6px">${pill(worst)}</div></div>
+      </div>
+      ${list.map((s) => {
+        const o = s.o;
+        const w = clamp(s.progress, 0, 100);
+        return `<div class="obj">
+          <div class="obj-top">
+            <div><div class="obj-name"><span class="dot" style="background:${colorOf(o)}"></span>${esc(o.title)}${o.estimated && !s.chks.some((c) => !c.example) ? ' <span class="tag">estimado</span>' : ''}</div>
+            <div class="obj-sub">Responsável: <b style="color:var(--text-2)">${esc(o.owner)}</b> · até ${fmtDate(o.deadline)}</div></div>
+            ${pill(s.status)}
+          </div>
+          <div class="obj-vals num"><span>${o.kind === 'monthly' ? 'Ritmo' : 'Atual'}: <b>${fmt(o.kind === 'monthly' ? s.eff : s.current, o.unit)}</b>${o.kind === 'monthly' ? '/mês' : ''}</span><span>${fmt(o.start, o.unit)} → <b>${fmt(o.target, o.unit)}</b></span></div>
+          <div class="bar" title="Linha branca: onde deveria estar hoje"><div class="fill ${s.status}" data-w="${w}"></div><div class="exp" style="left:calc(${clamp(s.expected, 0, 100)}% - 1px)"></div></div>
+          ${s.month ? `<div class="month-line num">Em ${s.month.name}: <b>${fmt(s.month.mtd, o.unit)}</b> de ${fmt(s.month.target, o.unit)} · esperado até hoje ${fmt(s.month.expectedToDate, o.unit)}${s.month.hasData ? '' : ' · <b>sem check-in no mês</b>'}</div>` : ''}
+        </div>`;
+      }).join('')}
+      ${capHtml}
+    </section>`;
+  }).join('');
+}
+
+function renderChart(sums) {
+  const seg = $('#chartSeg');
+  const objs = sums.map((s) => s.o);
+  if (chartSel !== 'all' && !objs.some((o) => o.id === chartSel)) chartSel = 'all';
+  seg.innerHTML = `<button type="button" data-id="all" aria-pressed="${chartSel === 'all'}">Todos</button>` +
+    objs.map((o) => `<button type="button" data-id="${o.id}" aria-pressed="${chartSel === o.id}">${esc(o.id.toUpperCase())}</button>`).join('');
+  $$('button', seg).forEach((b) => b.onclick = () => { chartSel = b.dataset.id; renderChart(sums); });
+
+  const box = $('.chart-box');
+  if (typeof window.Chart === 'undefined') {
+    box.innerHTML = '<div class="chart-fallback">O gráfico precisa de internet para carregar a biblioteca Chart.js.<br>O restante do dashboard funciona normalmente.</div>';
+    return;
+  }
+  if (!$('#chart')) box.innerHTML = '<canvas id="chart" aria-label="Gráfico de progresso real versus esperado"></canvas>';
+
+  const shown = chartSel === 'all' ? sums : sums.filter((s) => s.o.id === chartSel);
+  const ref = shown[0]?.o || objs[0];
+  if (!ref) return;
+  const total = periodDays(ref);
+  const tDay = daysBetween(ref.startDate, today());
+  const datasets = [];
+  shown.forEach((s) => {
+    const o = s.o;
+    const col = colorOf(o);
+    const pts = [{ x: 0, y: 0, raw: o.start, date: o.startDate, note: 'Ponto de partida' }]
+      .concat(s.chks.map((c) => ({ x: daysBetween(o.startDate, c.date), y: Math.round(progressPct(o, effValue(o, c)) * 10) / 10, raw: c.value, date: c.date, note: c.note, ex: c.example })));
+    datasets.push({
+      label: o.title, data: pts, borderColor: col, pointBackgroundColor: col, borderWidth: 2, fill: 'origin',
+      backgroundColor: (ctx) => { const a = ctx.chart.chartArea; if (!a) return 'transparent'; const g = ctx.chart.ctx.createLinearGradient(0, a.top, 0, a.bottom); g.addColorStop(0, col + (chartSel === 'all' ? '26' : '4D')); g.addColorStop(1, col + '00'); return g; },
+      pointStyle: pointOf(o), pointRadius: 5, pointHoverRadius: 7, pointBorderColor: '#1D1D25', pointBorderWidth: 2,
+      tension: 0.25, _o: o
+    });
+    if (chartSel !== 'all') {
+      datasets.push({ label: 'Projeção', data: s.proj != null ? [pts[pts.length - 1], { x: total, y: Math.round(s.projPct * 10) / 10, raw: s.proj, date: o.deadline, note: 'Projeção no ritmo atual' }] : [],
+        borderColor: col, borderDash: [2, 4], borderWidth: 2, pointRadius: [0, 5], pointStyle: pointOf(o), backgroundColor: col, _o: o });
+    }
+  });
+  datasets.push({ label: 'Esperado (linear)', data: [{ x: 0, y: 0 }, { x: total, y: 100 }], borderColor: 'rgba(244,244,247,0.45)', borderDash: [6, 6], borderWidth: 2, pointRadius: 0, pointHoverRadius: 0, _exp: true });
+
+  const monthTicks = [];
+  for (let d = 0; d <= total; d++) { const iso = addDays(ref.startDate, d); if (iso.endsWith('-01')) monthTicks.push(d); }
+  const guides = {
+    id: 'guides',
+    beforeDatasetsDraw(c) {
+      const { ctx, chartArea: a, scales: { x } } = c;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1;
+      monthTicks.forEach((d) => { const px = x.getPixelForValue(d); ctx.beginPath(); ctx.moveTo(px, a.top); ctx.lineTo(px, a.bottom); ctx.stroke(); });
+      if (tDay >= 0 && tDay <= total) {
+        const px = x.getPixelForValue(tDay);
+        ctx.strokeStyle = 'rgba(244,244,247,0.35)'; ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(px, a.top); ctx.lineTo(px, a.bottom); ctx.stroke();
+        ctx.setLineDash([]); ctx.fillStyle = 'rgba(244,244,247,0.6)'; ctx.font = '600 11px Inter, system-ui'; ctx.textAlign = 'center';
+        ctx.fillText('hoje', px, a.top - 6);
+      }
+      ctx.restore();
+    }
+  };
+  if (chart) { chart.destroy(); chart = null; }
+  chart = new Chart($('#chart'), {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: reduceMotion ? false : { duration: 900 },
+      parsing: false, layout: { padding: { top: 16 } },
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
+      scales: {
+        x: { type: 'linear', min: 0, max: total, grid: { display: false }, border: { color: 'rgba(255,255,255,0.1)' },
+          ticks: { color: '#8C8C9B', font: { size: 11 }, autoSkip: false, callback: (v) => (v === 0 || monthTicks.includes(v) || v === total) ? fmtDate(addDays(ref.startDate, v)) : '' },
+          afterBuildTicks: (ax) => { ax.ticks = [0].concat(monthTicks).concat([total]).filter((v, i, arr) => i === 0 || v - arr[i - 1] >= 10 || v === total).filter((v, i, arr) => !(i === 0 && arr[1] != null && arr[1] - v < 10)).map((v) => ({ value: v })); } },
+        y: { suggestedMin: 0, suggestedMax: 110, grid: { color: 'rgba(255,255,255,0.05)' }, border: { display: false },
+          ticks: { color: '#8C8C9B', font: { size: 11 }, callback: (v) => v + '%', stepSize: 25 } }
+      },
+      plugins: {
+        legend: { position: 'top', align: 'start', labels: { color: '#B3B3C0', usePointStyle: true, boxWidth: 8, boxHeight: 8, padding: 14, font: { size: 11.5 },
+          filter: (item, data) => data.datasets[item.datasetIndex].label !== 'Projeção' } },
+        tooltip: {
+          backgroundColor: '#25252F', borderColor: 'rgba(255,255,255,0.12)', borderWidth: 1, titleColor: '#F4F4F7', bodyColor: '#B3B3C0', padding: 10, usePointStyle: true,
+          filter: (it) => !it.dataset._exp,
+          callbacks: {
+            title: (items) => items.length ? fmtDateFull(addDays(ref.startDate, Math.round(items[0].parsed.x))) : '',
+            label: (it) => { const o = it.dataset._o; const r = it.raw; return ` ${o.title}: ${nf0.format(it.parsed.y)}% · ${fmt(r.raw, o.unit)}${o.kind === 'monthly' && r.note !== 'Ponto de partida' && it.dataset.label !== 'Projeção' ? ' no mês' : ''}${r.ex ? ' (exemplo)' : ''}`; },
+            afterLabel: (it) => it.raw.note ? '   ' + it.raw.note : ''
+          }
+        }
+      }
+    },
+    plugins: [guides]
+  });
+  $('#chartNote').textContent = 'Linha tracejada = progresso esperado se o avanço fosse linear entre o início e o prazo. ' +
+    (sums.some((s) => s.o.kind === 'monthly') ? 'Nos objetivos "no mês", o ponto mostra o ritmo mensal (vendido no mês projetado para o mês inteiro).' : '');
+}
+
+function renderHistory(sums) {
+  const sel = $('#histSel');
+  const objs = S.objectives.slice().sort((a, b) => (a.archived - b.archived) || ((a.order ?? 0) - (b.order ?? 0)));
+  if (!histSel || !objs.some((o) => o.id === histSel)) histSel = objs[0]?.id || null;
+  sel.innerHTML = objs.map((o) => `<option value="${o.id}" ${o.id === histSel ? 'selected' : ''}>${esc(o.title)}${o.archived ? ' (arquivado)' : ''}</option>`).join('');
+  sel.onchange = () => { histSel = sel.value; renderHistory(sums); };
+  const o = S.objectives.find((x) => x.id === histSel);
+  if (!o) { $('#timeline').innerHTML = '<div class="alert-empty">Sem objetivos.</div>'; return; }
+  const chks = checkinsOf(o);
+  const items = chks.map((c, i) => {
+    const prev = i ? chks[i - 1].value : o.start;
+    const sameMonth = !i || chks[i - 1].date.slice(0, 7) === c.date.slice(0, 7);
+    const d = c.value - prev;
+    const showDelta = o.kind !== 'monthly' || (i && sameMonth);
+    return `<div class="tl"><div class="tl-h"><div><span class="tl-date num">${fmtDateFull(c.date)}</span> ${c.example ? '<span class="tag ex">exemplo</span>' : ''}</div>
+      <button class="icon-btn" data-del="${c.id}" aria-label="Excluir check-in de ${fmtDateFull(c.date)}" title="Excluir check-in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div><span class="tl-v num">${fmt(c.value, o.unit)}</span>${o.kind === 'monthly' ? `<span class="small muted"> em ${monthName(c.date)}</span>` : ''}${showDelta && d ? `<span class="tl-d num ${(d > 0) === (o.target >= o.start) ? 'up' : 'down'}">${d > 0 ? '+' : ''}${fmt(d, o.unit)}</span>` : ''}</div>
+      ${c.note ? `<div class="tl-n">${esc(c.note)}</div>` : ''}</div>`;
+  }).reverse();
+  items.push(`<div class="tl start"><div class="tl-date num">${fmtDateFull(o.startDate)}</div><div><span class="tl-v num">${fmt(o.start, o.unit)}</span> <span class="small muted">ponto de partida${o.estimated ? ' (estimado)' : ''}</span></div><div class="tl-n">Fonte: ${esc(o.source || '—')}</div></div>`);
+  $('#timeline').innerHTML = items.join('');
+  $$('[data-del]', $('#timeline')).forEach((b) => b.onclick = async () => {
+    if (!(await ask('Excluir este check-in?'))) return;
+    S.checkins = S.checkins.filter((c) => c.id !== b.dataset.del);
+    await Store.commit(S, { deletes: [b.dataset.del] });
+    render(); toast('Check-in excluído.');
+  });
+}
+
+function renderStudents() {
+  const st = studentStats();
+  const t = today();
+  const labels = { ativo: 'Ativo', timeoff: 'Time off', encerrado: 'Encerrado', estornado: 'Estornado', futuro: 'Futuro' };
+  const maxL = Math.max(1, ...st.levels.map((l) => l.n));
+  const rows = st.list.slice().sort((a, b) => (a.s.start || '').localeCompare(b.s.start || ''));
+  $('#cardStudents').innerHTML = `
+    <div class="card-h" style="flex-wrap:wrap">
+      <div><div class="eyebrow">Pedagógico · informação</div><div class="card-title">Base de alunos</div>
+      <div class="small muted" style="margin-top:2px">Ficha de consulta, sem meta. Encerramento = matrícula + ${RULES.planMonths} meses (ou a data informada).</div></div>
+      <div class="actions">
+        <button class="btn sm ghost" id="stuTemplate" type="button">Baixar modelo CSV</button>
+        <button class="btn sm ghost" id="stuImport" type="button">Importar planilha (CSV)</button>
+        <button class="btn sm ghost" id="stuExport" type="button">Exportar CSV</button>
+        <button class="btn sm primary" id="stuNew" type="button">+ Aluno</button>
+        <input type="file" id="fileStu" accept=".csv,text/csv" hidden>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">Na base</div><div class="v num">${st.total}</div><div class="h">cadastros</div></div>
+      <div class="stat"><div class="k">Ativos</div><div class="v num" style="color:var(--on)">${st.active.length}</div><div class="h">inclui time off</div></div>
+      <div class="stat"><div class="k">Em time off</div><div class="v num" style="color:#93C5FD">${st.timeoff}</div><div class="h">hoje, ${fmtDate(t)}</div></div>
+      <div class="stat"><div class="k">Encerram até ${fmtDate(st.deadline)}</div><div class="v num" style="color:var(--behind)">${st.endingByDeadline.length}</div><div class="h">saem da contagem de ativos</div></div>
+    </div>
+    <div class="two">
+      <div>
+        <div class="eyebrow" style="margin-bottom:10px">Nivelamento dos ativos</div>
+        <div class="levels">${st.levels.map((l) => `<div class="lv"><span>${esc(l.l)}</span><div class="b"><i data-w="${l.n / maxL * 100}"></i></div><span class="num muted" style="text-align:right">${l.n}</span></div>`).join('')}
+        ${st.noLevel ? `<div class="small muted">${st.noLevel} sem nivelamento informado</div>` : ''}</div>
+      </div>
+      <div>
+        ${rows.length ? `<div class="table-wrap"><table class="tbl"><thead><tr><th>Aluno</th><th>Plano</th><th>Matrícula</th><th>Encerramento</th><th>Nível</th><th>Time off</th><th>Status</th></tr></thead><tbody>
+        ${rows.map(({ s, st: ss, end }) => {
+          const soon = (ss === 'ativo' || ss === 'timeoff') && end <= st.deadline;
+          return `<tr data-stu="${s.id}" style="cursor:pointer" tabindex="0" title="Clique para editar">
+            <td>${esc(s.name)} ${s.example ? '<span class="tag ex">exemplo</span>' : ''}</td>
+            <td>${esc(s.plan || '—')}</td>
+            <td class="num">${fmtDateFull(s.start)}</td>
+            <td class="num">${fmtDateFull(end)}${soon ? ' <span class="st fim">encerra no período</span>' : ''}</td>
+            <td>${esc(s.level || '—')}</td>
+            <td class="num">${s.timeoffStart ? fmtDate(s.timeoffStart) + ' → ' + (s.timeoffEnd ? fmtDate(s.timeoffEnd) : '…') : '—'}</td>
+            <td><span class="st ${ss}">${labels[ss]}</span></td></tr>`;
+        }).join('')}</tbody></table></div>`
+        : `<div class="alert-empty">Nenhum aluno cadastrado. Importe a planilha (CSV) ou adicione manualmente.</div>`}
+      </div>
+    </div>`;
+  $('#stuNew').onclick = () => openStudent(null);
+  $('#stuExport').onclick = exportStudents;
+  $('#stuTemplate').onclick = () => download('modelo-alunos.csv', toCSV([['nome', 'plano', 'matricula', 'encerramento', 'nivelamento', 'timeoff_inicio', 'timeoff_fim', 'estornado'], ['Maria Silva', 'Mentoria 12 meses', '15/03/2026', '', 'Básico', '', '', 'nao']]));
+  $('#stuImport').onclick = () => $('#fileStu').click();
+  $('#fileStu').onchange = (e) => { const f = e.target.files[0]; if (f) importStudents(f); e.target.value = ''; };
+  $$('[data-stu]').forEach((tr) => {
+    tr.onclick = () => openStudent(tr.dataset.stu);
+    tr.onkeydown = (e) => { if (e.key === 'Enter') openStudent(tr.dataset.stu); };
+  });
+}
+
+function renderFooter() {
+  $('#footInfo').innerHTML = Store.mode === 'cloud'
+    ? 'Dados no Supabase: cada responsável atualiza do próprio dispositivo.'
+    : 'Dados salvos neste navegador. Para compartilhar entre dispositivos, preencha o bloco CONFIG (Supabase).';
+}
+
+function render() {
+  const sums = activeObjectives().map(summarize);
+  renderHeader(sums);
+  renderGlobal(sums);
+  renderKPIs(sums);
+  renderProjection(sums);
+  renderAlerts(sums);
+  renderAreas(sums);
+  renderChart(sums);
+  renderHistory(sums);
+  renderStudents();
+  renderFooter();
+  animateIn();
+}
+
+/* ---------------------------------------------------------------------
+   Modais
+   --------------------------------------------------------------------- */
+function openModal(id) { const m = $('#' + id); m.classList.add('open'); const f = $('input:not([type=hidden]):not([type=checkbox]), select, textarea', m); if (f) setTimeout(() => f.focus(), 50); }
+function closeModal(el) { el.classList.remove('open'); }
+$$('.overlay:not(#mAsk)').forEach((ov) => {
+  ov.addEventListener('mousedown', (e) => { if (e.target === ov) closeModal(ov); });
+  $$('[data-close]', ov).forEach((b) => b.addEventListener('click', () => closeModal(ov)));
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if ($('#meeting').classList.contains('open')) { closeMeeting(); return; }
+  const open = $$('.overlay.open:not(#mAsk)'); if ($('#mAsk').classList.contains('open')) return; if (open.length) closeModal(open[open.length - 1]);
+});
+
+async function clearExamples(silent) {
+  const del = S.checkins.filter((c) => c.example).map((c) => c.id).concat(S.students.filter((s) => s.example).map((s) => s.id));
+  S.checkins = S.checkins.filter((c) => !c.example);
+  S.students = S.students.filter((s) => !s.example);
+  S.meta.exampleMode = false;
+  await Store.commit(S, { deletes: del, upserts: [['config', S.meta]] });
+  render();
+  if (!silent) toast('Exemplos apagados. Agora os dados são só os reais.');
+}
+
+// 1. Atualizar progresso: todos os objetivos em uma etapa
+async function openUpdate() {
+  if (S.meta.exampleMode) {
+    if (!(await ask('O dashboard está em modo exemplo. Para registrar números reais, os check-ins e alunos de exemplo serão apagados. Continuar?'))) return;
+    await clearExamples(true);
+  }
+  $('#updDate').value = today();
+  $('#updRows').innerHTML = activeObjectives().sort((a, b) => isMine(b) - isMine(a)).map((o) => {
+    const s = summarize(o);
+    const hint = o.kind === 'monthly' ? `Acumulado no mês até a data (${fmt(monthTarget(o, today()), o.unit)} é a meta de ${monthName(today())})` : 'Valor atual';
+    return `<div class="upd-row${isMine(o) ? ' mine' : ''}">
+      <div><label class="h" for="u_${o.id}"><span class="dot" style="background:${colorOf(o)}"></span>${esc(o.title)}${isMine(o) ? ' <span class="tag" style="border-color:rgba(109,68,255,.6);color:#C4B5FD">seu</span>' : ''}</label>
+        <div class="hint">${esc(o.owner)} · último: <span class="num">${s.last ? fmt(s.last.value, o.unit) + ' em ' + fmtDate(s.last.date) : fmt(o.start, o.unit) + ' (início)'}</span></div>
+        <div class="hint">${esc(o.source || '')}</div></div>
+      <div><input class="inp num" id="u_${o.id}" type="number" step="any" inputmode="decimal" placeholder="${o.unit === 'brl' ? 'R$' : o.unit === 'pct' ? '%' : 'nº'}" aria-describedby="uh_${o.id}"><div class="hint" id="uh_${o.id}">${hint}</div></div>
+      <div><textarea class="inp" id="n_${o.id}" rows="1" placeholder="O que aconteceu? (opcional)" aria-label="Observação para ${esc(o.title)}"></textarea></div>
+    </div>`;
+  }).join('');
+  openModal('mUpdate');
+}
+async function saveUpdate() {
+  const date = $('#updDate').value;
+  if (!validISO(date)) { toast('Informe uma data válida.'); return; }
+  const ups = [];
+  activeObjectives().forEach((o) => {
+    const raw = $('#u_' + o.id).value;
+    if (raw === '') return;
+    const v = parseNum(raw);
+    if (isNaN(v)) return;
+    const c = { id: uid('ck'), objectiveId: o.id, date, value: v, note: $('#n_' + o.id).value.trim(), example: false };
+    S.checkins.push(c); ups.push(['checkin', c]);
+  });
+  if (!ups.length) { toast('Nenhum valor preenchido.'); return; }
+  await Store.commit(S, { upserts: ups });
+  closeModal($('#mUpdate'));
+  render();
+  toast(`${ups.length} check-in(s) salvos.`);
+}
+
+// Gerenciar objetivos
+let editingObj = null;
+function renderManage() {
+  const act = activeObjectives();
+  const arch = S.objectives.filter((o) => o.archived);
+  $('#manageList').innerHTML = act.map((o) => `<div class="obj-admin">
+      <div><div class="obj-name"><span class="dot" style="background:${colorOf(o)}"></span>${esc(o.title)}</div>
+      <div class="obj-sub num">${esc(o.area)} · ${esc(o.owner)} · ${fmt(o.start, o.unit)} → ${fmt(o.target, o.unit)} · até ${fmtDateFull(o.deadline)}</div></div>
+      <div class="row-actions"><button class="btn sm" data-edit="${o.id}" type="button">Editar</button><button class="btn sm ghost" data-arch="${o.id}" type="button">Arquivar</button></div>
+    </div>`).join('') || '<div class="alert-empty">Nenhum objetivo ativo.</div>';
+  $('#archList').innerHTML = arch.length ? `<div class="eyebrow" style="margin-bottom:6px">Arquivados (concluídos)</div>` + arch.map((o) => `<div class="obj-admin">
+      <div><div class="obj-name muted">${esc(o.title)}</div><div class="obj-sub num">${esc(o.area)} · ${fmt(o.target, o.unit)}</div></div>
+      <div class="row-actions"><button class="btn sm" data-restore="${o.id}" type="button">Restaurar</button><button class="btn sm danger" data-remove="${o.id}" type="button">Excluir</button></div>
+    </div>`).join('') : '';
+  $$('[data-edit]').forEach((b) => b.onclick = () => openObj(b.dataset.edit));
+  $$('[data-arch]').forEach((b) => b.onclick = () => setArchived(b.dataset.arch, true));
+  $$('[data-restore]').forEach((b) => b.onclick = () => setArchived(b.dataset.restore, false));
+  $$('[data-remove]').forEach((b) => b.onclick = async () => {
+    const o = S.objectives.find((x) => x.id === b.dataset.remove);
+    if (!(await ask(`Excluir "${o.title}" e todo o histórico dele? Isso não tem volta.`))) return;
+    const del = [o.id].concat(S.checkins.filter((c) => c.objectiveId === o.id).map((c) => c.id));
+    S.objectives = S.objectives.filter((x) => x.id !== o.id);
+    S.checkins = S.checkins.filter((c) => c.objectiveId !== o.id);
+    await Store.commit(S, { deletes: del });
+    renderManage(); render();
+  });
+}
+async function setArchived(id, v) {
+  const o = S.objectives.find((x) => x.id === id);
+  o.archived = v;
+  await Store.commit(S, { upserts: [['objetivo', o]] });
+  renderManage(); render();
+  toast(v ? 'Objetivo arquivado.' : 'Objetivo restaurado.');
+}
+function openObj(id) {
+  editingObj = id ? S.objectives.find((o) => o.id === id) : null;
+  const o = editingObj || { title: '', area: '', owner: '', unit: 'count', kind: 'stock', start: '', target: '', startDate: today(), deadline: activeObjectives()[0]?.deadline || today(), source: '', estimated: false };
+  $('#mObjT').textContent = editingObj ? 'Editar objetivo' : 'Novo objetivo';
+  $('#areaList').innerHTML = [...new Set(S.objectives.map((x) => x.area))].map((a) => `<option value="${esc(a)}">`).join('');
+  $('#fTitle').value = o.title; $('#fArea').value = o.area; $('#fOwner').value = o.owner;
+  $('#fUnit').value = o.unit; $('#fKind').value = o.kind; $('#fStart').value = o.start; $('#fTarget').value = o.target;
+  $('#fStartDate').value = o.startDate; $('#fDeadline').value = o.deadline; $('#fSource').value = o.source || ''; $('#fEst').checked = !!o.estimated;
+  openModal('mObj');
+}
+async function saveObj() {
+  const f = {
+    title: $('#fTitle').value.trim(), area: $('#fArea').value.trim(), owner: $('#fOwner').value.trim(),
+    unit: $('#fUnit').value, kind: $('#fKind').value, start: parseNum($('#fStart').value), target: parseNum($('#fTarget').value),
+    startDate: $('#fStartDate').value, deadline: $('#fDeadline').value, source: $('#fSource').value.trim(), estimated: $('#fEst').checked
+  };
+  if (!f.title || !f.area || !f.owner) { toast('Preencha objetivo, área e responsável.'); return; }
+  if (/[\/,&]| e /i.test(f.owner)) { if (!(await ask('Parece que há mais de um responsável. O combinado é 1 pessoa por objetivo. Salvar assim mesmo?'))) return; }
+  if (isNaN(f.start) || isNaN(f.target)) { toast('Valor inicial e meta precisam ser números.'); return; }
+  if (!validISO(f.startDate) || !validISO(f.deadline) || f.deadline <= f.startDate) { toast('O prazo precisa ser depois do início.'); return; }
+  let o;
+  if (editingObj) { o = Object.assign(editingObj, f); }
+  else { o = { id: uid('ob'), order: S.objectives.length, archived: false, ...f }; S.objectives.push(o); }
+  await Store.commit(S, { upserts: [['objetivo', o]] });
+  closeModal($('#mObj'));
+  renderManage(); render();
+  toast('Objetivo salvo.');
+}
+
+// Aluno
+let editingStu = null;
+function openStudent(id) {
+  editingStu = id ? S.students.find((s) => s.id === id) : null;
+  const s = editingStu || { name: '', plan: 'Mentoria 12 meses', start: today(), end: '', level: '', timeoffStart: '', timeoffEnd: '', refunded: false };
+  $('#mStudentT').textContent = editingStu ? 'Editar aluno' : 'Novo aluno';
+  $('#planList').innerHTML = [...new Set(S.students.map((x) => x.plan).filter(Boolean).concat(['Mentoria 12 meses']))].map((p) => `<option value="${esc(p)}">`).join('');
+  $('#sName').value = s.name; $('#sPlan').value = s.plan; $('#sStart').value = s.start; $('#sEnd').value = s.end;
+  $('#sLevel').value = LEVELS.includes(s.level) ? s.level : ''; $('#sToStart').value = s.timeoffStart; $('#sToEnd').value = s.timeoffEnd; $('#sRefund').checked = !!s.refunded;
+  $('#stuDelete').style.display = editingStu ? '' : 'none';
+  openModal('mStudent');
+}
+async function saveStudent() {
+  const f = { name: $('#sName').value.trim(), plan: $('#sPlan').value.trim(), start: $('#sStart').value, end: $('#sEnd').value, level: $('#sLevel').value,
+    timeoffStart: $('#sToStart').value, timeoffEnd: $('#sToEnd').value, refunded: $('#sRefund').checked };
+  if (!f.name || !validISO(f.start)) { toast('Nome e data de matrícula são obrigatórios.'); return; }
+  let s;
+  if (editingStu) s = Object.assign(editingStu, f, { example: false });
+  else { s = { id: uid('al'), example: false, ...f }; S.students.push(s); }
+  await Store.commit(S, { upserts: [['aluno', s]] });
+  closeModal($('#mStudent')); render(); toast('Aluno salvo.');
+}
+async function deleteStudent() {
+  if (!editingStu || !(await ask(`Excluir ${editingStu.name}?`))) return;
+  const id = editingStu.id;
+  S.students = S.students.filter((s) => s.id !== id);
+  await Store.commit(S, { deletes: [id] });
+  closeModal($('#mStudent')); render(); toast('Aluno excluído.');
+}
+
+/* ---------------------------------------------------------------------
+   8. Modo reunião
+   --------------------------------------------------------------------- */
+const MEETING_Q = {
+  risk: 'Pergunta da reunião: o que muda ATÉ a próxima revisão, quem faz e quando?',
+  behind: 'Pergunta da reunião: qual é o menor ajuste que recoloca no ritmo esta semana?',
+  on: ''
+};
+function openMeeting() {
+  const sums = activeObjectives().map(summarize);
+  const order = { risk: 0, behind: 1, on: 2 };
+  sums.sort((a, b) => order[a.status] - order[b.status] || a.gap - b.gap);
+  const count = { on: 0, behind: 0, risk: 0 }; sums.forEach((s) => count[s.status]++);
+  const avg = sums.length ? sums.reduce((a, s) => a + clamp(s.progress, 0, 100), 0) / sums.length : 0;
+  $('#meeting').innerHTML = `<div class="mt-wrap">
+    <div class="mt-top">
+      <div><div class="eyebrow">Modo reunião · ${fmtDateFull(today())}</div><h2>${esc(S.meta.business)} · ${esc(S.meta.period || '')}</h2></div>
+      <div class="mt-sum">
+        <span class="chip lime num">Cumprimento global ${nf0.format(avg)}%</span>
+        <span class="pill risk"><i></i>${count.risk} AT RISK</span><span class="pill behind"><i></i>${count.behind} BEHIND</span><span class="pill on"><i></i>${count.on} ON TRACK</span>
+        <button class="btn" id="mtClose" type="button">Sair (Esc)</button>
+      </div>
+    </div>
+    <div class="mt-grid">${sums.map((s) => {
+      const o = s.o;
+      const lastNote = s.chks.slice().reverse().find((c) => c.note);
+      return `<article class="mt-card ${s.status}">
+        ${pill(s.status)}
+        <h3>${esc(o.title)}</h3>
+        <div class="muted">${esc(o.area)} · Responsável: <b style="color:var(--text)">${esc(o.owner)}</b></div>
+        <div class="mt-big num"><span class="v">${o.kind === 'monthly' ? fmtShort(s.month?.mtd ?? 0, o.unit) : fmtShort(s.current, o.unit)}</span>
+          <span class="t">${o.kind === 'monthly' ? `de ${fmtShort(s.month?.target ?? o.target, o.unit)} em ${s.month?.name}` : `de ${fmtShort(o.target, o.unit)}`}</span></div>
+        <div class="bar"><div class="fill ${s.status}" data-w="${clamp(s.progress, 0, 100)}"></div><div class="exp" style="left:calc(${clamp(s.expected, 0, 100)}% - 1px)"></div></div>
+        <div class="small muted num" style="margin-top:6px">Progresso ${nf0.format(s.progress)}% · esperado ${nf0.format(s.expected)}% · última atualização há ${s.sinceUpdate} dia(s)</div>
+        <div class="mt-proj num">${s.projPct != null ? `No ritmo atual chega a <b style="color:${s.status === 'on' ? 'var(--on)' : s.status === 'behind' ? 'var(--behind)' : '#F87171'}">${nf0.format(Math.max(0, s.projPct))}%</b> (≈ ${fmtShort(Math.max(0, s.proj), o.unit)}${o.kind === 'monthly' ? '/mês' : ''}) em ${fmtDate(o.deadline)}` : 'Sem check-in ainda.'}</div>
+        ${lastNote ? `<div class="mt-note">“${esc(lastNote.note)}” <span class="muted small">(${fmtDate(lastNote.date)})</span></div>` : ''}
+        ${MEETING_Q[s.status] ? `<div class="mt-q">${MEETING_Q[s.status]}</div>` : ''}
+      </article>`;
+    }).join('')}</div></div>`;
+  $('#meeting').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  $('#mtClose').onclick = closeMeeting;
+  if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  }
+  animateIn($('#meeting'));
+}
+function closeMeeting() {
+  $('#meeting').classList.remove('open');
+  document.body.style.overflow = '';
+  if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+}
+
+/* ---------------------------------------------------------------------
+   CSV
+   --------------------------------------------------------------------- */
+function csvCell(v) { const s = String(v ?? ''); return /[;"\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+function toCSV(rows) { return '﻿' + rows.map((r) => r.map(csvCell).join(';')).join('\r\n'); }
+function parseCSV(text) {
+  text = text.replace(/^﻿/, '');
+  const first = text.split(/\r?\n/)[0] || '';
+  const delim = (first.match(/;/g) || []).length >= (first.match(/,/g) || []).length ? ';' : ',';
+  const rows = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) {
+      if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+      else cell += ch;
+    } else if (ch === '"') q = true;
+    else if (ch === delim) { row.push(cell); cell = ''; }
+    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; }
+    else cell += ch;
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+  const clean = rows.filter((r) => r.some((c) => c.trim() !== ''));
+  if (!clean.length) return [];
+  const norm = (h) => h.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '_');
+  const head = clean[0].map(norm);
+  return clean.slice(1).map((r) => Object.fromEntries(head.map((h, i) => [h, (r[i] ?? '').trim()])));
+}
+function download(name, content) {
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+const OBJ_COLS = ['registro', 'id', 'area', 'titulo', 'unidade', 'medida', 'inicial', 'meta', 'data_inicio', 'prazo', 'responsavel', 'estimado', 'arquivado', 'fonte', 'objetivo_id', 'data', 'valor', 'observacao', 'exemplo'];
+function exportObjectives() {
+  const rows = [OBJ_COLS];
+  S.objectives.forEach((o) => rows.push(['objetivo', o.id, o.area, o.title, o.unit, o.kind, o.start, o.target, o.startDate, o.deadline, o.owner, o.estimated ? 'sim' : 'nao', o.archived ? 'sim' : 'nao', o.source || '', '', '', '', '', '']));
+  S.checkins.slice().sort((a, b) => a.date.localeCompare(b.date)).forEach((c) => rows.push(['checkin', c.id, '', '', '', '', '', '', '', '', '', '', '', '', c.objectiveId, c.date, c.value, c.note || '', c.example ? 'sim' : 'nao']));
+  download(`objetivos-${today()}.csv`, toCSV(rows));
+  toast('CSV exportado.');
+}
+const yes = (v) => /^(s|sim|y|yes|true|1|x)$/i.test(String(v || '').trim());
+async function importObjectives(file) {
+  const rows = parseCSV(await file.text());
+  const objs = [], chks = [];
+  rows.forEach((r) => {
+    if (r.registro === 'objetivo') {
+      const o = { id: r.id || uid('ob'), order: objs.length, area: r.area, title: r.titulo, unit: ['brl', 'pct', 'count'].includes(r.unidade) ? r.unidade : 'count',
+        kind: r.medida === 'monthly' ? 'monthly' : 'stock', start: parseNum(r.inicial), target: parseNum(r.meta), startDate: parseAnyDate(r.data_inicio), deadline: parseAnyDate(r.prazo),
+        owner: r.responsavel, estimated: yes(r.estimado), archived: yes(r.arquivado), source: r.fonte };
+      if (o.title && !isNaN(o.start) && !isNaN(o.target) && validISO(o.startDate) && validISO(o.deadline)) objs.push(o);
+    } else if (r.registro === 'checkin') {
+      const c = { id: r.id || uid('ck'), objectiveId: r.objetivo_id, date: parseAnyDate(r.data), value: parseNum(r.valor), note: r.observacao || '', example: yes(r.exemplo) };
+      if (c.objectiveId && validISO(c.date) && !isNaN(c.value)) chks.push(c);
+    }
+  });
+  if (!objs.length) { toast('Nenhum objetivo válido no arquivo. Use um CSV exportado por este dashboard.'); return; }
+  const ids = new Set(objs.map((o) => o.id));
+  const validChks = chks.filter((c) => ids.has(c.objectiveId));
+  if (!(await ask(`Substituir os objetivos atuais por ${objs.length} objetivo(s) e ${validChks.length} check-in(s) do arquivo?`))) return;
+  const prev = allIds();
+  S.objectives = objs; S.checkins = validChks;
+  S.meta.exampleMode = validChks.some((c) => c.example);
+  await Store.replaceAll(S, prev);
+  render(); toast('Objetivos importados.');
+}
+function exportStudents() {
+  const rows = [['nome', 'plano', 'matricula', 'encerramento', 'nivelamento', 'timeoff_inicio', 'timeoff_fim', 'estornado', 'exemplo']];
+  S.students.forEach((s) => rows.push([s.name, s.plan, fmtDateFull(s.start), fmtDateFull(studentEnd(s)), s.level, s.timeoffStart ? fmtDateFull(s.timeoffStart) : '', s.timeoffEnd ? fmtDateFull(s.timeoffEnd) : '', s.refunded ? 'sim' : 'nao', s.example ? 'sim' : 'nao']));
+  download(`alunos-${today()}.csv`, toCSV(rows));
+  toast('CSV de alunos exportado.');
+}
+async function importStudents(file) {
+  const rows = parseCSV(await file.text());
+  const pick = (r, ...keys) => { for (const k of keys) if (r[k] != null && r[k] !== '') return r[k]; return ''; };
+  const list = [];
+  let bad = 0;
+  rows.forEach((r) => {
+    const name = pick(r, 'nome', 'aluno', 'name');
+    const start = parseAnyDate(pick(r, 'matricula', 'data_de_matricula', 'inicio', 'data_inicio', 'data_matricula'));
+    if (!name || !start) { bad++; return; }
+    const lvRaw = pick(r, 'nivelamento', 'nivel', 'teste_de_nivelamento');
+    const lv = LEVELS.find((l) => l.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '') === lvRaw.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')) || '';
+    list.push({ id: uid('al'), name, plan: pick(r, 'plano', 'plan'), start, end: parseAnyDate(pick(r, 'encerramento', 'data_de_encerramento', 'fim', 'data_fim')),
+      level: lv, timeoffStart: parseAnyDate(pick(r, 'timeoff_inicio', 'time_off_inicio', 'trancamento_inicio')), timeoffEnd: parseAnyDate(pick(r, 'timeoff_fim', 'time_off_fim', 'trancamento_fim')),
+      refunded: yes(pick(r, 'estornado', 'estorno')), example: false });
+  });
+  if (!list.length) { toast('Nenhum aluno válido. O CSV precisa das colunas "nome" e "matricula".'); return; }
+  if (!(await ask(`Importar ${list.length} aluno(s)${bad ? ` (${bad} linha(s) ignoradas por falta de nome ou data)` : ''}? A base atual de alunos será substituída.`))) return;
+  const del = S.students.map((s) => s.id);
+  S.students = list;
+  await Store.commit(S, { deletes: del, upserts: list.map((s) => ['aluno', s]) });
+  render(); toast(`${list.length} aluno(s) importados.`);
+}
+
+/* ---------------------------------------------------------------------
+   Inicialização
+   --------------------------------------------------------------------- */
+function wire() {
+  $('#btnUpdate').onclick = openUpdate;
+  $('#updSave').onclick = saveUpdate;
+  $('#btnManage').onclick = () => { renderManage(); openModal('mManage'); };
+  $('#btnNewObj').onclick = () => openObj(null);
+  $('#objSave').onclick = saveObj;
+  $('#objForm').onsubmit = (e) => { e.preventDefault(); saveObj(); };
+  $('#stuSave').onclick = saveStudent;
+  $('#stuForm').onsubmit = (e) => { e.preventDefault(); saveStudent(); };
+  $('#stuDelete').onclick = deleteStudent;
+  $('#btnMeetingSide').onclick = openMeeting;
+  $('#btnBell').onclick = () => $('#cardAlerts').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+  $('#btnUser').onclick = (e) => { e.stopPropagation(); $('#userMenu').hidden = !$('#userMenu').hidden; };
+  document.addEventListener('click', (e) => { if (!$('#userMenu').hidden && !e.target.closest('#userMenu')) $('#userMenu').hidden = true; });
+  if (lsGet(HIDE_KEY) === '1') document.body.classList.add('hide-values');
+  $('#btnHide').onclick = () => { const on = document.body.classList.toggle('hide-values'); lsSet(HIDE_KEY, on ? '1' : '0'); render(); };
+  $$('.nav-btn[data-go]').forEach((b) => b.onclick = () => {
+    $$('.nav-btn').forEach((x) => x.classList.remove('active')); b.classList.add('active');
+    const el = document.getElementById(b.dataset.go);
+    if (b.dataset.go === 'top') window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    else if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 84, behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+  $('#btnClearExamples').onclick = async () => { if (await ask('Apagar todos os check-ins e alunos de exemplo? Os objetivos e metas continuam.')) clearExamples(false); };
+  $('#btnExport').onclick = exportObjectives;
+  $('#btnImport').onclick = () => $('#fileObj').click();
+  $('#fileObj').onchange = (e) => { const f = e.target.files[0]; if (f) importObjectives(f); e.target.value = ''; };
+  let rt;
+  window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => chart && chart.resize(), 150); });
+}
+
+async function boot() {
+  const loaded = await Store.init();
+  if (loaded && Array.isArray(loaded.objectives) && loaded.objectives.length) {
+    S = { meta: Object.assign({ business: 'Mentoria Inglês Funcional', period: 'Q4 2026', exampleMode: false }, loaded.meta),
+      objectives: loaded.objectives, checkins: loaded.checkins || [], students: loaded.students || [] };
+  } else {
+    S = seedState();
+    if (Store.mode === 'cloud') await Store.replaceAll(S, []);
+    else Store.writeLocal(S);
+  }
+  wire();
+  render();
+}
+// Chart.js carrega com defer; o DOMContentLoaded dispara depois dele.
+document.addEventListener('DOMContentLoaded', boot);
+</script>
+</body>
+</html>
